@@ -9,230 +9,181 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-/* ===== BASE ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{
-  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
-  background:#eef0f7;color:#14172b;font-size:14px;line-height:1.5;
-  -webkit-font-smoothing:antialiased;
-}
+body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:#eef0f7;color:#14172b;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 
-/* ===== LOGIN ===== */
-#loginWrap{
-  display:flex;justify-content:center;align-items:center;
-  height:100vh;
-  background:linear-gradient(145deg,#0c0880 0%,#1e10c7 50%,#3a28e8 100%);
-  position:relative;overflow:hidden;
-}
-#loginWrap::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 30% 50%,rgba(255,255,255,.07) 0%,transparent 70%);
-}
-.login-card{
-  width:400px;background:#fff;border-radius:24px;
-  padding:44px 40px;box-shadow:0 40px 80px rgba(14,8,128,.35);
-  position:relative;z-index:1;
-}
+/* LOGIN */
+#loginWrap{display:flex;justify-content:center;align-items:center;height:100vh;background:linear-gradient(145deg,#0c0880 0%,#1e10c7 50%,#3a28e8 100%);position:relative;overflow:hidden}
+#loginWrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(255,255,255,.07) 0%,transparent 70%)}
+.login-card{width:400px;background:#fff;border-radius:24px;padding:44px 40px;box-shadow:0 40px 80px rgba(14,8,128,.35);position:relative;z-index:1}
 .login-brand{text-align:center;margin-bottom:32px}
 .login-brand h1{font-size:26px;font-weight:800;color:#1e10c7;letter-spacing:-1px}
-.login-brand p{font-size:12px;color:#9fa6bc;margin-top:4px;letter-spacing:.3px}
+.login-brand p{font-size:12px;color:#9fa6bc;margin-top:4px}
 .lbl{display:block;font-size:11px;font-weight:700;color:#6b7494;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
-.fi{
-  width:100%;padding:13px 15px;border:1.5px solid #e4e7f0;
-  border-radius:12px;font-size:14px;font-family:inherit;
-  outline:none;transition:border-color .2s,box-shadow .2s;
-  background:#fff;color:#14172b;
-}
+.fi{width:100%;padding:13px 15px;border:1.5px solid #e4e7f0;border-radius:12px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;background:#fff;color:#14172b}
 .fi:focus{border-color:#1e10c7;box-shadow:0 0 0 3px rgba(30,16,199,.1)}
 .fi::placeholder{color:#c2c8db}
 .form-group{margin-bottom:14px}
-.btn-login{
-  width:100%;padding:14px;border:none;border-radius:12px;
-  background:#1e10c7;color:#fff;font-size:15px;font-weight:700;
-  font-family:inherit;cursor:pointer;letter-spacing:.3px;
-  margin-top:6px;transition:all .2s;
-}
+.btn-login{width:100%;padding:14px;border:none;border-radius:12px;background:#1e10c7;color:#fff;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.3px;margin-top:6px;transition:all .2s}
 .btn-login:hover{background:#180db5;transform:translateY(-1px);box-shadow:0 10px 24px rgba(30,16,199,.3)}
-.btn-login:active{transform:translateY(0)}
 #loginErr{text-align:center;font-size:12px;color:#e53e3e;margin-top:10px;min-height:16px}
 
-/* ===== APP SHELL ===== */
+/* APP */
 #app{display:none;height:100vh;overflow:hidden}
 .layout{display:flex;height:100vh}
 
-/* ===== SIDEBAR ===== */
-.sidebar{
-  width:230px;background:#0f0a8a;display:flex;flex-direction:column;
-  flex-shrink:0;position:relative;
-}
-.sidebar::after{
-  content:'';position:absolute;right:0;top:0;bottom:0;
-  width:1px;background:rgba(255,255,255,.06);
-}
+/* SIDEBAR */
+.sidebar{width:230px;background:#0f0a8a;display:flex;flex-direction:column;flex-shrink:0;position:relative}
+.sidebar::after{content:'';position:absolute;right:0;top:0;bottom:0;width:1px;background:rgba(255,255,255,.06)}
 .sb-head{padding:22px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
-.sb-logo{
-  display:flex;align-items:center;gap:10px;
-}
-.sb-logo-mark{
-  width:32px;height:32px;background:#fff;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.sb-logo-mark span{font-size:13px;font-weight:800;color:#1e10c7;letter-spacing:-.5px}
+.sb-logo{display:flex;align-items:center;gap:10px}
+.sb-logo-mark{width:32px;height:32px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-logo-mark span{font-size:13px;font-weight:800;color:#1e10c7}
 .sb-logo-text{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.5px}
 .sb-logo-sub{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.3px;margin-top:1px}
-.sb-user{
-  margin:14px 0 0;background:rgba(255,255,255,.08);border-radius:10px;
-  padding:10px 12px;display:flex;align-items:center;gap:10px;
-  border:1px solid rgba(255,255,255,.1);
-}
-.u-av{
-  width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:800;color:#fff;flex-shrink:0;letter-spacing:-.5px;
-}
+.sb-user{margin:14px 0 0;background:rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.1)}
+.u-av{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
 .u-nm{font-size:13px;color:#fff;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .u-rl{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px;letter-spacing:.3px}
 .sb-nav{padding:14px 10px;flex:1;overflow-y:auto}
 .nav-section{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.2px;padding:0 8px;margin:14px 0 6px}
 .nav-section:first-child{margin-top:0}
-.mi{
-  display:flex;align-items:center;gap:10px;padding:10px 10px;
-  border-radius:9px;cursor:pointer;color:rgba(255,255,255,.6);
-  font-size:13px;font-weight:500;transition:all .15s;margin-bottom:2px;
-}
+.mi{display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:9px;cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;transition:all .15s;margin-bottom:2px}
 .mi:hover{background:rgba(255,255,255,.1);color:#fff}
 .mi.active{background:#fff;color:#1e10c7;font-weight:700}
 .mi-ic{font-size:14px;width:18px;text-align:center;flex-shrink:0}
 .sb-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.08)}
-.btn-logout{
-  width:100%;padding:9px;background:transparent;border:1px solid rgba(255,255,255,.15);
-  border-radius:9px;color:rgba(255,255,255,.5);font-size:12px;font-family:inherit;
-  cursor:pointer;transition:all .15s;letter-spacing:.2px;
-}
+.btn-logout{width:100%;padding:9px;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:9px;color:rgba(255,255,255,.5);font-size:12px;font-family:inherit;cursor:pointer;transition:all .15s}
 .btn-logout:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.8)}
 
-/* ===== MAIN ===== */
+/* MAIN */
 .main{flex:1;overflow-y:auto;padding:28px 30px;background:#eef0f7}
 .page{display:none;animation:fadeIn .2s ease}
 .page.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.pg-head{margin-bottom:22px;display:flex;align-items:flex-start;justify-content:space-between}
+.pg-head{margin-bottom:22px}
 .pg-title{font-size:20px;font-weight:800;color:#14172b;letter-spacing:-.5px}
 .pg-desc{font-size:12px;color:#9fa6bc;margin-top:3px}
 
-/* ===== CARDS ===== */
+/* CARD */
 .card{background:#fff;border-radius:16px;padding:22px 24px;box-shadow:0 1px 8px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);margin-bottom:18px}
 .card-t{font-size:13px;font-weight:700;color:#14172b;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
 .card-t small{font-size:12px;color:#9fa6bc;font-weight:400}
 
-/* ===== KPI GRID ===== */
+/* KPI */
 .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
-.kpi{
-  background:#fff;border-radius:14px;padding:18px 20px;
-  box-shadow:0 1px 8px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);
-  position:relative;overflow:hidden;
-}
-.kpi::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:#1e10c7;border-radius:14px 14px 0 0;
-}
+.kpi{background:#fff;border-radius:14px;padding:18px 20px;box-shadow:0 1px 8px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#1e10c7;border-radius:14px 14px 0 0}
 .kpi:nth-child(2)::before{background:#0284c7}
 .kpi:nth-child(3)::before{background:#059669}
 .kpi-lbl{font-size:10px;font-weight:700;color:#9fa6bc;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
 .kpi-val{font-size:28px;font-weight:800;color:#14172b;line-height:1;letter-spacing:-1px;margin-bottom:5px}
 .kpi-sub{font-size:11px;color:#b0b8cc}
 
-/* ===== PERIOD BUTTONS ===== */
+/* PERIOD */
 .period-row{display:flex;gap:6px;margin-bottom:16px}
-.p-btn{
-  padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;
-  cursor:pointer;border:1.5px solid #e4e7f0;background:#fff;
-  color:#9fa6bc;transition:all .15s;font-family:inherit;
-}
-.p-btn:hover{border-color:#c9cfe8;color:#6b7494}
+.p-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid #e4e7f0;background:#fff;color:#9fa6bc;transition:all .15s;font-family:inherit}
 .p-btn.on{background:#1e10c7;color:#fff;border-color:#1e10c7}
 
-/* ===== CHARTS ===== */
+/* CHART */
 .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
 .chart-box{position:relative;height:190px}
 
-/* ===== TABLE ===== */
+/* TABLE */
 .tbl{width:100%;border-collapse:collapse;font-size:13px}
-.tbl th{
-  text-align:left;padding:9px 12px;font-size:11px;font-weight:700;
-  color:#9fa6bc;text-transform:uppercase;letter-spacing:.4px;
-  border-bottom:1px solid #f0f2f8;background:#fafbfd;white-space:nowrap;
-}
-.tbl td{padding:12px 12px;border-bottom:1px solid #f5f6fa;vertical-align:middle}
+.tbl th{text-align:left;padding:9px 12px;font-size:11px;font-weight:700;color:#9fa6bc;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid #f0f2f8;background:#fafbfd;white-space:nowrap}
+.tbl td{padding:11px 12px;border-bottom:1px solid #f5f6fa;vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr:hover td{background:#fafbff}
 .tbl td strong{font-weight:700;color:#14172b}
 
-/* ===== FORM ===== */
+/* FORM */
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .act-grid{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:12px;align-items:end}
 select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239fa6bc' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
 
-/* ===== BUTTONS ===== */
-.btn-p{
-  padding:10px 20px;background:#1e10c7;color:#fff;border:none;border-radius:10px;
-  font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
-  transition:all .15s;white-space:nowrap;
-}
+/* BUTTONS */
+.btn-p{padding:10px 20px;background:#1e10c7;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
 .btn-p:hover{background:#180db5;transform:translateY(-1px)}
-.btn-p:active{transform:translateY(0)}
-.btn-s{
-  padding:10px 20px;background:#fff;color:#1e10c7;
-  border:1.5px solid #1e10c7;border-radius:10px;font-size:13px;
-  font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;
-}
+.btn-s{padding:10px 20px;background:#fff;color:#1e10c7;border:1.5px solid #1e10c7;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
 .btn-s:hover{background:#f0f0ff}
-.btn-d{
-  padding:5px 12px;background:#fff0f0;color:#dc2626;border:none;
-  border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;
-  font-family:inherit;transition:background .15s;
-}
+.btn-d{padding:5px 12px;background:#fff0f0;color:#dc2626;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
 .btn-d:hover{background:#fee2e2}
 
-/* ===== TABS ===== */
+/* TABS */
 .tab-bar{display:flex;border-bottom:2px solid #eef0f7;margin-bottom:18px;gap:2px}
-.ti{
-  padding:10px 18px;font-size:13px;font-weight:600;color:#9fa6bc;
-  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;
-  transition:all .15s;
-}
+.ti{padding:10px 18px;font-size:13px;font-weight:600;color:#9fa6bc;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
 .ti:hover{color:#6b7494}
 .ti.on{color:#1e10c7;border-bottom-color:#1e10c7}
 
-/* ===== STATUS / BADGES ===== */
+/* MSG */
 .s-ok{font-size:12px;color:#059669;font-weight:600;margin-top:10px;min-height:18px}
 .s-err{font-size:12px;color:#dc2626;font-weight:600;margin-top:10px;min-height:18px}
 .stmsg{font-size:12px;font-weight:600;margin-top:10px;min-height:18px;color:transparent}
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.2px}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700}
 .b-master{background:#ede9fe;color:#5b21b6}
 .b-admin{background:#dbeafe;color:#1d4ed8}
 .b-user{background:#e0f2fe;color:#0369a1}
-.dup-badge{display:inline-block;padding:6px 14px;border-radius:9px;font-size:12px;font-weight:700;margin-bottom:14px}
-.dup-dup{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
-.dup-ok{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+.st-contract{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:7px;font-size:12px;font-weight:700;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
+.st-prospect{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:7px;font-size:12px;font-weight:700;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
 
-/* ===== MISC ===== */
-.search-row{display:flex;gap:10px;margin-bottom:16px}
+/* DUP BANNER */
+.dup-banner{border-radius:12px;padding:14px 18px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px}
+.db-ic{font-size:20px;flex-shrink:0;margin-top:1px}
+.db-title{font-size:14px;font-weight:700;margin-bottom:2px}
+.db-sub{font-size:12px;color:#6b7494}
+
+/* USER READONLY DASH */
+.ro-card{background:#f8f9fc;border-radius:14px;padding:20px;border:1px solid #e9eaf0;margin-bottom:18px}
+.ro-title{font-size:12px;font-weight:700;color:#9fa6bc;text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}
+.ro-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ro-item{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #f0f2f8}
+.ro-lbl{font-size:11px;color:#9fa6bc;margin-bottom:4px;font-weight:600}
+.ro-val{font-size:22px;font-weight:800;color:#14172b;letter-spacing:-1px}
+
+/* MANUAL */
+.manual-hero{text-align:center;padding:16px 0 28px}
+.manual-hero h2{font-size:24px;font-weight:800;color:#14172b;letter-spacing:-1px;margin-bottom:8px}
+.manual-hero p{font-size:14px;color:#6b7494;max-width:480px;margin:0 auto;line-height:1.6}
+.tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.tier-card{background:#fff;border-radius:18px;padding:26px 22px;box-shadow:0 1px 8px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.tier-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.1)}
+.tier-card.featured{border:2px solid #1e10c7;box-shadow:0 4px 20px rgba(30,16,199,.15)}
+.tier-card.featured::after{content:'관리자';position:absolute;top:16px;right:16px;background:#1e10c7;color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.4px}
+.tier-chip{display:inline-block;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:14px}
+.tc-user{background:#e0f2fe;color:#0369a1}
+.tc-admin{background:#dbeafe;color:#1d4ed8}
+.tc-master{background:#ede9fe;color:#5b21b6}
+.tier-name{font-size:20px;font-weight:800;color:#14172b;margin-bottom:6px;letter-spacing:-.5px}
+.tier-desc{font-size:12px;color:#6b7494;margin-bottom:18px;line-height:1.6}
+.tier-div{height:1px;background:#f0f2f8;margin-bottom:16px}
+.feat-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+.feat-list li{display:flex;align-items:flex-start;gap:9px;font-size:12px;line-height:1.5;color:#374151}
+.fi-ic{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;margin-top:1px}
+.fi-yes{background:#dcfce7;color:#16a34a}
+.fi-no{background:#f1f5f9;color:#94a3b8}
+.fi-txt-dim{color:#94a3b8;text-decoration:line-through}
+.info-box{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:16px 18px;display:flex;gap:12px;font-size:13px;color:#92400e;line-height:1.7}
+.ib-ic{font-size:18px;flex-shrink:0;margin-top:1px}
+
+/* MISC */
+.search-row{display:flex;gap:10px;margin-bottom:12px}
 .search-row .fi{flex:1}
+.search-hint{font-size:11px;color:#9fa6bc;margin-bottom:4px}
 .divider{height:1px;background:#f0f2f8;margin:18px 0}
-.empty{text-align:center;padding:36px;color:#b0b8cc;font-size:13px}
+.empty{text-align:center;padding:32px;color:#b0b8cc;font-size:13px}
 .role-sel{font-size:12px;padding:5px 8px;border:1px solid #e4e7f0;border-radius:7px;cursor:pointer;font-family:inherit;outline:none}
-.team-wrap{display:none;margin-top:2px}
-
 ::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#d0d4e8;border-radius:4px}
+::-webkit-scrollbar-track{background:transparent}
 </style>
 </head>
 <body>
 
-<!-- ============================================================ LOGIN -->
+<!-- LOGIN -->
 <div id="loginWrap">
   <div class="login-card">
     <div class="login-brand">
@@ -252,11 +203,10 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
   </div>
 </div>
 
-<!-- ============================================================ APP -->
+<!-- APP -->
 <div id="app">
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sb-head">
       <div class="sb-logo">
@@ -274,131 +224,148 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
         </div>
       </div>
     </div>
-
     <div class="sb-nav">
       <div class="nav-section">메뉴</div>
-      <div class="mi active" id="miDash" onclick="goPage('dash')">
-        <span class="mi-ic">📊</span> 대시보드
-      </div>
-      <div class="mi" id="miCrm" onclick="goPage('crm')">
-        <span class="mi-ic">📋</span> CRM 관리
-      </div>
-      <div class="mi" id="miAdmin" onclick="goPage('admin')" style="display:none">
-        <span class="mi-ic">⚙️</span> 관리자
-      </div>
+      <div class="mi active" id="miDash"  onclick="goPage('dash')"><span class="mi-ic">📊</span>대시보드</div>
+      <div class="mi"        id="miCrm"   onclick="goPage('crm')"><span class="mi-ic">📋</span>CRM 관리</div>
+      <div class="mi"        id="miAdmin" onclick="goPage('admin')" style="display:none"><span class="mi-ic">⚙️</span>관리자</div>
     </div>
-
     <div class="sb-foot">
       <button class="btn-logout" onclick="doLogout()">로그아웃</button>
     </div>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
 
-    <!-- ======================================================== DASHBOARD -->
+    <!-- DASHBOARD -->
     <div class="page active" id="pgDash">
       <div class="pg-head">
-        <div>
-          <div class="pg-title" id="greeting">대시보드</div>
-          <div class="pg-desc" id="dateStr"></div>
-        </div>
+        <div class="pg-title" id="greeting">대시보드</div>
+        <div class="pg-desc"  id="dateStr"></div>
       </div>
 
-      <div class="period-row">
-        <button class="p-btn on" onclick="setPeriod('day',this)">오늘</button>
-        <button class="p-btn" onclick="setPeriod('week',this)">이번 주</button>
-        <button class="p-btn" onclick="setPeriod('month',this)">이번 달</button>
-      </div>
-
-      <div class="kpi-row">
-        <div class="kpi">
-          <div class="kpi-lbl">콜 수</div>
-          <div class="kpi-val" id="kCalls">0</div>
-          <div class="kpi-sub" id="kCallsSub">오늘 · 내 활동</div>
+      <!-- ADMIN/MASTER VIEW -->
+      <div id="dashAdmin" style="display:none">
+        <div class="period-row">
+          <button class="p-btn on" onclick="setPeriod('day',this)">오늘</button>
+          <button class="p-btn"    onclick="setPeriod('week',this)">이번 주</button>
+          <button class="p-btn"    onclick="setPeriod('month',this)">이번 달</button>
         </div>
-        <div class="kpi">
-          <div class="kpi-lbl">통화 시간</div>
-          <div class="kpi-val" id="kTime">0분</div>
-          <div class="kpi-sub" id="kTimeSub">오늘 · 총 통화</div>
+        <div class="kpi-row">
+          <div class="kpi">
+            <div class="kpi-lbl">아웃바운드 콜</div>
+            <div class="kpi-val" id="kCalls">0</div>
+            <div class="kpi-sub" id="kCallsSub">오늘 · 팀 전체</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-lbl">총 통화 시간</div>
+            <div class="kpi-val" id="kTime">0분</div>
+            <div class="kpi-sub" id="kTimeSub">오늘 · 팀 전체</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-lbl">신규 CRM 등록</div>
+            <div class="kpi-val" id="kCrm">0</div>
+            <div class="kpi-sub" id="kCrmSub">오늘 · 팀 전체</div>
+          </div>
         </div>
-        <div class="kpi">
-          <div class="kpi-lbl">신규 CRM</div>
-          <div class="kpi-val" id="kCrm">0</div>
-          <div class="kpi-sub" id="kCrmSub">오늘 · 등록 건수</div>
+        <div class="chart-row">
+          <div class="card">
+            <div class="card-t">아웃바운드 콜 추이 <small>최근 7일</small></div>
+            <div class="chart-box"><canvas id="chartCalls"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-t">CRM 등록 추이 <small>최근 7일</small></div>
+            <div class="chart-box"><canvas id="chartCrm"></canvas></div>
+          </div>
         </div>
-      </div>
-
-      <div class="chart-row">
         <div class="card">
-          <div class="card-t">콜 수 추이 <small>최근 7일</small></div>
-          <div class="chart-box"><canvas id="chartCalls"></canvas></div>
-        </div>
-        <div class="card">
-          <div class="card-t">CRM 등록 추이 <small>최근 7일</small></div>
-          <div class="chart-box"><canvas id="chartCrm"></canvas></div>
-        </div>
-      </div>
-
-      <!-- 영업 활동 기록 -->
-      <div class="card">
-        <div class="card-t">영업 활동 기록 <small id="actDateLbl"></small></div>
-        <div class="act-grid">
-          <div class="form-group" style="margin:0">
-            <label class="lbl">콜 수</label>
-            <input class="fi" id="actCount" type="number" min="0" placeholder="0">
+          <div class="card-t">영업 활동 기록 입력 <small id="actDateLbl"></small></div>
+          <div class="act-grid">
+            <div class="form-group" style="margin:0">
+              <label class="lbl">아웃바운드 콜 수</label>
+              <input class="fi" id="actCount" type="number" min="0" placeholder="0">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="lbl">통화 시간 (분)</label>
+              <input class="fi" id="actTime" type="number" min="0" placeholder="0">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="lbl">메모</label>
+              <input class="fi" id="actMemo" placeholder="간단한 메모 (선택)">
+            </div>
+            <div>
+              <label class="lbl">&nbsp;</label>
+              <button class="btn-p" onclick="saveAct()">저장</button>
+            </div>
           </div>
-          <div class="form-group" style="margin:0">
-            <label class="lbl">통화 시간 (분)</label>
-            <input class="fi" id="actTime" type="number" min="0" placeholder="0">
-          </div>
-          <div class="form-group" style="margin:0">
-            <label class="lbl">메모</label>
-            <input class="fi" id="actMemo" placeholder="간단한 메모 (선택)">
-          </div>
-          <div>
-            <label class="lbl">&nbsp;</label>
-            <button class="btn-p" onclick="saveAct()">저장</button>
-          </div>
-        </div>
-        <div id="actMsg" class="stmsg">-</div>
-
-        <!-- 팀 활동 (ADMIN/MASTER) -->
-        <div class="team-wrap" id="teamWrap">
+          <div id="actMsg" class="stmsg">-</div>
           <div class="divider"></div>
           <div style="font-size:12px;font-weight:700;color:#14172b;margin-bottom:12px">팀 활동 현황 (오늘)</div>
           <table class="tbl">
-            <thead><tr><th>담당자</th><th>콜 수</th><th>통화 시간</th><th>메모</th></tr></thead>
+            <thead><tr><th>담당자</th><th>아웃바운드 콜</th><th>통화 시간</th><th>메모</th></tr></thead>
             <tbody id="teamBody"></tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- ======================================================== CRM -->
-    <div class="page" id="pgCrm">
-      <div class="pg-head">
-        <div>
-          <div class="pg-title">CRM 관리</div>
-          <div class="pg-desc">가망고객 등록 및 중복 확인</div>
+      <!-- USER READONLY VIEW -->
+      <div id="dashUser" style="display:none">
+        <div class="ro-card">
+          <div class="ro-title">나의 오늘 활동</div>
+          <div class="ro-grid">
+            <div class="ro-item">
+              <div class="ro-lbl">아웃바운드 콜</div>
+              <div class="ro-val" id="uKpiCalls">-</div>
+            </div>
+            <div class="ro-item">
+              <div class="ro-lbl">통화 시간</div>
+              <div class="ro-val" id="uKpiTime">-</div>
+            </div>
+          </div>
+          <p style="font-size:11px;color:#b0b8cc;margin-top:12px">활동 기록 입력은 관리자에게 문의하세요.</p>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi">
+            <div class="kpi-lbl">이번 주 콜</div>
+            <div class="kpi-val" id="uWeekCalls">0</div>
+            <div class="kpi-sub">나의 주간 실적</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-lbl">이번 달 콜</div>
+            <div class="kpi-val" id="uMonthCalls">0</div>
+            <div class="kpi-sub">나의 월간 실적</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-lbl">등록 CRM</div>
+            <div class="kpi-val" id="uMyCrm">0</div>
+            <div class="kpi-sub">나의 누적 등록</div>
+          </div>
         </div>
       </div>
+    </div>
 
+    <!-- CRM -->
+    <div class="page" id="pgCrm">
+      <div class="pg-head">
+        <div class="pg-title">CRM 관리</div>
+        <div class="pg-desc">가망고객 등록 및 중복 확인</div>
+      </div>
       <div class="tab-bar">
         <div class="ti on" onclick="crmTab('check',this)">중복 확인</div>
-        <div class="ti" onclick="crmTab('reg',this)">CRM 등록</div>
-        <div class="ti" onclick="crmTab('list',this)">목록 조회</div>
+        <div class="ti"    onclick="crmTab('reg',this)">CRM 등록</div>
+        <div class="ti"    onclick="crmTab('list',this)">목록 조회</div>
       </div>
 
       <!-- 중복 확인 -->
       <div id="tabCheck">
         <div class="card">
           <div class="card-t">중복 가망 확인</div>
-          <div class="search-row">
-            <input class="fi" id="searchKw" placeholder="전화번호 또는 업체명으로 검색 (하이픈 없이 입력 가능)">
+          <p class="search-hint">⚠ 정확한 검색을 위해 4자리 이상 입력이 필요합니다. 전화번호 앞자리(010 등)만으로는 검색할 수 없습니다.</p>
+          <div class="search-row" style="margin-top:8px">
+            <input class="fi" id="searchKw" placeholder="업체명 또는 전화번호 4자 이상 입력 (예: 강남피자, 1234-5678)">
             <button class="btn-p" onclick="checkDup()">검색</button>
           </div>
-          <div id="dupBadge"></div>
+          <div id="dupBanner"></div>
           <div id="dupList"></div>
         </div>
       </div>
@@ -417,13 +384,22 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
               <input class="fi" id="rPhone" placeholder="010-0000-0000" maxlength="13">
             </div>
           </div>
-          <div class="form-group">
-            <label class="lbl">주소 — 지번 주소만 입력</label>
-            <input class="fi" id="rAddress" placeholder="예: 서울시 강남구 역삼동 123-4  ※ 지번(구주소) 형식으로 입력해주세요">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="lbl">주소 — 지번(구주소)만 입력</label>
+              <input class="fi" id="rAddress" placeholder="예: 서울시 강남구 역삼동 123-4">
+            </div>
+            <div class="form-group">
+              <label class="lbl">상태 *</label>
+              <select class="fi" id="rStatus">
+                <option value="가망">가망 — 영업 대상 고객</option>
+                <option value="계약중">계약중 — 현재 계약 진행 중 (연락 금지)</option>
+              </select>
+            </div>
           </div>
           <div class="form-group">
             <label class="lbl">메모</label>
-            <input class="fi" id="rMemo" placeholder="특이사항 등 메모 (선택)">
+            <input class="fi" id="rMemo" placeholder="특이사항 메모 (선택)">
           </div>
           <button class="btn-p" onclick="saveCRM()">등록하기</button>
           <div id="regMsg" class="stmsg">-</div>
@@ -440,7 +416,7 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
           </div>
           <div style="overflow-x:auto">
             <table class="tbl">
-              <thead><tr><th>업체명</th><th>전화번호</th><th>주소</th><th>담당자</th><th>등록일</th></tr></thead>
+              <thead><tr><th>업체명</th><th>전화번호</th><th>주소</th><th>상태</th><th>담당자</th><th>등록일</th></tr></thead>
               <tbody id="listBody"></tbody>
             </table>
           </div>
@@ -448,22 +424,16 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
       </div>
     </div>
 
-    <!-- ======================================================== ADMIN -->
+    <!-- ADMIN -->
     <div class="page" id="pgAdmin">
       <div class="pg-head">
-        <div>
-          <div class="pg-title">관리자</div>
-          <div class="pg-desc">시스템 관리 — MASTER 전용</div>
-        </div>
+        <div class="pg-title">관리자</div>
+        <div class="pg-desc" id="adminDesc">시스템 관리</div>
       </div>
+      <div class="tab-bar" id="adminTabBar"></div>
 
-      <div class="tab-bar">
-        <div class="ti on" onclick="admTab('users',this)">사용자 관리</div>
-        <div class="ti" onclick="admTab('allcrm',this)">전체 CRM 조회</div>
-      </div>
-
-      <!-- 사용자 관리 -->
-      <div id="admUsers">
+      <!-- 사용자 관리 (MASTER) -->
+      <div id="admUsers" style="display:none">
         <div class="card" style="margin-bottom:14px">
           <div class="card-t">신규 계정 생성</div>
           <div class="form-row">
@@ -478,7 +448,7 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="lbl">사원명 (닉네임) *</label>
+              <label class="lbl">사원명 *</label>
               <input class="fi" id="nNick" placeholder="홍길동">
             </div>
             <div class="form-group">
@@ -502,284 +472,327 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
         </div>
       </div>
 
-      <!-- 전체 CRM -->
+      <!-- 전체 CRM (MASTER) -->
       <div id="admCrmWrap" style="display:none">
         <div class="card">
           <div class="card-t">전체 CRM 데이터 <small id="admCnt"></small></div>
           <div class="search-row">
             <input class="fi" id="admKw" placeholder="업체명 / 전화번호 검색">
-            <select class="fi" id="admMgr" style="max-width:150px">
-              <option value="">전체 담당자</option>
-            </select>
+            <select class="fi" id="admMgr" style="max-width:150px"><option value="">전체 담당자</option></select>
             <button class="btn-s" onclick="loadAdmCRM()">조회</button>
           </div>
           <div style="overflow-x:auto">
             <table class="tbl">
-              <thead><tr><th>업체명</th><th>전화번호</th><th>주소</th><th>담당자</th><th>등록일</th><th>관리</th></tr></thead>
+              <thead><tr><th>업체명</th><th>전화번호</th><th>주소</th><th>상태</th><th>담당자</th><th>등록일</th><th>관리</th></tr></thead>
               <tbody id="admCrmBody"></tbody>
             </table>
           </div>
         </div>
       </div>
+
+      <!-- 이용 안내 (ADMIN + MASTER) -->
+      <div id="admManual" style="display:none">
+        <div class="manual-hero">
+          <h2>권한별 이용 안내</h2>
+          <p>MUYI CRM의 각 권한 등급별 접근 가능한 기능을 안내합니다.<br>권한 변경이 필요한 경우 최고 관리자(MASTER)에게 문의하세요.</p>
+        </div>
+        <div class="tier-grid">
+          <!-- USER -->
+          <div class="tier-card">
+            <span class="tier-chip tc-user">USER</span>
+            <div class="tier-name">일반 사원</div>
+            <div class="tier-desc">영업 활동 및 개인 실적 조회를 위한 기본 권한입니다.</div>
+            <div class="tier-div"></div>
+            <ul class="feat-list">
+              <li><span class="fi-ic fi-yes">✓</span>대시보드 — 나의 실적 조회</li>
+              <li><span class="fi-ic fi-yes">✓</span>CRM 등록 — 가망고객 신규 등록</li>
+              <li><span class="fi-ic fi-yes">✓</span>중복 확인 — 가망 DB 검색</li>
+              <li><span class="fi-ic fi-yes">✓</span>나의 CRM 목록 조회</li>
+              <li><span class="fi-ic fi-no">—</span><span class="fi-txt-dim">팀 활동 현황 열람</span></li>
+              <li><span class="fi-ic fi-no">—</span><span class="fi-txt-dim">영업 활동 기록 입력</span></li>
+              <li><span class="fi-ic fi-no">—</span><span class="fi-txt-dim">전체 CRM 조회/삭제</span></li>
+              <li><span class="fi-ic fi-no">—</span><span class="fi-txt-dim">계정 생성 / 권한 변경</span></li>
+            </ul>
+          </div>
+          <!-- ADMIN -->
+          <div class="tier-card featured">
+            <span class="tier-chip tc-admin">ADMIN</span>
+            <div class="tier-name">관리자</div>
+            <div class="tier-desc">팀 활동 모니터링 및 영업 데이터 관리를 위한 권한입니다.</div>
+            <div class="tier-div"></div>
+            <ul class="feat-list">
+              <li><span class="fi-ic fi-yes">✓</span>대시보드 — 팀 전체 실적 조회</li>
+              <li><span class="fi-ic fi-yes">✓</span>팀 활동 현황 열람 (오늘)</li>
+              <li><span class="fi-ic fi-yes">✓</span>영업 활동 기록 직접 입력</li>
+              <li><span class="fi-ic fi-yes">✓</span>CRM 등록 및 전체 목록 조회</li>
+              <li><span class="fi-ic fi-yes">✓</span>중복 확인 — 전체 DB 검색</li>
+              <li><span class="fi-ic fi-yes">✓</span>권한별 이용 안내 열람</li>
+              <li><span class="fi-ic fi-no">—</span><span class="fi-txt-dim">계정 생성 / 권한 변경</span></li>
+              <li><span class="fi-ic fi-no">—</span><span class="fi-txt-dim">전체 CRM 삭제</span></li>
+            </ul>
+          </div>
+          <!-- MASTER -->
+          <div class="tier-card">
+            <span class="tier-chip tc-master">MASTER</span>
+            <div class="tier-name">최고 관리자</div>
+            <div class="tier-desc">시스템 전체 관리 및 모든 데이터에 접근 가능한 최상위 권한입니다.</div>
+            <div class="tier-div"></div>
+            <ul class="feat-list">
+              <li><span class="fi-ic fi-yes">✓</span>모든 ADMIN 권한 포함</li>
+              <li><span class="fi-ic fi-yes">✓</span>계정 생성 및 권한 변경</li>
+              <li><span class="fi-ic fi-yes">✓</span>전체 CRM 데이터 조회</li>
+              <li><span class="fi-ic fi-yes">✓</span>CRM 데이터 삭제</li>
+              <li><span class="fi-ic fi-yes">✓</span>담당자별 필터 조회</li>
+              <li><span class="fi-ic fi-yes">✓</span>전체 사용자 목록 관리</li>
+              <li><span class="fi-ic fi-yes">✓</span>시스템 전체 접근</li>
+              <li><span class="fi-ic fi-yes">✓</span>권한별 이용 안내 열람</li>
+            </ul>
+          </div>
+        </div>
+        <div class="info-box">
+          <span class="ib-ic">💡</span>
+          <div>
+            <strong>꼭 알아두세요</strong><br>
+            권한 변경은 MASTER(최고 관리자)만 가능합니다. 변경이 필요하시면 최고 관리자에게 문의하세요.<br>
+            <span style="font-size:12px;opacity:.8">⛔ <strong>계약중</strong> 상태 고객은 영업 연락이 금지됩니다. 중복 확인 시 반드시 상태를 확인하고 진행하세요.</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-  </div><!-- .main -->
-</div><!-- .layout -->
-</div><!-- #app -->
+  </div>
+</div>
+</div>
 
 <script>
-// ================================================================
-//  MUYI CRM v2.0  |  Supabase + Chart.js
-// ================================================================
-
 const SB_URL = "https://npkpxlbcwmwlxqauevyv.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wa3B4bGJjd213bHhxYXVldnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzMjg2MTIsImV4cCI6MjA4OTkwNDYxMn0.t3n2RvYdJd1_1Ay44V3MW7p2GqJDiocqgrmt0qIov88";
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
-let AU = null;   // auth user
-let PR = null;   // profile (users table)
-let curPeriod = 'day';
-let chCalls = null;
-let chCRM = null;
+let AU=null, PR=null, curPeriod='day', chCalls=null, chCRM=null;
 
-// ── UTILS ──────────────────────────────────────────────────────
-const td = () => new Date().toISOString().slice(0,10);
+const td    = () => new Date().toISOString().slice(0,10);
+const isPriv= () => ['master','admin'].includes((PR?.role||'').toLowerCase());
 
-function periodRange(p) {
-  const now = new Date();
-  let start = td();
-  if (p === 'week') {
-    const d = new Date(now);
-    const day = d.getDay() || 7;
-    d.setDate(d.getDate() - day + 1);
-    start = d.toISOString().slice(0,10);
-  } else if (p === 'month') {
-    start = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-01';
-  }
-  return { start, end: td() };
+function periodRange(p){
+  const now=new Date();
+  if(p==='week'){const d=new Date(now),day=d.getDay()||7;d.setDate(d.getDate()-day+1);return{start:d.toISOString().slice(0,10),end:td()}}
+  if(p==='month'){return{start:now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-01',end:td()}}
+  return{start:td(),end:td()}
 }
 
-function last7() {
-  return Array.from({length:7}, (_,i) => {
-    const d = new Date(); d.setDate(d.getDate()-6+i);
-    return d.toISOString().slice(0,10);
-  });
-}
+function last7(){return Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return d.toISOString().slice(0,10)})}
 
-function fmtPhone(raw) {
-  const n = raw.replace(/\D/g,'');
-  if (n.length <= 3) return n;
-  if (n.length <= 7) return n.slice(0,3)+'-'+n.slice(3);
+function fmtPhone(raw){
+  const n=raw.replace(/\D/g,'');
+  if(n.length<=3)return n;
+  if(n.length<=7)return n.slice(0,3)+'-'+n.slice(3);
   return n.slice(0,3)+'-'+n.slice(3,7)+'-'+n.slice(7,11);
 }
 
-function maskPhone(p) {
-  if (!p) return '-';
-  return p.replace(/(\d{3})-(\d{2})(\d{2})-(\d{2})(\d{2})/, '$1-$2**-$4**');
+function maskPhone(p){
+  if(!p)return'-';
+  return p.replace(/(\d{3})-(\d{2})(\d{2})-(\d{2})(\d{2})/,'$1-$2**-$4**');
 }
 
-function rlLbl(r) { return ({master:'MASTER',admin:'ADMIN',user:'USER'})[r]||(r||'USER').toUpperCase(); }
-function rlCls(r) { return ({master:'b-master',admin:'b-admin',user:'b-user'})[r]||'b-user'; }
+function rlLbl(r){return({master:'MASTER',admin:'ADMIN',user:'USER'})[r]||(r||'USER').toUpperCase()}
+function rlCls(r){return({master:'b-master',admin:'b-admin',user:'b-user'})[r]||'b-user'}
 
-function setMsg(id, txt, ok) {
-  const el = document.getElementById(id);
-  el.textContent = txt;
-  el.className = ok ? 's-ok' : 's-err';
-  if (ok) setTimeout(()=>{ el.textContent='-'; el.className='stmsg'; }, 3000);
+function stBadge(s){
+  if(s==='계약중')return`<span class="st-contract">⛔ 계약중</span>`;
+  return`<span class="st-prospect">◉ 가망</span>`;
 }
 
-// ── INIT ──────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', async () => {
-  // Date display
-  const now = new Date();
-  document.getElementById('dateStr').textContent =
-    now.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
-  document.getElementById('actDateLbl').textContent = td();
+function setMsg(id,txt,ok){
+  const el=document.getElementById(id);
+  el.textContent=txt; el.className=ok?'s-ok':'s-err';
+  if(ok)setTimeout(()=>{el.textContent='-';el.className='stmsg'},3000);
+}
 
-  // Phone auto-format
-  document.getElementById('rPhone').addEventListener('input', function() {
-    const pos = this.selectionStart;
-    const old = this.value.length;
-    this.value = fmtPhone(this.value);
-    const diff = this.value.length - old;
-    try { this.setSelectionRange(pos+diff, pos+diff); } catch(e){}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+
+// INIT
+document.addEventListener('DOMContentLoaded',async()=>{
+  const now=new Date();
+  document.getElementById('dateStr').textContent=now.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+  document.getElementById('actDateLbl').textContent=td();
+  document.getElementById('rPhone').addEventListener('input',function(){
+    const pos=this.selectionStart,old=this.value.length;
+    this.value=fmtPhone(this.value);
+    const diff=this.value.length-old;
+    try{this.setSelectionRange(pos+diff,pos+diff)}catch(e){}
   });
-
-  // Login events
-  document.getElementById('loginBtn').addEventListener('click', doLogin);
-  document.getElementById('password').addEventListener('keydown', e => {
-    if (e.key === 'Enter') doLogin();
-  });
-
-  // Check session
-  const { data } = await sb.auth.getSession();
-  if (data?.session?.user) {
-    AU = data.session.user;
-    await fetchProfile();
-    bootApp();
-  }
+  document.getElementById('loginBtn').addEventListener('click',doLogin);
+  document.getElementById('password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+  const{data}=await sb.auth.getSession();
+  if(data?.session?.user){AU=data.session.user;await fetchProfile();bootApp()}
 });
 
-// ── AUTH ──────────────────────────────────────────────────────
-async function doLogin() {
-  const email = document.getElementById('email').value.trim();
-  const pw    = document.getElementById('password').value.trim();
-  const errEl = document.getElementById('loginErr');
-  errEl.textContent = '';
-  if (!email || !pw) { errEl.textContent = '이메일과 비밀번호를 입력하세요.'; return; }
-
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
-  if (error) { errEl.textContent = '로그인 실패: ' + error.message; return; }
-  AU = data.user;
-  await fetchProfile();
-  bootApp();
+// AUTH
+async function doLogin(){
+  const email=document.getElementById('email').value.trim();
+  const pw=document.getElementById('password').value.trim();
+  const errEl=document.getElementById('loginErr');
+  errEl.textContent='';
+  if(!email||!pw){errEl.textContent='이메일과 비밀번호를 입력하세요.';return}
+  const{data,error}=await sb.auth.signInWithPassword({email,password:pw});
+  if(error){errEl.textContent='로그인 실패: '+error.message;return}
+  AU=data.user;await fetchProfile();bootApp();
 }
 
-async function fetchProfile() {
-  const { data } = await sb.from('users').select('*').eq('id', AU.id).maybeSingle();
-  PR = data;
+async function fetchProfile(){
+  const{data}=await sb.from('users').select('*').eq('id',AU.id).maybeSingle();
+  PR=data;
 }
 
-function bootApp() {
-  document.getElementById('loginWrap').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-
-  const name = PR?.name || AU.email.split('@')[0];
-  const role = (PR?.role || 'user').toLowerCase();
-
-  document.getElementById('uName').textContent = name;
-  document.getElementById('uAv').textContent   = name[0].toUpperCase();
-  document.getElementById('uRole').textContent = rlLbl(role);
-  document.getElementById('greeting').textContent = `안녕하세요, ${name}님 👋`;
-
-  if (role === 'master') document.getElementById('miAdmin').style.display = 'flex';
-  if (['master','admin'].includes(role)) {
-    document.getElementById('teamWrap').style.display = 'block';
-  }
+function bootApp(){
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('app').style.display='block';
+  const name=PR?.name||AU.email.split('@')[0];
+  const role=(PR?.role||'user').toLowerCase();
+  document.getElementById('uName').textContent=name;
+  document.getElementById('uAv').textContent=name[0].toUpperCase();
+  document.getElementById('uRole').textContent=rlLbl(role);
+  document.getElementById('greeting').textContent=`안녕하세요, ${name}님 👋`;
+  if(['master','admin'].includes(role)) document.getElementById('miAdmin').style.display='flex';
   goPage('dash');
 }
 
-async function doLogout() {
-  await sb.auth.signOut();
-  AU = null; PR = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('loginWrap').style.display = 'flex';
-  ['email','password'].forEach(id => document.getElementById(id).value = '');
+async function doLogout(){
+  await sb.auth.signOut();AU=null;PR=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginWrap').style.display='flex';
+  ['email','password'].forEach(id=>document.getElementById(id).value='');
 }
 
-// ── NAVIGATION ───────────────────────────────────────────────
-function goPage(page) {
-  ['dash','crm','admin'].forEach(p => {
-    document.getElementById('pg'+cap(p)).classList.toggle('active', p===page);
-    const m = document.getElementById('mi'+cap(p));
-    if (m) m.classList.toggle('active', p===page);
+// NAV
+function goPage(page){
+  ['dash','crm','admin'].forEach(p=>{
+    document.getElementById('pg'+cap(p)).classList.toggle('active',p===page);
+    const m=document.getElementById('mi'+cap(p));
+    if(m)m.classList.toggle('active',p===page);
   });
-  if (page === 'dash')  loadDash();
-  if (page === 'admin') {
-    if (PR?.role !== 'master') { alert('접근 권한이 없습니다.'); goPage('dash'); return; }
-    loadAdmUsers(); loadMgrFilter();
+  if(page==='dash')  loadDash();
+  if(page==='admin') setupAdminPage();
+}
+
+// ADMIN SETUP
+function setupAdminPage(){
+  const role=(PR?.role||'').toLowerCase();
+  if(!['master','admin'].includes(role)){goPage('dash');return}
+  const tabBar=document.getElementById('adminTabBar');
+  if(role==='master'){
+    document.getElementById('adminDesc').textContent='시스템 전체 관리 — MASTER 전용 기능 포함';
+    tabBar.innerHTML=`
+      <div class="ti on" onclick="admTab('users',this)">사용자 관리</div>
+      <div class="ti"    onclick="admTab('allcrm',this)">전체 CRM 조회</div>
+      <div class="ti"    onclick="admTab('manual',this)">이용 안내</div>`;
+    admTab_show('users');loadAdmUsers();loadMgrFilter();
+  }else{
+    document.getElementById('adminDesc').textContent='관리자 — 이용 안내 열람';
+    tabBar.innerHTML=`<div class="ti on" onclick="admTab('manual',this)">이용 안내</div>`;
+    admTab_show('manual');
   }
 }
-function cap(s) { return s.charAt(0).toUpperCase()+s.slice(1); }
 
-// ── PERIOD ───────────────────────────────────────────────────
-function setPeriod(p, btn) {
-  curPeriod = p;
-  document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  loadKPI();
+function admTab(tab,el){
+  document.querySelectorAll('#adminTabBar .ti').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');
+  admTab_show(tab);
+  if(tab==='allcrm')loadAdmCRM();
 }
 
-// ── DASHBOARD ────────────────────────────────────────────────
-async function loadDash() {
-  await Promise.all([ loadKPI(), loadCharts(), loadTodayAct() ]);
-  if (['master','admin'].includes(PR?.role)) loadTeam();
+function admTab_show(tab){
+  document.getElementById('admUsers').style.display   =tab==='users' ?'block':'none';
+  document.getElementById('admCrmWrap').style.display =tab==='allcrm'?'block':'none';
+  document.getElementById('admManual').style.display  =tab==='manual'?'block':'none';
 }
 
-async function loadKPI() {
-  const { start, end } = periodRange(curPeriod);
-  const priv = ['master','admin'].includes(PR?.role);
-  const pLbl = {day:'오늘',week:'이번 주',month:'이번 달'}[curPeriod];
-  const scope = priv ? '팀 전체' : '내 활동';
-
-  // Calls KPI
-  let cq = sb.from('calls').select('call_count,call_time').gte('date',start).lte('date',end);
-  if (!priv) cq = cq.eq('manager', AU.id);
-  const { data: cd } = await cq;
-  let calls=0, mins=0;
-  (cd||[]).forEach(r => { calls += r.call_count||0; mins += r.call_time||0; });
-  document.getElementById('kCalls').textContent = calls;
-  document.getElementById('kTime').textContent  = mins+'분';
-  document.getElementById('kCallsSub').textContent = pLbl+' · '+scope;
-  document.getElementById('kTimeSub').textContent  = pLbl+' · 총 통화';
-
-  // CRM KPI
-  let pq = sb.from('prospects').select('*',{count:'exact',head:true})
-    .gte('created_at', start+'T00:00:00').lte('created_at', end+'T23:59:59');
-  if (!priv) pq = pq.eq('manager', PR?.name || AU.email);
-  const { count } = await pq;
-  document.getElementById('kCrm').textContent    = count||0;
-  document.getElementById('kCrmSub').textContent = pLbl+' · 등록 건수';
+// PERIOD
+function setPeriod(p,btn){
+  curPeriod=p;
+  document.querySelectorAll('.p-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');loadKPI();
 }
 
-async function loadCharts() {
-  const days = last7();
-  const lbls = days.map(d => d.slice(5).replace('-','/'));
-
-  // Call data
-  const { data: cd } = await sb.from('calls').select('date,call_count').in('date', days);
-  const cm = {};
-  (cd||[]).forEach(r => cm[r.date] = (cm[r.date]||0)+(r.call_count||0));
-
-  // CRM data
-  const { data: pd } = await sb.from('prospects').select('created_at').gte('created_at', days[0]+'T00:00:00');
-  const pm = {};
-  (pd||[]).forEach(r => { const d=r.created_at.slice(0,10); pm[d]=(pm[d]||0)+1; });
-
-  mkChart('chartCalls', chCalls, lbls, days.map(d=>cm[d]||0), '콜 수', '#1e10c7', i=>chCalls=i);
-  mkChart('chartCrm',   chCRM,   lbls, days.map(d=>pm[d]||0), 'CRM',   '#059669', i=>chCRM=i);
+// DASHBOARD
+async function loadDash(){
+  const priv=isPriv();
+  document.getElementById('dashAdmin').style.display=priv?'block':'none';
+  document.getElementById('dashUser').style.display =priv?'none':'block';
+  if(priv){await Promise.all([loadKPI(),loadCharts(),loadTodayAct(),loadTeam()]);}
+  else{await loadUserDash();}
 }
 
-function mkChart(id, inst, labels, data, label, color, cb) {
-  if (inst) inst.destroy();
-  const ctx = document.getElementById(id).getContext('2d');
-  cb(new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets:[{ label, data,
-        borderColor:color, backgroundColor:color+'1a',
-        borderWidth:2.5, pointRadius:4, pointBackgroundColor:color,
-        tension:.4, fill:true
-      }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{ grid:{display:false}, ticks:{font:{size:11,family:"'Noto Sans KR',sans-serif"},color:'#9fa6bc'} },
-        y:{ beginAtZero:true, grid:{color:'#f0f2f8'}, ticks:{font:{size:11,family:"'Noto Sans KR',sans-serif"},color:'#9fa6bc',stepSize:1} }
-      }
-    }
+async function loadKPI(){
+  const{start,end}=periodRange(curPeriod);
+  const pLbl={day:'오늘',week:'이번 주',month:'이번 달'}[curPeriod];
+  const{data:cd}=await sb.from('calls').select('call_count,call_time').gte('date',start).lte('date',end);
+  let calls=0,mins=0;(cd||[]).forEach(r=>{calls+=r.call_count||0;mins+=r.call_time||0});
+  document.getElementById('kCalls').textContent=calls;
+  document.getElementById('kTime').textContent=mins+'분';
+  document.getElementById('kCallsSub').textContent=pLbl+' · 팀 전체';
+  document.getElementById('kTimeSub').textContent=pLbl+' · 팀 전체';
+  const{count}=await sb.from('prospects').select('*',{count:'exact',head:true}).gte('created_at',start+'T00:00:00').lte('created_at',end+'T23:59:59');
+  document.getElementById('kCrm').textContent=count||0;
+  document.getElementById('kCrmSub').textContent=pLbl+' · 팀 전체';
+}
+
+async function loadUserDash(){
+  const{data:today}=await sb.from('calls').select('*').eq('manager',AU.id).eq('date',td()).maybeSingle();
+  document.getElementById('uKpiCalls').textContent=(today?.call_count||0)+'콜';
+  document.getElementById('uKpiTime').textContent=(today?.call_time||0)+'분';
+  const{start:ws}=periodRange('week');
+  const{data:wk}=await sb.from('calls').select('call_count').eq('manager',AU.id).gte('date',ws).lte('date',td());
+  let wc=0;(wk||[]).forEach(r=>wc+=r.call_count||0);
+  document.getElementById('uWeekCalls').textContent=wc;
+  const{start:ms}=periodRange('month');
+  const{data:mn}=await sb.from('calls').select('call_count').eq('manager',AU.id).gte('date',ms).lte('date',td());
+  let mc=0;(mn||[]).forEach(r=>mc+=r.call_count||0);
+  document.getElementById('uMonthCalls').textContent=mc;
+  const mgr=PR?.name||AU.email;
+  const{count}=await sb.from('prospects').select('*',{count:'exact',head:true}).eq('manager',mgr);
+  document.getElementById('uMyCrm').textContent=count||0;
+}
+
+async function loadCharts(){
+  const days=last7(),lbls=days.map(d=>d.slice(5).replace('-','/'));
+  const{data:cd}=await sb.from('calls').select('date,call_count').in('date',days);
+  const cm={};(cd||[]).forEach(r=>cm[r.date]=(cm[r.date]||0)+(r.call_count||0));
+  const{data:pd}=await sb.from('prospects').select('created_at').gte('created_at',days[0]+'T00:00:00');
+  const pm={};(pd||[]).forEach(r=>{const d=r.created_at.slice(0,10);pm[d]=(pm[d]||0)+1});
+  mkChart('chartCalls',chCalls,lbls,days.map(d=>cm[d]||0),'아웃바운드 콜','#1e10c7',i=>chCalls=i);
+  mkChart('chartCrm',chCRM,lbls,days.map(d=>pm[d]||0),'CRM 등록','#059669',i=>chCRM=i);
+}
+
+function mkChart(id,inst,labels,data,label,color,cb){
+  if(inst)inst.destroy();
+  const ctx=document.getElementById(id);if(!ctx)return;
+  cb(new Chart(ctx.getContext('2d'),{
+    type:'line',
+    data:{labels,datasets:[{label,data,borderColor:color,backgroundColor:color+'1a',borderWidth:2.5,pointRadius:4,pointBackgroundColor:color,tension:.4,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:11,family:"'Noto Sans KR',sans-serif"},color:'#9fa6bc'}},
+              y:{beginAtZero:true,grid:{color:'#f0f2f8'},ticks:{font:{size:11,family:"'Noto Sans KR',sans-serif"},color:'#9fa6bc',stepSize:1}}}}
   }));
 }
 
-async function loadTodayAct() {
-  const { data } = await sb.from('calls').select('*').eq('manager',AU.id).eq('date',td()).maybeSingle();
-  if (data) {
-    document.getElementById('actCount').value = data.call_count||'';
-    document.getElementById('actTime').value  = data.call_time||'';
-    document.getElementById('actMemo').value  = data.memo||'';
+async function loadTodayAct(){
+  const{data}=await sb.from('calls').select('*').eq('manager',AU.id).eq('date',td()).maybeSingle();
+  if(data){
+    document.getElementById('actCount').value=data.call_count||'';
+    document.getElementById('actTime').value=data.call_time||'';
+    document.getElementById('actMemo').value=data.memo||'';
   }
 }
 
-async function loadTeam() {
-  const { data: calls } = await sb.from('calls').select('*').eq('date', td());
-  const { data: users } = await sb.from('users').select('id,name');
-  const umap = {}; (users||[]).forEach(u => umap[u.id]=u.name);
-  const tbody = document.getElementById('teamBody');
-  if (!calls?.length) { tbody.innerHTML='<tr><td colspan="4" class="empty">오늘 활동 기록 없음</td></tr>'; return; }
-  tbody.innerHTML = calls.map(r=>`<tr>
+async function loadTeam(){
+  const{data:calls}=await sb.from('calls').select('*').eq('date',td());
+  const{data:users}=await sb.from('users').select('id,name');
+  const umap={};(users||[]).forEach(u=>umap[u.id]=u.name);
+  const tbody=document.getElementById('teamBody');
+  if(!calls?.length){tbody.innerHTML='<tr><td colspan="4" class="empty">오늘 활동 기록 없음</td></tr>';return}
+  tbody.innerHTML=calls.map(r=>`<tr>
     <td><strong>${umap[r.manager]||'-'}</strong></td>
     <td>${r.call_count||0}콜</td>
     <td>${r.call_time||0}분</td>
@@ -787,186 +800,193 @@ async function loadTeam() {
   </tr>`).join('');
 }
 
-async function saveAct() {
-  const count = parseInt(document.getElementById('actCount').value)||0;
-  const time  = parseInt(document.getElementById('actTime').value)||0;
-  const memo  = document.getElementById('actMemo').value.trim();
-  if (count === 0 && time === 0) { setMsg('actMsg','콜 수 또는 통화 시간을 입력하세요.',false); return; }
-
-  const payload = { call_count:count, call_time:time, memo, date:td(), manager:AU.id };
-  const { data: ex } = await sb.from('calls').select('id').eq('manager',AU.id).eq('date',td()).maybeSingle();
-  if (ex) { await sb.from('calls').update(payload).eq('id',ex.id); }
-  else    { await sb.from('calls').insert([payload]); }
-
+async function saveAct(){
+  const count=parseInt(document.getElementById('actCount').value)||0;
+  const time=parseInt(document.getElementById('actTime').value)||0;
+  const memo=document.getElementById('actMemo').value.trim();
+  if(count===0&&time===0){setMsg('actMsg','콜 수 또는 통화 시간을 입력하세요.',false);return}
+  const payload={call_count:count,call_time:time,memo,date:td(),manager:AU.id};
+  const{data:ex}=await sb.from('calls').select('id').eq('manager',AU.id).eq('date',td()).maybeSingle();
+  if(ex)await sb.from('calls').update(payload).eq('id',ex.id);
+  else  await sb.from('calls').insert([payload]);
   setMsg('actMsg','✓ 저장되었습니다.',true);
-  loadKPI();
-  if (['master','admin'].includes(PR?.role)) loadTeam();
+  loadKPI();loadTeam();
 }
 
-// ── CRM TABS ─────────────────────────────────────────────────
-function crmTab(tab, el) {
-  const map = { check:'tabCheck', reg:'tabReg', list:'tabList' };
-  Object.values(map).forEach(id => document.getElementById(id).style.display='none');
-  document.querySelectorAll('#pgCrm .ti').forEach(t => t.classList.remove('on'));
+// CRM TABS
+function crmTab(tab,el){
+  const map={check:'tabCheck',reg:'tabReg',list:'tabList'};
+  Object.values(map).forEach(id=>document.getElementById(id).style.display='none');
+  document.querySelectorAll('#pgCrm .ti').forEach(t=>t.classList.remove('on'));
   el.classList.add('on');
-  document.getElementById(map[tab]).style.display = 'block';
-  if (tab === 'list') loadList();
+  document.getElementById(map[tab]).style.display='block';
+  if(tab==='list')loadList();
 }
 
-// ── DUPLICATE CHECK ──────────────────────────────────────────
-async function checkDup() {
-  const kw = document.getElementById('searchKw').value.trim();
-  if (!kw) return;
-  const clean  = kw.replace(/-/g,'');
-  const fmted  = fmtPhone(clean);
+// DUPLICATE CHECK — 최소 4자 + 전화번호 7자리 제한
+async function checkDup(){
+  const raw=document.getElementById('searchKw').value.trim();
+  const banner=document.getElementById('dupBanner');
+  const list=document.getElementById('dupList');
+  banner.innerHTML='';list.innerHTML='';
 
-  const { data } = await sb.from('prospects').select('*')
-    .or(`business_name.ilike.%${kw}%,phone.ilike.%${kw}%,phone.ilike.%${fmted}%`);
+  if(raw.length<4){
+    banner.innerHTML=`<div class="dup-banner" style="background:#f0f4ff;border:1px solid #c7d2fe">
+      <span class="db-ic">🔍</span>
+      <div><div class="db-title" style="color:#4338ca">검색어가 너무 짧습니다</div>
+      <div class="db-sub">업체명 또는 전화번호를 4자 이상 입력해 주세요.</div></div>
+    </div>`;
+    return;
+  }
 
-  const badge = document.getElementById('dupBadge');
-  const list  = document.getElementById('dupList');
+  const digits=raw.replace(/\D/g,'');
+  const isPhoneLike=/^\d[-\d]*$/.test(raw)&&digits.length>0;
+  if(isPhoneLike&&digits.length<7){
+    banner.innerHTML=`<div class="dup-banner" style="background:#fffbeb;border:1px solid #fde68a">
+      <span class="db-ic">⚠️</span>
+      <div><div class="db-title" style="color:#b45309">전화번호 자릿수 부족</div>
+      <div class="db-sub">전화번호는 국번 포함 7자리 이상 입력해 주세요. (예: 010-1234-5678)</div></div>
+    </div>`;
+    return;
+  }
 
-  if (data?.length > 0) {
-    badge.innerHTML = `<span class="dup-badge dup-dup">⚠ 중복 ${data.length}건 발견</span>`;
-    list.innerHTML  = `<table class="tbl">
-      <thead><tr><th>업체명</th><th>전화번호</th><th>담당자</th><th>등록일</th></tr></thead>
+  const fmted=fmtPhone(digits);
+  const{data}=await sb.from('prospects').select('*')
+    .or(`business_name.ilike.%${raw}%,phone.ilike.%${raw}%,phone.ilike.%${fmted}%`);
+
+  if(data?.length>0){
+    const hasContract=data.some(d=>d.status==='계약중');
+    banner.innerHTML=`<div class="dup-banner" style="background:${hasContract?'#fef2f2':'#fff7ed'};border:1px solid ${hasContract?'#fecaca':'#fed7aa'}">
+      <span class="db-ic">${hasContract?'⛔':'⚠️'}</span>
+      <div>
+        <div class="db-title" style="color:${hasContract?'#b91c1c':'#c2410c'}">${hasContract?'⛔ 연락 금지 고객 포함 · ':''}중복 ${data.length}건 발견</div>
+        <div class="db-sub">${hasContract?'계약중 상태 고객이 포함되어 있습니다. 절대 영업 연락 금지입니다.':'이미 등록된 가망고객입니다. 등록 전 확인하세요.'}</div>
+      </div>
+    </div>`;
+    list.innerHTML=`<table class="tbl">
+      <thead><tr><th>업체명</th><th>전화번호</th><th>상태</th><th>담당자</th><th>등록일</th></tr></thead>
       <tbody>${data.map(d=>`<tr>
         <td><strong>${d.business_name||'-'}</strong></td>
         <td>${maskPhone(d.phone)}</td>
+        <td>${stBadge(d.status||'가망')}</td>
         <td>${d.manager||'-'}</td>
         <td>${(d.created_at||'').slice(0,10)||'-'}</td>
       </tr>`).join('')}</tbody></table>`;
-  } else {
-    badge.innerHTML = `<span class="dup-badge dup-ok">✓ 등록 가능 — 중복 없음</span>`;
-    list.innerHTML  = '';
+  }else{
+    banner.innerHTML=`<div class="dup-banner" style="background:#f0fdf4;border:1px solid #bbf7d0">
+      <span class="db-ic">✅</span>
+      <div><div class="db-title" style="color:#15803d">등록 가능 — 중복 없음</div>
+      <div class="db-sub">동일한 업체명 또는 전화번호가 없습니다. CRM 등록 탭에서 등록하세요.</div></div>
+    </div>`;
   }
 }
 
-// ── CRM REGISTER ─────────────────────────────────────────────
-async function saveCRM() {
-  const name    = document.getElementById('rName').value.trim();
-  const phone   = document.getElementById('rPhone').value.trim();
-  const address = document.getElementById('rAddress').value.trim();
-  const memo    = document.getElementById('rMemo').value.trim();
-
-  if (!name || !phone) { setMsg('regMsg','업체명과 전화번호는 필수입니다.',false); return; }
-
-  const manager = PR?.name || AU.email;
-  const { error } = await sb.from('prospects').insert([{
-    business_name:name, phone, address:address||null, memo:memo||'', manager
-  }]);
-
-  if (error) { setMsg('regMsg','오류: '+error.message, false); }
-  else {
+// CRM REGISTER
+async function saveCRM(){
+  const name=document.getElementById('rName').value.trim();
+  const phone=document.getElementById('rPhone').value.trim();
+  const address=document.getElementById('rAddress').value.trim();
+  const status=document.getElementById('rStatus').value;
+  const memo=document.getElementById('rMemo').value.trim();
+  if(!name||!phone){setMsg('regMsg','업체명과 전화번호는 필수입니다.',false);return}
+  const manager=PR?.name||AU.email;
+  const{error}=await sb.from('prospects').insert([{business_name:name,phone,address:address||null,status,memo:memo||'',manager}]);
+  if(error){setMsg('regMsg','오류: '+error.message,false);}
+  else{
     setMsg('regMsg','✓ CRM 등록 완료',true);
-    ['rName','rPhone','rAddress','rMemo'].forEach(id => document.getElementById(id).value='');
+    ['rName','rPhone','rAddress','rMemo'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('rStatus').value='가망';
   }
 }
 
-// ── CRM LIST ─────────────────────────────────────────────────
-async function loadList() {
-  const kw   = document.getElementById('listKw').value.trim();
-  const priv = ['master','admin'].includes(PR?.role);
-  let q = sb.from('prospects').select('*').order('created_at',{ascending:false}).limit(300);
-  if (!priv) q = q.eq('manager', PR?.name || AU.email);
-  if (kw)    q = q.or(`business_name.ilike.%${kw}%,manager.ilike.%${kw}%`);
-  const { data } = await q;
-  document.getElementById('crmCnt').textContent = (data?.length||0)+'건';
-  const tbody = document.getElementById('listBody');
-  if (!data?.length) { tbody.innerHTML='<tr><td colspan="5" class="empty">데이터 없음</td></tr>'; return; }
-  tbody.innerHTML = data.map(r=>`<tr>
+// CRM LIST
+async function loadList(){
+  const kw=document.getElementById('listKw').value.trim();
+  let q=sb.from('prospects').select('*').order('created_at',{ascending:false}).limit(300);
+  if(!isPriv())q=q.eq('manager',PR?.name||AU.email);
+  if(kw)q=q.or(`business_name.ilike.%${kw}%,manager.ilike.%${kw}%`);
+  const{data}=await q;
+  document.getElementById('crmCnt').textContent=(data?.length||0)+'건';
+  const tbody=document.getElementById('listBody');
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="6" class="empty">데이터 없음</td></tr>';return}
+  tbody.innerHTML=data.map(r=>`<tr>
     <td><strong>${r.business_name||'-'}</strong></td>
     <td>${r.phone||'-'}</td>
     <td>${r.address||'-'}</td>
+    <td>${stBadge(r.status||'가망')}</td>
     <td>${r.manager||'-'}</td>
     <td>${(r.created_at||'').slice(0,10)||'-'}</td>
   </tr>`).join('');
 }
 
-// ── ADMIN TABS ───────────────────────────────────────────────
-function admTab(tab, el) {
-  document.getElementById('admUsers').style.display   = tab==='users'  ? 'block':'none';
-  document.getElementById('admCrmWrap').style.display = tab==='allcrm' ? 'block':'none';
-  document.querySelectorAll('#pgAdmin .ti').forEach(t => t.classList.remove('on'));
-  el.classList.add('on');
-  if (tab==='allcrm') loadAdmCRM();
-}
-
-// ── ADMIN USERS ──────────────────────────────────────────────
-async function loadAdmUsers() {
-  const { data } = await sb.from('users').select('*').order('created_at',{ascending:false});
-  const tbody = document.getElementById('userBody');
-  if (!data?.length) { tbody.innerHTML='<tr><td colspan="4" class="empty">사용자 없음</td></tr>'; return; }
-  tbody.innerHTML = data.map(u=>`<tr>
+// ADMIN USERS
+async function loadAdmUsers(){
+  const{data}=await sb.from('users').select('*').order('created_at',{ascending:false});
+  const tbody=document.getElementById('userBody');
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="4" class="empty">사용자 없음</td></tr>';return}
+  tbody.innerHTML=data.map(u=>`<tr>
     <td><strong>${u.name||'-'}</strong></td>
     <td style="color:#6b7494">${u.email||'-'}</td>
     <td><span class="badge ${rlCls(u.role)}">${rlLbl(u.role)}</span></td>
-    <td>
-      <select class="role-sel" onchange="changeRole('${u.id}',this.value)">
-        <option value="user"   ${u.role==='user'  ?'selected':''}>USER</option>
-        <option value="admin"  ${u.role==='admin' ?'selected':''}>ADMIN</option>
-        <option value="master" ${u.role==='master'?'selected':''}>MASTER</option>
-      </select>
-    </td>
+    <td><select class="role-sel" onchange="changeRole('${u.id}',this.value)">
+      <option value="user"   ${u.role==='user'  ?'selected':''}>USER</option>
+      <option value="admin"  ${u.role==='admin' ?'selected':''}>ADMIN</option>
+      <option value="master" ${u.role==='master'?'selected':''}>MASTER</option>
+    </select></td>
   </tr>`).join('');
 }
 
-async function changeRole(uid, role) {
-  await sb.from('users').update({role}).eq('id',uid);
-}
+async function changeRole(uid,role){await sb.from('users').update({role}).eq('id',uid)}
 
-async function createUser() {
-  const email = document.getElementById('nEmail').value.trim();
-  const pw    = document.getElementById('nPw').value.trim();
-  const nick  = document.getElementById('nNick').value.trim();
-  const role  = document.getElementById('nRole').value;
-
-  if (!email||!pw||!nick) { setMsg('createMsg','모든 항목을 입력하세요.',false); return; }
-  if (pw.length < 8)       { setMsg('createMsg','비밀번호는 8자 이상이어야 합니다.',false); return; }
-
-  const { data, error } = await sb.auth.signUp({ email, password:pw });
-  if (error) { setMsg('createMsg','오류: '+error.message, false); return; }
-
-  const uid = data.user?.id;
-  if (uid) await sb.from('users').upsert([{id:uid, name:nick, role, email}]);
-
-  setMsg('createMsg','✓ 계정 생성 완료 (이메일 확인 안내 발송)',true);
-  ['nEmail','nPw','nNick'].forEach(id => document.getElementById(id).value='');
+async function createUser(){
+  const email=document.getElementById('nEmail').value.trim();
+  const pw=document.getElementById('nPw').value.trim();
+  const nick=document.getElementById('nNick').value.trim();
+  const role=document.getElementById('nRole').value;
+  if(!email||!pw||!nick){setMsg('createMsg','모든 항목을 입력하세요.',false);return}
+  if(pw.length<8){setMsg('createMsg','비밀번호는 8자 이상이어야 합니다.',false);return}
+  const{data,error}=await sb.auth.signUp({email,password:pw});
+  if(error){setMsg('createMsg','오류: '+error.message,false);return}
+  const uid=data.user?.id;
+  if(uid)await sb.from('users').upsert([{id:uid,name:nick,role,email}]);
+  setMsg('createMsg','✓ 계정 생성 완료',true);
+  ['nEmail','nPw','nNick'].forEach(id=>document.getElementById(id).value='');
   loadAdmUsers();
 }
 
-// ── ADMIN CRM ────────────────────────────────────────────────
-async function loadMgrFilter() {
-  const { data } = await sb.from('users').select('name');
-  const sel = document.getElementById('admMgr');
-  sel.innerHTML = '<option value="">전체 담당자</option>';
-  (data||[]).forEach(u => { sel.innerHTML += `<option value="${u.name}">${u.name}</option>`; });
+// ADMIN CRM
+async function loadMgrFilter(){
+  const{data}=await sb.from('users').select('name');
+  const sel=document.getElementById('admMgr');
+  sel.innerHTML='<option value="">전체 담당자</option>';
+  (data||[]).forEach(u=>{sel.innerHTML+=`<option value="${u.name}">${u.name}</option>`});
 }
 
-async function loadAdmCRM() {
-  const kw  = document.getElementById('admKw').value.trim();
-  const mgr = document.getElementById('admMgr').value;
-  let q = sb.from('prospects').select('*').order('created_at',{ascending:false});
-  if (kw)  q = q.or(`business_name.ilike.%${kw}%,phone.ilike.%${kw}%`);
-  if (mgr) q = q.eq('manager', mgr);
-  const { data } = await q;
-  document.getElementById('admCnt').textContent = (data?.length||0)+'건';
-  const tbody = document.getElementById('admCrmBody');
-  if (!data?.length) { tbody.innerHTML='<tr><td colspan="6" class="empty">데이터 없음</td></tr>'; return; }
-  tbody.innerHTML = data.map(r=>`<tr>
+async function loadAdmCRM(){
+  const kw=document.getElementById('admKw').value.trim();
+  const mgr=document.getElementById('admMgr').value;
+  let q=sb.from('prospects').select('*').order('created_at',{ascending:false});
+  if(kw)q=q.or(`business_name.ilike.%${kw}%,phone.ilike.%${kw}%`);
+  if(mgr)q=q.eq('manager',mgr);
+  const{data}=await q;
+  document.getElementById('admCnt').textContent=(data?.length||0)+'건';
+  const tbody=document.getElementById('admCrmBody');
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="7" class="empty">데이터 없음</td></tr>';return}
+  tbody.innerHTML=data.map(r=>`<tr>
     <td><strong>${r.business_name||'-'}</strong></td>
     <td>${r.phone||'-'}</td>
     <td>${r.address||'-'}</td>
+    <td>${stBadge(r.status||'가망')}</td>
     <td>${r.manager||'-'}</td>
     <td>${(r.created_at||'').slice(0,10)||'-'}</td>
     <td><button class="btn-d" onclick="delCRM(${r.id},this)">삭제</button></td>
   </tr>`).join('');
 }
 
-async function delCRM(id, btn) {
-  if (!confirm('이 CRM 데이터를 삭제하시겠습니까?')) return;
-  const { error } = await sb.from('prospects').delete().eq('id',id);
-  if (!error) btn.closest('tr').remove();
+async function delCRM(id,btn){
+  if(!confirm('이 CRM 데이터를 삭제하시겠습니까?'))return;
+  const{error}=await sb.from('prospects').delete().eq('id',id);
+  if(!error)btn.closest('tr').remove();
   else alert('삭제 실패: '+error.message);
 }
 </script>

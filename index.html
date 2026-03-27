@@ -856,41 +856,27 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
       <button class="modal-close" onclick="closePwResetModal()">✕</button>
     </div>
     <div class="modal-body">
-      <!-- 서비스 롤 키 섹션 -->
-      <div id="serviceKeySection" style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:13px;padding:16px;margin-bottom:18px">
-        <div style="font-size:14px;font-weight:700;color:#1e10c7;margin-bottom:6px">🔐 Supabase 서비스 롤 키 설정</div>
-        <div style="font-size:13px;color:#4338ca;margin-bottom:11px;line-height:1.6">
-          최초 1회만 입력하면 브라우저에 저장됩니다.<br>
-          <strong>Supabase 대시보드 → Settings → API → service_role</strong>에서 복사하세요.
-        </div>
-        <input class="fi" id="serviceKeyInput" type="password" placeholder="eyJhbGciOi... (service_role 키)">
-        <button class="btn-p btn-sm" style="margin-top:9px" onclick="saveServiceKey()">저장</button>
-        <div id="serviceKeyMsg" class="stmsg">-</div>
+      <div style="background:#fff8f0;border:1px solid #fed7aa;border-radius:11px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.6">
+        ⚠️ MASTER가 직접 새 비밀번호를 설정합니다.<br>설정 후 해당 사원에게 임시 비밀번호를 안내하고, 사원이 직접 변경하도록 안내하세요.
       </div>
-      <!-- 비밀번호 설정 섹션 -->
-      <div id="newPwSection">
-        <div style="background:#fff8f0;border:1px solid #fed7aa;border-radius:11px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.6">
-          ⚠️ MASTER가 직접 새 비밀번호를 설정합니다.<br>설정 후 해당 사원에게 임시 비밀번호를 안내하고, 사원이 직접 변경하도록 안내하세요.
+      <div style="display:flex;gap:9px;margin-bottom:13px;align-items:flex-end">
+        <div class="form-group" style="margin:0;flex:1">
+          <label class="lbl">새 임시 비밀번호 (8자 이상) *</label>
+          <input class="fi" id="newPwForUser" type="text" placeholder="새 비밀번호 입력">
         </div>
-        <div style="display:flex;gap:9px;margin-bottom:13px;align-items:flex-end">
-          <div class="form-group" style="margin:0;flex:1">
-            <label class="lbl">새 임시 비밀번호 (8자 이상) *</label>
-            <input class="fi" id="newPwForUser" type="text" placeholder="새 비밀번호 입력">
-          </div>
-          <button class="btn-g btn-sm" onclick="generateTempPw()" style="flex-shrink:0">🎲 자동생성</button>
-        </div>
-        <div id="pwResetResultBox" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:11px;padding:13px 16px;margin-bottom:13px">
-          <div style="font-size:13px;font-weight:700;color:#15803d;margin-bottom:6px">✅ 비밀번호 변경 완료!</div>
-          <div style="font-size:13px;color:#166534">사원에게 전달할 임시 비밀번호:</div>
-          <div style="font-size:18px;font-weight:900;color:#15803d;letter-spacing:2px;margin:8px 0;font-family:monospace" id="pwResetResultPw"></div>
-          <button class="btn-s btn-sm" onclick="copyTempPw()">📋 복사</button>
-        </div>
-        <div id="pwResetMsg" class="stmsg">-</div>
+        <button class="btn-g btn-sm" onclick="generateTempPw()" style="flex-shrink:0">🎲 자동생성</button>
       </div>
+      <div id="pwResetResultBox" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:11px;padding:16px;margin-bottom:13px">
+        <div style="font-size:14px;font-weight:700;color:#15803d;margin-bottom:7px">✅ 비밀번호 변경 완료!</div>
+        <div style="font-size:13px;color:#166534;margin-bottom:6px">사원에게 전달할 임시 비밀번호:</div>
+        <div style="font-size:22px;font-weight:900;color:#15803d;letter-spacing:3px;margin:8px 0;font-family:monospace;background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #bbf7d0" id="pwResetResultPw"></div>
+        <button class="btn-s btn-sm" onclick="copyTempPw()">📋 클립보드 복사</button>
+      </div>
+      <div id="pwResetMsg" class="stmsg">-</div>
     </div>
     <div class="modal-foot">
       <button class="btn-g btn-sm" onclick="closePwResetModal()">닫기</button>
-      <button class="btn-p btn-sm" onclick="doResetPw()">🔑 비밀번호 변경</button>
+      <button class="btn-p btn-sm" id="doResetPwBtn" onclick="doResetPw()">🔑 비밀번호 변경</button>
     </div>
   </div>
 </div>
@@ -1976,7 +1962,7 @@ async function changeRole(uid,role){
   if(role==='inactive'&&!confirm('INACTIVE로 변경하시겠습니까?'))return;
   await sb.from('users').update({role}).eq('id',uid);loadAdmUsers();
 }
-// ── 비밀번호 재설정 (MASTER) ──
+// ── 비밀번호 재설정 (MASTER - Edge Function 방식) ──
 let pwResetTargetId=null,pwResetTargetEmail=null;
 
 function openPwResetModal(uid,email,name){
@@ -1984,20 +1970,13 @@ function openPwResetModal(uid,email,name){
   document.getElementById('pwResetTargetLabel').textContent=`대상: ${name} (${email})`;
   document.getElementById('newPwForUser').value='';
   document.getElementById('pwResetResultBox').style.display='none';
-  document.getElementById('pwResetMsg').className='stmsg';document.getElementById('pwResetMsg').textContent='-';
-  // 서비스 키 섹션 표시 여부
-  const hasKey=!!localStorage.getItem('sb_service_key');
-  document.getElementById('serviceKeySection').style.display=hasKey?'none':'block';
+  document.getElementById('pwResetMsg').className='stmsg';
+  document.getElementById('pwResetMsg').textContent='-';
   document.getElementById('pwResetModal').style.display='flex';
 }
-function closePwResetModal(){document.getElementById('pwResetModal').style.display='none';pwResetTargetId=null;pwResetTargetEmail=null;}
-
-function saveServiceKey(){
-  const key=document.getElementById('serviceKeyInput').value.trim();
-  if(!key||!key.startsWith('eyJ')){setMsg('serviceKeyMsg','올바른 서비스 롤 키를 입력하세요.',false);return}
-  localStorage.setItem('sb_service_key',key);
-  setMsg('serviceKeyMsg','✓ 저장되었습니다.',true);
-  setTimeout(()=>{document.getElementById('serviceKeySection').style.display='none';},1200);
+function closePwResetModal(){
+  document.getElementById('pwResetModal').style.display='none';
+  pwResetTargetId=null;pwResetTargetEmail=null;
 }
 
 function generateTempPw(){
@@ -2008,46 +1987,52 @@ function generateTempPw(){
 
 function copyTempPw(){
   const pw=document.getElementById('pwResetResultPw').textContent;
-  navigator.clipboard.writeText(pw).then(()=>alert('클립보드에 복사되었습니다!'));
+  navigator.clipboard.writeText(pw).then(()=>alert('✅ 클립보드에 복사되었습니다!'));
 }
 
 async function doResetPw(){
   const newPw=document.getElementById('newPwForUser').value.trim();
   if(!pwResetTargetId){setMsg('pwResetMsg','대상 사용자 정보가 없습니다.',false);return}
   if(newPw.length<8){setMsg('pwResetMsg','비밀번호는 8자 이상이어야 합니다.',false);return}
-  const svcKey=localStorage.getItem('sb_service_key');
-  if(!svcKey){setMsg('pwResetMsg','서비스 롤 키를 먼저 저장해 주세요.',false);document.getElementById('serviceKeySection').style.display='block';return}
-  setMsg('pwResetMsg','처리 중...', true);
+
+  const btn=document.getElementById('doResetPwBtn');
+  btn.disabled=true;btn.textContent='처리 중...';
+  setMsg('pwResetMsg','비밀번호 변경 중...', true);
+
   try{
-    // Supabase Admin API로 비밀번호 직접 변경
-    const res=await fetch(`${SB_URL}/auth/v1/admin/users/${pwResetTargetId}`,{
-      method:'PUT',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${svcKey}`,'apikey':svcKey},
-      body:JSON.stringify({password:newPw})
+    // 현재 로그인된 사용자의 JWT 토큰 가져오기
+    const{data:{session}}=await sb.auth.getSession();
+    if(!session){setMsg('pwResetMsg','세션이 만료되었습니다. 다시 로그인하세요.',false);btn.disabled=false;btn.textContent='🔑 비밀번호 변경';return}
+
+    // Edge Function 호출
+    const res=await fetch(`${SB_URL}/functions/v1/reset-user-password`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${session.access_token}`,
+        'apikey': SB_KEY
+      },
+      body:JSON.stringify({userId:pwResetTargetId,newPassword:newPw})
     });
-    if(!res.ok){
-      const err=await res.json();
-      // 서비스 키가 틀린 경우
-      if(res.status===403||res.status===401){
-        localStorage.removeItem('sb_service_key');
-        document.getElementById('serviceKeySection').style.display='block';
-        setMsg('pwResetMsg','서비스 롤 키가 올바르지 않습니다. 다시 입력해 주세요.',false);return;
-      }
-      setMsg('pwResetMsg','오류: '+(err.message||JSON.stringify(err)),false);return;
+
+    const result=await res.json();
+    if(!res.ok||result.error){
+      setMsg('pwResetMsg','오류: '+(result.error||'알 수 없는 오류'),false);
+      btn.disabled=false;btn.textContent='🔑 비밀번호 변경';return;
     }
-    // 성공 - must_change_password 플래그 설정
-    await sb.from('users').update({must_change_password:true,temp_password:null,temp_password_expires:null}).eq('id',pwResetTargetId);
-    // 결과 표시
+
+    // 성공
     document.getElementById('pwResetResultPw').textContent=newPw;
     document.getElementById('pwResetResultBox').style.display='block';
     document.getElementById('newPwForUser').value='';
-    setMsg('pwResetMsg','✓ 비밀번호 변경 완료! 사원에게 임시 비밀번호를 안내하세요.',true);
+    setMsg('pwResetMsg','✓ 비밀번호 변경 완료!',true);
   }catch(e){
     setMsg('pwResetMsg','네트워크 오류: '+e.message,false);
   }
+  btn.disabled=false;btn.textContent='🔑 비밀번호 변경';
 }
 
-// ── 강제 비밀번호 변경 (로그인 후) ──
+// ── 강제 비밀번호 변경 (로그인 후 임시비번 감지 시) ──
 async function checkMustChangePw(){
   if(!PR)return;
   if(PR.must_change_password){
@@ -2064,7 +2049,6 @@ async function doForcePwChange(){
   await sb.from('users').update({must_change_password:false}).eq('id',AU.id);
   PR.must_change_password=false;
   document.getElementById('forcePwChangeModal').style.display='none';
-  setMsg('forcePwMsg','-',true);
   alert('✅ 비밀번호가 성공적으로 변경되었습니다!');
 }
 async function createUser(){

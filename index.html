@@ -1709,6 +1709,7 @@ async function doLogin(){
   if(btn)btn.classList.add('loading');
   if(btnText)btnText.textContent='로그인 중...';
   if(spinner)spinner.style.display='inline-block';
+  let loginData=null;
   try{
     const{data,error}=await sb.auth.signInWithPassword({email,password:pw});
     if(error){
@@ -1718,12 +1719,29 @@ async function doLogin(){
       if(spinner)spinner.style.display='none';
       return;
     }
-    AU=data.user;await fetchProfile();await loadDarkMode();bootApp();
+    loginData=data;
   }catch(e){
-    errEl.textContent='네트워크 오류. 다시 시도해 주세요.';
+    // 실제 네트워크/서버 오류만 여기서 처리
+    console.error('Login network error:',e);
+    errEl.textContent='서버 연결 오류. 잠시 후 다시 시도해 주세요.';
     if(btn)btn.classList.remove('loading');
     if(btnText)btnText.textContent='로그인';
     if(spinner)spinner.style.display='none';
+    return;
+  }
+  // 로그인 성공 - bootApp은 별도 try/catch
+  try{
+    AU=loginData.user;
+    await fetchProfile();
+    await loadDarkMode();
+    bootApp();
+  }catch(bootErr){
+    console.error('Boot error:',bootErr);
+    // bootApp 에러는 무시하고 계속 진행 (이미 로그인은 됨)
+    AU=loginData.user;
+    try{document.getElementById('loginWrap').style.display='none';}catch(e){}
+    try{document.getElementById('app').style.display='block';}catch(e){}
+    goPage('dash');
   }
 }
 async function fetchProfile(){const{data}=await sb.from('users').select('*').eq('id',AU.id).maybeSingle();PR=data}
@@ -1733,12 +1751,13 @@ function bootApp(){
   document.getElementById('loginWrap').style.display='none';
   document.getElementById('app').style.display='block';
   const name=PR?.name||AU.email.split('@')[0];
-  document.getElementById('uName').textContent=name;
-  document.getElementById('uAv').textContent=PR?.animal_emoji||getAnimal(name);
-  document.getElementById('uRole').textContent=rlLbl(role);
-  document.getElementById('greeting').textContent=`안녕하세요, ${name}님 👋`;
+  const _s=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  _s('uName',name);
+  _s('uAv',PR?.animal_emoji||getAnimal(name));
+  _s('uRole',rlLbl(role));
+  _s('greeting',`안녕하세요, ${name}님 👋`);
   if(['master','admin'].includes(role)){
-    document.getElementById('miAdmin').style.display='flex';
+    const miAdm=document.getElementById('miAdmin');if(miAdm)miAdm.style.display='flex';
     document.getElementById('miAnnounce').style.display='flex';
     document.getElementById('announceWriteBtn').style.display='flex';
   }

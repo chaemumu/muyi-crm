@@ -19,6 +19,17 @@
 html{-webkit-text-size-adjust:100%;font-size:18px}
 body{font-family:-apple-system,'SF Pro Display','Noto Sans KR',BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f2f2f7;color:#1c1c1e;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;line-height:1.5}
 
+
+/* ── MY INFO INLINE (강제 적용) ── */
+.my-info-inline {
+  width: 100% !important;
+}
+
+.my-info-wrap {
+  max-width: 680px !important;
+  margin: 20px auto !important;
+}
+
 /* ── TOKENS ── */
 :root{
   --blue:#0a84ff;--blue-dark:#0071e3;--blue-light:#e8f4ff;
@@ -815,14 +826,90 @@ body.dark .pg-wrap,body.dark .page{background:#0e0e12}
   </div>
 
   <div class="main" id="mainArea">
-    <div id="topBar" style="display:flex;align-items:center;justify-content:space-between;padding:11px 20px;background:var(--surface);border-bottom:1px solid var(--border2);position:sticky;top:0;z-index:50;gap:10px">
+    <div id="topBar" style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--surface);border-bottom:1px solid var(--border2);position:sticky;top:0;z-index:50;gap:10px">
       <button class="mob-menu-btn" onclick="openSidebar()" style="display:none">☰</button>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:22px;font-weight:800;color:var(--blue);letter-spacing:-1px">muy!</span>
-        <span style="font-size:13px;color:var(--gray-500);font-weight:500">CRM</span>
-      </div>
+      <img id="topLogo" src="./logo.png" alt="MUYI" style="height:40px;width:auto;object-fit:contain;filter:brightness(0) saturate(100%) invert(24%) sepia(94%) saturate(1338%) hue-rotate(240deg);">
       <div style="display:flex;align-items:center;gap:8px">
         <button id="darkModeBtn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span id="darkModeLabel">다크모드</span></button>
+      </div>
+    </div>
+
+    <!-- ■ 내 정보 (상단에 고정 표시) ■ -->
+    <div class="my-info-inline">
+      <div class="pg-wrap my-info-wrap">
+
+        <!-- 타이틀 -->
+        <div class="pg-head" style="margin-bottom:12px">
+          <div class="pg-title">👤 내 정보</div>
+        </div>
+
+        <!-- 프로필 -->
+        <div class="card">
+          <div class="card-t">🐾 프로필 설정</div>
+
+          <div class="form-group">
+            <label class="lbl">닉네임 *</label>
+            <input class="fi" id="myNickname" placeholder="표시될 이름">
+          </div>
+
+          <div class="form-group">
+            <label class="lbl">프로필 동물 선택</label>
+            <div id="animalPickerWrap" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
+            <input type="hidden" id="myAnimalEmoji" value="🐶">
+          </div>
+
+          <div id="myRoleDisplay" style="margin-bottom:12px;display:none">
+            <label class="lbl">권한 등급</label>
+            <div id="myRoleBadge" style="margin-top:4px"></div>
+          </div>
+
+          <button class="btn-p" onclick="saveProfile()">💾 저장</button>
+          <div id="profileMsg" class="stmsg"></div>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="card">
+          <div class="card-t">🔒 비밀번호 변경</div>
+
+          <div class="form-group">
+            <label class="lbl">현재 비밀번호 *</label>
+            <input class="fi" id="curPw" type="password" placeholder="현재 비밀번호 입력">
+          </div>
+
+          <div class="form-group">
+            <label class="lbl">새 비밀번호 *</label>
+            <input class="fi" id="newPw" type="password" placeholder="8자 이상">
+          </div>
+
+          <div class="form-group">
+            <label class="lbl">새 비밀번호 확인 *</label>
+            <input class="fi" id="newPwConfirm" type="password" placeholder="재입력">
+          </div>
+
+          <button class="btn-p" onclick="changePw()">변경하기</button>
+          <div id="pwMsg" class="stmsg"></div>
+        </div>
+
+        <!-- MASTER 전용 -->
+        <div class="card" id="mypageMasterSection" style="display:none">
+          <div class="card-t">👥 사용자 관리 <small>MASTER 전용</small></div>
+
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>이름</th>
+                  <th>이메일</th>
+                  <th>권한</th>
+                  <th>권한 변경</th>
+                  <th>비밀번호 재설정</th>
+                </tr>
+              </thead>
+              <tbody id="mypageUserBody"></tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -971,6 +1058,7 @@ body.dark .pg-wrap,body.dark .page{background:#0e0e12}
         </div>
       </div>
     </div>
+
 
     <!-- ■ CRM ■ -->
     <div class="page" id="pgCrm">
@@ -1169,62 +1257,64 @@ body.dark .pg-wrap,body.dark .page{background:#0e0e12}
 
         <!-- 탭: 권한 안내 -->
         <div id="manualTabRoles">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px">
-            <div class="tier-card" id="tc-master">
-              <div style="font-size:28px;margin-bottom:8px">👑</div>
-              <div style="font-weight:800;font-size:16px;margin-bottom:4px"><span class="badge badge-master">MASTER</span></div>
-              <div style="font-size:13px;color:var(--gray-500);margin-bottom:10px;font-weight:600">최고 관리자</div>
-              <ul style="font-size:13px;color:var(--gray-600);line-height:2;padding-left:14px;margin:0">
-                <li>계정 생성/삭제</li>
-                <li>권한 변경</li>
-                <li>비밀번호 재설정</li>
-                <li>전체 백업</li>
-                <li>업로드 승인</li>
-                <li>DB 배정</li>
-              </ul>
-            </div>
-            <div class="tier-card" id="tc-admin">
-              <div style="font-size:28px;margin-bottom:8px">🛡️</div>
-              <div style="font-weight:800;font-size:16px;margin-bottom:4px"><span class="badge badge-admin">관리자</span></div>
-              <div style="font-size:13px;color:var(--gray-500);margin-bottom:10px;font-weight:600">팀 관리자</div>
-              <ul style="font-size:13px;color:var(--gray-600);line-height:2;padding-left:14px;margin:0">
-                <li>팀 전체 DB</li>
-                <li>주간 리포트</li>
-                <li>중복 탐지</li>
-                <li>장기종결 정리</li>
-                <li>DB 배정</li>
-              </ul>
-            </div>
-            <div class="tier-card" id="tc-user">
-              <div style="font-size:28px;margin-bottom:8px">💼</div>
-              <div style="font-weight:800;font-size:16px;margin-bottom:4px"><span class="badge badge-user">사원</span></div>
-              <div style="font-size:13px;color:var(--gray-500);margin-bottom:10px;font-weight:600">일반 영업 사원</div>
-              <ul style="font-size:13px;color:var(--gray-600);line-height:2;padding-left:14px;margin:0">
-                <li>담당 DB 관리</li>
-                <li>통화 기록</li>
-                <li>단계 변경</li>
-                <li>뱃지 획득</li>
+          <div style="overflow-x:auto;margin-bottom:20px">
+          <div style="display:grid;grid-template-columns:repeat(5,minmax(160px,1fr));gap:14px;min-width:800px">
+            <div class="tier-card" id="tc-inactive">
+              <div style="font-size:28px;margin-bottom:8px">🚫</div>
+              <div style="font-weight:800;font-size:16px;margin-bottom:4px;white-space:nowrap"><span class="badge badge-inactive">비활성</span></div>
+              <div style="font-size:12px;color:var(--gray-500);margin-bottom:10px;font-weight:600;white-space:nowrap">접근 차단</div>
+              <ul style="font-size:12px;color:var(--gray-600);line-height:2;padding-left:14px;margin:0">
+                <li style="white-space:nowrap">모든 메뉴 차단</li>
+                <li style="white-space:nowrap">퇴사 처리 시</li>
               </ul>
             </div>
             <div class="tier-card" id="tc-junior">
               <div style="font-size:28px;margin-bottom:8px">🌱</div>
-              <div style="font-weight:800;font-size:16px;margin-bottom:4px"><span class="badge badge-junior">신입사원</span></div>
-              <div style="font-size:13px;color:var(--gray-500);margin-bottom:10px;font-weight:600">신입 영업 사원</div>
-              <ul style="font-size:13px;color:var(--gray-600);line-height:2;padding-left:14px;margin:0">
-                <li>가망 DB 등록</li>
-                <li>배정 DB 관리</li>
-                <li>통화 기록</li>
+              <div style="font-weight:800;font-size:16px;margin-bottom:4px;white-space:nowrap"><span class="badge badge-junior">신입사원</span></div>
+              <div style="font-size:12px;color:var(--gray-500);margin-bottom:10px;font-weight:600;white-space:nowrap">신입 영업 사원</div>
+              <ul style="font-size:12px;color:var(--gray-600);line-height:2;padding-left:14px;margin:0">
+                <li style="white-space:nowrap">가망 DB 등록</li>
+                <li style="white-space:nowrap">배정 DB 관리</li>
+                <li style="white-space:nowrap">통화 기록</li>
               </ul>
             </div>
-            <div class="tier-card" id="tc-inactive">
-              <div style="font-size:28px;margin-bottom:8px">🚫</div>
-              <div style="font-weight:800;font-size:16px;margin-bottom:4px"><span class="badge badge-inactive">비활성</span></div>
-              <div style="font-size:13px;color:var(--gray-500);margin-bottom:10px;font-weight:600">접근 차단</div>
-              <ul style="font-size:13px;color:var(--gray-600);line-height:2;padding-left:14px;margin:0">
-                <li>모든 메뉴 차단</li>
-                <li>퇴사 처리 시</li>
+            <div class="tier-card" id="tc-user">
+              <div style="font-size:28px;margin-bottom:8px">💼</div>
+              <div style="font-weight:800;font-size:16px;margin-bottom:4px;white-space:nowrap"><span class="badge badge-user">사원</span></div>
+              <div style="font-size:12px;color:var(--gray-500);margin-bottom:10px;font-weight:600;white-space:nowrap">일반 영업 사원</div>
+              <ul style="font-size:12px;color:var(--gray-600);line-height:2;padding-left:14px;margin:0">
+                <li style="white-space:nowrap">담당 DB 관리</li>
+                <li style="white-space:nowrap">통화 기록</li>
+                <li style="white-space:nowrap">단계 변경</li>
+                <li style="white-space:nowrap">뱃지 획득</li>
               </ul>
             </div>
+            <div class="tier-card" id="tc-admin">
+              <div style="font-size:28px;margin-bottom:8px">🛡️</div>
+              <div style="font-weight:800;font-size:16px;margin-bottom:4px;white-space:nowrap"><span class="badge badge-admin">관리자</span></div>
+              <div style="font-size:12px;color:var(--gray-500);margin-bottom:10px;font-weight:600;white-space:nowrap">팀 관리자</div>
+              <ul style="font-size:12px;color:var(--gray-600);line-height:2;padding-left:14px;margin:0">
+                <li style="white-space:nowrap">팀 전체 DB</li>
+                <li style="white-space:nowrap">주간 리포트</li>
+                <li style="white-space:nowrap">중복 탐지</li>
+                <li style="white-space:nowrap">장기종결 정리</li>
+                <li style="white-space:nowrap">DB 배정</li>
+              </ul>
+            </div>
+            <div class="tier-card" id="tc-master">
+              <div style="font-size:28px;margin-bottom:8px">👑</div>
+              <div style="font-weight:800;font-size:16px;margin-bottom:4px;white-space:nowrap"><span class="badge badge-master">MASTER</span></div>
+              <div style="font-size:12px;color:var(--gray-500);margin-bottom:10px;font-weight:600;white-space:nowrap">최고 관리자</div>
+              <ul style="font-size:12px;color:var(--gray-600);line-height:2;padding-left:14px;margin:0">
+                <li style="white-space:nowrap">계정 생성/삭제</li>
+                <li style="white-space:nowrap">권한 변경</li>
+                <li style="white-space:nowrap">비밀번호 재설정</li>
+                <li style="white-space:nowrap">전체 백업</li>
+                <li style="white-space:nowrap">업로드 승인</li>
+                <li style="white-space:nowrap">DB 배정</li>
+              </ul>
+            </div>
+          </div>
           </div>
           <div class="info-box"><span style="font-size:20px;flex-shrink:0">💡</span>
             <div><strong>꼭 알아두세요</strong><br>
@@ -1605,95 +1695,6 @@ body.dark .pg-wrap,body.dark .page{background:#0e0e12}
       </div>
     </div>
 
-    <!-- ■ 내 정보 ■ -->
-    <div class="page" id="pgMypage">
-      <div class="pg-wrap" style="max-width:780px;margin:0 auto">
-        <div class="pg-head"><div class="pg-title">👤 내 정보</div></div>
-        <div class="card" style="max-width:500px;margin-bottom:16px">
-          <div class="card-t">🐾 프로필 설정</div>
-          <div class="form-group"><label class="lbl">닉네임 *</label><input class="fi" id="myNickname" placeholder="표시될 이름"></div>
-          <div class="form-group">
-            <label class="lbl">프로필 동물 선택</label>
-            <div id="animalPickerWrap" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
-            <input type="hidden" id="myAnimalEmoji" value="🐶">
-          </div>
-          <button class="btn-p" onclick="saveProfile()">💾 저장</button>
-          <div id="profileMsg" class="stmsg">-</div>
-        </div>
-        <div class="card" style="max-width:500px">
-          <div class="card-t">🔒 비밀번호 변경</div>
-          <div class="form-group"><label class="lbl">현재 비밀번호 *</label><input class="fi" id="curPw" type="password" autocorrect="off" autocapitalize="off" spellcheck="false" lang="en" placeholder="현재 비밀번호 입력"></div>
-          <div class="form-group"><label class="lbl">새 비밀번호 (8자 이상) *</label><input class="fi" id="newPw" type="password" autocorrect="off" autocapitalize="off" spellcheck="false" lang="en" placeholder="새 비밀번호 입력"></div>
-          <div class="form-group"><label class="lbl">새 비밀번호 확인 *</label><input class="fi" id="newPwConfirm" type="password" autocorrect="off" autocapitalize="off" spellcheck="false" lang="en" placeholder="재입력"></div>
-          <button class="btn-p" onclick="changePw()">변경하기</button>
-          <div id="pwMsg" class="stmsg">-</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── MODALS ── -->
-
-<!-- 비밀번호 재설정 모달 (MASTER용) -->
-<div class="modal-overlay" id="pwResetModal" style="display:none" onclick="if(event.target===this)closePwResetModal()">
-  <div class="modal" style="max-width:480px">
-    <div class="modal-head">
-      <div>
-        <div class="modal-title">🔑 비밀번호 재설정</div>
-        <div class="modal-sub" id="pwResetTargetLabel">-</div>
-      </div>
-      <button class="modal-close" onclick="closePwResetModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div style="background:#fff8f0;border:1px solid #fed7aa;border-radius:11px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.6">
-        ⚠️ MASTER가 직접 새 비밀번호를 설정합니다.<br>설정 후 해당 사원에게 임시 비밀번호를 안내하고, 사원이 직접 변경하도록 안내하세요.
-      </div>
-      <div style="display:flex;gap:9px;margin-bottom:13px;align-items:flex-end">
-        <div class="form-group" style="margin:0;flex:1">
-          <label class="lbl">새 임시 비밀번호 (8자 이상) *</label>
-          <input class="fi" id="newPwForUser" type="text" placeholder="새 비밀번호 입력">
-        </div>
-        <button class="btn-g btn-sm" onclick="generateTempPw()" style="flex-shrink:0">🎲 자동생성</button>
-      </div>
-      <div id="pwResetResultBox" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:11px;padding:16px;margin-bottom:13px">
-        <div style="font-size:14px;font-weight:700;color:#15803d;margin-bottom:7px">✅ 비밀번호 변경 완료!</div>
-        <div style="font-size:13px;color:#166534;margin-bottom:6px">사원에게 전달할 임시 비밀번호:</div>
-        <div style="font-size:22px;font-weight:900;color:#15803d;letter-spacing:3px;margin:8px 0;font-family:monospace;background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #bbf7d0" id="pwResetResultPw"></div>
-        <button class="btn-s btn-sm" onclick="copyTempPw()">📋 클립보드 복사</button>
-      </div>
-      <div id="pwResetMsg" class="stmsg">-</div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn-g btn-sm" onclick="closePwResetModal()">닫기</button>
-      <button class="btn-p btn-sm" id="doResetPwBtn" onclick="doResetPw()">🔑 비밀번호 변경</button>
-    </div>
-  </div>
-</div>
-
-<!-- 강제 비밀번호 변경 모달 (임시비번으로 로그인 시) -->
-<div class="modal-overlay" id="forcePwChangeModal" style="display:none">
-  <div class="modal" style="max-width:440px">
-    <div class="modal-head">
-      <div>
-        <div class="modal-title">🔒 비밀번호 변경 필요</div>
-        <div class="modal-sub">관리자가 임시 비밀번호를 설정했습니다. 새 비밀번호를 설정해 주세요.</div>
-      </div>
-    </div>
-    <div class="modal-body">
-      <div style="background:#fff8f0;border:1px solid #fed7aa;border-radius:11px;padding:13px;margin-bottom:16px;font-size:13px;color:#92400e">
-        ⚠️ 비밀번호를 변경하지 않으면 시스템을 사용할 수 없습니다.
-      </div>
-      <div class="form-group"><label class="lbl">새 비밀번호 (8자 이상) *</label><input class="fi" id="forceNewPw" type="password" autocorrect="off" autocapitalize="off" spellcheck="false" lang="en" placeholder="새 비밀번호"></div>
-      <div class="form-group"><label class="lbl">새 비밀번호 확인 *</label><input class="fi" id="forceNewPwConfirm" type="password" autocorrect="off" autocapitalize="off" spellcheck="false" lang="en" placeholder="비밀번호 재입력"></div>
-      <div id="forcePwMsg" class="stmsg">-</div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn-p" onclick="doForcePwChange()">변경 완료</button>
-    </div>
-  </div>
-</div>
-
 <!-- CRM 상세 모달 -->
 <div class="modal-overlay" id="crmModal" style="display:none" onclick="if(event.target===this)closeCrmModal()">
   <div class="modal">
@@ -1929,9 +1930,36 @@ function openSidebar(){document.getElementById('sidebar').classList.add('open');
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('mobOverlay').classList.remove('show')}
 
 // 다크모드
+function _syncDarkBtn(isDark){
+  const btn=document.getElementById('darkModeBtn');
+  const lbl=document.getElementById('darkModeLabel');
+  if(!btn)return;
+  if(isDark){
+    btn.style.background='rgba(255,255,255,.07)';
+    btn.style.borderColor='rgba(255,255,255,.2)';
+    btn.style.color='#e5e7eb';
+    btn.firstChild.textContent='☀️ ';
+    if(lbl)lbl.textContent='라이트모드';
+  }else{
+    btn.style.background='none';
+    btn.style.borderColor='';
+    btn.style.color='';
+    btn.firstChild.textContent='🌙 ';
+    if(lbl)lbl.textContent='다크모드';
+  }
+}
 function toggleDark(){
   document.body.classList.toggle('dark');
   const isDark=document.body.classList.contains('dark');
+  _syncDarkBtn(isDark);
+  const logo=document.getElementById('topLogo');
+  if(logo){
+    if(isDark){
+      logo.style.filter='brightness(0) saturate(100%) invert(57%) sepia(84%) saturate(1070%) hue-rotate(1deg)';
+    }else{
+      logo.style.filter='brightness(0) saturate(100%) invert(24%) sepia(94%) saturate(1338%) hue-rotate(240deg)';
+    }
+  }
   if(AU)sb.from('user_settings').upsert([{user_id:AU.id,dark_mode:isDark}]).then(()=>{});
 }
 async function loadDarkMode(){
@@ -2243,19 +2271,21 @@ function bootApp(){
   _s('uRole',rlLbl(role));
   _s('greeting',`안녕하세요, ${name}님 👋`);
   if(role==='junior'){
-    // 신입사원: 대시보드+CRM만 접근, 나머지 숨기기
     ['miCalendar','miGuide','miAdmin'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   }
   if(['master','admin'].includes(role)){
     const miAdm=document.getElementById('miAdmin');if(miAdm)miAdm.style.display='flex';
-    document.getElementById('miAnnounce').style.display='flex';
-    document.getElementById('announceWriteBtn').style.display='flex';
+    const miAnn=document.getElementById('miAnnounce');if(miAnn)miAnn.style.display='flex';
+    const awb=document.getElementById('announceWriteBtn');if(awb)awb.style.display='flex';
   }
+  // 엑셀 업로드 버튼 권한
+  const excelBtn=document.getElementById('excelUploadBtn');
+  if(excelBtn&&['master','admin'].includes(role))excelBtn.style.display='flex';
   loadAnnounceBadge();goPage('dash');
-  // 강제 비밀번호 변경 체크
-  setTimeout(checkMustChangePw, 500);
-  // 계약 만료 임박 체크 (3초 후)
-  setTimeout(checkContractExpiring, 3000);
+  setTimeout(checkMustChangePw,500);
+  setTimeout(checkContractExpiring,3000);
+  setTimeout(()=>{if(typeof initPushBtn==='function')initPushBtn();},800);
+  setTimeout(()=>{if(typeof updateCalendarSidebarBadge==='function')updateCalendarSidebarBadge();},1000);
   setupSessionRefresh();
 }
 async function doLogout(){
@@ -2407,6 +2437,12 @@ async function loadUserDash(){
   if(tc?.length){uCard.style.display='block';document.getElementById('userTodayContactCnt').textContent=tc.length+'건';
     document.getElementById('userTodayContactsList').innerHTML=tc.map(r=>`<div style="display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid #f0f2f8"><strong>${r.business_name}</strong> <span style="color:#9fa6bc;font-size:13px">${maskPhone(r.phone)}</span> ${stageBadge(r.stage||'가망')} <button class="btn-s btn-sm" style="margin-left:auto" onclick="openCrmModal(${r.id})">상세</button></div>`).join('');}
   else uCard.style.display='none';
+  // 뱃지 렌더
+  if(typeof renderBadges==='function'){
+    const{data:bdToday}=await sb.from('calls').select('call_count,call_time').eq('manager',AU.id).eq('date',td());
+    let _bc=0,_bt=0;(bdToday||[]).forEach(r=>{_bc+=r.call_count||0;_bt+=r.call_time||0;});
+    await renderBadges(_bc,_bt);
+  }
 }
 
 async function loadCharts(){
@@ -2536,6 +2572,11 @@ async function saveAct(){
   if(ex)await sb.from('calls').update(payload).eq('id',ex.id);
   else await sb.from('calls').insert([payload]);
   setMsg('actMsg','✓ 저장되었습니다.',true);loadKPI();loadTeam();loadLeaderboard();loadGoalProgress();
+  // 목표 달성 체크 + 뱃지 체크
+  if(typeof checkGoalAchievement==='function')await checkGoalAchievement();
+  const{data:bdData}=await sb.from('calls').select('call_count,call_time').eq('manager',AU.id).eq('date',td());
+  let _bc=0,_bt=0;(bdData||[]).forEach(r=>{_bc+=r.call_count||0;_bt+=r.call_time||0;});
+  if(typeof checkAndAwardBadges==='function')await checkAndAwardBadges(_bc,_bt);
 }
 
 // ── CRM ──
@@ -2615,7 +2656,6 @@ async function openCrmModal(id){
   toggleEditForm(false);
   document.getElementById('modalDeleteBtn').style.display=((PR?.role||'')==='master')?'block':'none';
   await loadCallHistory(id);await loadTemplateQuickList();
-  // 계약완료 시 추가 필드 표시
   const isContract=data.stage==='계약완료';
   const contractSection=document.getElementById('contractSection');
   if(contractSection){
@@ -2626,10 +2666,13 @@ async function openCrmModal(id){
       document.getElementById('contractStatus').value=data.contract_status||'active';
     }
   }
-  // 편집 버튼 권한
   const editBtn=document.getElementById('crmEditBtn');
   if(editBtn){const canEdit=isPriv()||(data.manager===(PR?.name||''));editBtn.style.display=canEdit?'inline-flex':'none';}
+  const mapBtn=document.getElementById('mapBtn');
+  if(mapBtn)mapBtn.style.display=data.address?'flex':'none';
+  if(typeof updateModalNav==='function')updateModalNav(id);
   document.getElementById('crmModal').style.display='flex';
+  setTimeout(()=>{if(typeof initCallTimer==='function')initCallTimer();if(typeof resetCallTimer==='function')resetCallTimer();},100);
 }
 function closeCrmModal(){document.getElementById('crmModal').style.display='none';curCrmId=null;curCrmData=null;}
 
@@ -2696,24 +2739,31 @@ async function saveCrmEdit(){
   const name=document.getElementById('editName').value.trim(),phone=document.getElementById('editPhone').value.trim();
   if(!name||!phone){setMsg('editMsg','업체명과 전화번호는 필수.',false);return}
   const stageVal=document.getElementById('editStage').value;
+  const oldStage=curCrmData?.stage;
+  const newMemo=document.getElementById('editMemo').value.trim();
+  const oldMemo=curCrmData?.memo||'';
   const payload={business_name:name,phone,address:document.getElementById('editAddress').value.trim()||null,
     industry:document.getElementById('editIndustry').value.trim()||null,
     stage:stageVal,
     next_contact_date:document.getElementById('editNextContact').value||null,
     status:document.getElementById('editStatus').value,
     fail_reason:document.getElementById('editFailReason').value||null,
-    memo:document.getElementById('editMemo').value.trim(),
+    memo:newMemo,
     contract_end_date:document.getElementById('contractEndDate')?.value||null,
     contract_items:document.getElementById('contractItems')?.value.trim()||null,
     contract_status:document.getElementById('contractStatus')?.value||null};
+  if(stageVal==='계약완료'&&oldStage!=='계약완료')payload.contracted_at=new Date().toISOString();
   const{error}=await sb.from('prospects').update(payload).eq('id',curCrmId);
   if(error){setMsg('editMsg','오류: '+error.message,false);return}
+  if(newMemo&&newMemo!==oldMemo&&curCrmId){
+    await sb.from('call_logs').insert([{prospect_id:curCrmId,manager_id:AU.id,manager_name:PR?.name||AU.email,content:`[메모 변경]\n${newMemo}`,result:'기타',called_at:new Date().toISOString()}]);
+  }
   setMsg('editMsg','✓ 저장되었습니다.',true);curCrmData={...curCrmData,...payload};
   document.getElementById('crmModalTitle').textContent=name;
   document.getElementById('crmModalSub').innerHTML=`${stageBadge(stageVal)} &nbsp;${maskPhone(phone)} &nbsp;담당: ${curCrmData.manager||'-'}`;
-  // 계약완료 섹션 갱신
   const cs=document.getElementById('contractSection');
   if(cs)cs.style.display=stageVal==='계약완료'?'block':'none';
+  if(stageVal==='계약완료'&&oldStage!=='계약완료'&&typeof launchConfetti==='function')launchConfetti();
   toggleEditForm(false);loadPipeline();
 }
 async function deleteCrmFromModal(){
@@ -3008,7 +3058,6 @@ async function renderCalendar(){
   document.getElementById('calDayDetail').style.display='none';
 }
 function moveMonth(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}else if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
-async 
 // ── 캘린더 날짜 선택 ──
 function selectCalDay(el, dateStr){
   document.querySelectorAll('.cal-day.selected').forEach(d=>d.classList.remove('selected'));
@@ -3109,7 +3158,7 @@ function admTab(tab,el){
   if(tab==='dupcheck')loadDupCheck();
   if(tab==='kakaowork')loadKakaoWorkSettings();
   if(tab==='stale')loadStaleDB();
-  if(tab==='perfcards')loadPerfCards();
+  if(tab==='perfcards'){if(typeof initPerfCardSelects==='function')initPerfCardSelects();loadPerfCards();}
   if(tab==='assign'){loadAssignUsers();loadAssignList();}
 }
 function admTab_show(tab){
@@ -3176,7 +3225,6 @@ function copyTempPw(){
   navigator.clipboard.writeText(pw).then(()=>alert('✅ 클립보드에 복사되었습니다!'));
 }
 
-async 
 // ── 비밀번호 재설정 이메일 발송 (MASTER 전용) ──
 async function sendResetEmail(){
   if(!pwResetTargetEmail){setMsg('pwResetMsg','이메일 주소가 없습니다.',false);return}
@@ -3447,6 +3495,47 @@ function loadMypage(){
   const el=document.getElementById('myNickname');
   if(el)el.value=name;
   initAnimalPicker();
+  // 권한 등급 표시
+  const roleDisplay=document.getElementById('myRoleDisplay');
+  const roleBadge=document.getElementById('myRoleBadge');
+  if(roleDisplay&&roleBadge&&PR?.role){
+    roleDisplay.style.display='block';
+    roleBadge.innerHTML=`<span class="badge ${rlCls(PR.role)}">${rlLbl(PR.role)}</span>`;
+  }
+  // MASTER 전용 사용자 관리 섹션
+  const masterSec=document.getElementById('mypageMasterSection');
+  if(masterSec){
+    if(PR?.role==='master'){
+      masterSec.style.display='block';
+      loadMypageUsers();
+    }else{
+      masterSec.style.display='none';
+    }
+  }
+}
+async function loadMypageUsers(){
+  const{data}=await sb.from('users').select('*').order('created_at',{ascending:false});
+  const tbody=document.getElementById('mypageUserBody');
+  if(!tbody)return;
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="5" class="empty">사용자 없음</td></tr>';return}
+  tbody.innerHTML=data.map(u=>`<tr>
+    <td><strong>${u.name||'-'}</strong></td>
+    <td style="color:#6b7494;font-size:13px">${u.email||'-'}</td>
+    <td><span class="badge ${rlCls(u.role)}">${rlLbl(u.role)}</span></td>
+    <td><select class="role-sel" onchange="changeMypageRole('${u.id}',this.value)">
+      <option value="junior" ${u.role==='junior'?'selected':''}>신입사원</option>
+      <option value="user" ${u.role==='user'?'selected':''}>사원</option>
+      <option value="admin" ${u.role==='admin'?'selected':''}>관리자</option>
+      <option value="master" ${u.role==='master'?'selected':''}>MASTER</option>
+      <option value="inactive" ${u.role==='inactive'?'selected':''}>비활성</option>
+    </select></td>
+    <td><button class="btn-g btn-sm" onclick="openPwResetModal('${u.id}','${u.email}','${u.name||u.email}')">🔑 재설정</button></td>
+  </tr>`).join('');
+}
+async function changeMypageRole(uid,role){
+  if(role==='inactive'&&!confirm('INACTIVE로 변경하시겠습니까?'))return;
+  await sb.from('users').update({role}).eq('id',uid);
+  loadMypageUsers();
 }
 
 // ── 대시보드 미니 달력 ──
@@ -3498,8 +3587,6 @@ function setNextContactQuick(days){
   if(el)el.value=d.toISOString().slice(0,10);
 }
 
-// saveCallLog에 다음 연락 날짜 업데이트 포함 (기존 함수 override)
-const _origSaveCallLog = window.saveCallLog;
 async function saveCallLog(){
   if(!curCrmId)return;
   const content=document.getElementById('callContent').value.trim();
@@ -3507,7 +3594,8 @@ async function saveCallLog(){
   const stageChange=document.getElementById('callStageChange').value;
   const nextDate=document.getElementById('callNextDate')?.value||'';
   if(!content){setMsg('callLogMsg','통화 내용을 입력하세요.',false);return}
-  const durVal=parseInt(document.getElementById('callDuration')?.value)||(_timerSeconds>0?Math.ceil(_timerSeconds/60):0);
+  const timerSecs=typeof _timerSeconds!=='undefined'?_timerSeconds:0;
+  const durVal=parseInt(document.getElementById('callDuration')?.value)||(timerSecs>0?Math.ceil(timerSecs/60):0);
   const{error}=await sb.from('call_logs').insert([{
     prospect_id:curCrmId,manager_id:AU.id,manager_name:PR?.name||AU.email,
     content,result,duration_minutes:durVal||null,called_at:new Date().toISOString()
@@ -3517,8 +3605,10 @@ async function saveCallLog(){
   if(stageChange)updates.stage=stageChange;
   if(nextDate)updates.next_contact_date=nextDate;
   if(Object.keys(updates).length>0)await sb.from('prospects').update(updates).eq('id',curCrmId);
-  // 카카오워크 계약완료 알림
-  if(stageChange==='계약완료')sendKakaoWorkNotify('contract',{business_name:curCrmData?.business_name||'-',manager:PR?.name||AU.email,stage:'계약 완료'});
+  if(stageChange==='계약완료'){
+    if(typeof sendKakaoWorkNotify==='function')sendKakaoWorkNotify('contract',{business_name:curCrmData?.business_name||'-',manager:PR?.name||AU.email,stage:'계약 완료'});
+    if(typeof launchConfetti==='function')launchConfetti();
+  }
   setMsg('callLogMsg','✓ 통화 기록 저장',true);
   document.getElementById('callContent').value='';
   document.getElementById('callStageChange').value='';
@@ -3526,6 +3616,7 @@ async function saveCallLog(){
   if(document.getElementById('callDuration'))document.getElementById('callDuration').value='';
   await loadCallHistory(curCrmId);
   if(stageChange&&curCrmData)curCrmData.stage=stageChange;
+  if(typeof resetCallTimer==='function')resetCallTimer();
 }
 
 // ═══════════════════════════════════════════════
@@ -3793,34 +3884,52 @@ async function loadDupCheck(){
 }
 async function runDupDetect(){
   const el=document.getElementById('dupDetectResult');
-  el.innerHTML='<div class="empty">탐지 중...</div>';
-  // 전체 DB 가져오기
+  el.innerHTML='<div class="empty">탐지 중... (유사도 분석 포함)</div>';
   const{data}=await sb.from('prospects').select('id,business_name,phone,manager,stage').order('created_at',{ascending:false}).limit(2000);
-  if(!data?.length){el.innerHTML='<div class="empty">데이터 없음</div>';return}
-  const phoneDups=[];const nameDups=[];
-  // 전화번호 중복
+  if(!data?.length){el.innerHTML='<div class="empty">데이터 없음</div>';return;}
+  const phoneDups=[],nameDups=[],fuzzyDups=[];
   const phoneMap={};
   data.forEach(r=>{const p=(r.phone||'').replace(/\D/g,'');if(p.length>7){if(!phoneMap[p])phoneMap[p]=[];phoneMap[p].push(r);}});
   Object.values(phoneMap).filter(arr=>arr.length>1).forEach(arr=>phoneDups.push(arr));
-  // 업체명 중복 (완전일치)
   const nameMap={};
   data.forEach(r=>{const n=(r.business_name||'').trim().toLowerCase();if(n){if(!nameMap[n])nameMap[n]=[];nameMap[n].push(r);}});
   Object.values(nameMap).filter(arr=>arr.length>1).forEach(arr=>nameDups.push(arr));
-  const total=phoneDups.length+nameDups.length;
-  if(!total){el.innerHTML='<div class="empty" style="color:#059669">✅ 중복 의심 DB 없음!</div>';return}
-  let html=`<div style="font-size:14px;font-weight:700;color:#dc2626;margin-bottom:12px">⚠️ 중복 의심 ${total}그룹 발견</div>`;
+  const exactNames=new Set(Object.keys(nameMap).filter(k=>nameMap[k].length>1));
+  for(let i=0;i<Math.min(data.length,500);i++){
+    for(let j=i+1;j<Math.min(data.length,500);j++){
+      const na=(data[i].business_name||'').trim().toLowerCase();
+      const nb=(data[j].business_name||'').trim().toLowerCase();
+      if(exactNames.has(na)||exactNames.has(nb))continue;
+      const score=typeof similarityScore==='function'?similarityScore(na,nb):0;
+      if(score>=0.8&&score<1.0)fuzzyDups.push({a:data[i],b:data[j],score});
+    }
+  }
+  const total=phoneDups.length+nameDups.length+fuzzyDups.length;
+  if(!total){el.innerHTML='<div class="empty" style="color:var(--green)">✅ 중복/유사 DB 없음!</div>';return;}
+  let html=`<div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:12px">⚠️ 중복/유사 ${total}그룹 발견</div>`;
   if(phoneDups.length){
     html+=`<div style="font-size:13px;font-weight:700;margin-bottom:8px">📱 전화번호 중복 (${phoneDups.length}그룹)</div>`;
-    phoneDups.slice(0,20).forEach(arr=>{
+    phoneDups.slice(0,15).forEach(arr=>{
       html+=`<div class="dup-detect-banner"><div><div style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:6px">☎ ${arr[0].phone}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">${arr.map(r=>`<span class="blocked-chip" style="cursor:pointer" onclick="openCrmModal(${r.id})">${r.business_name||'-'} (${r.manager||'-'})</span>`).join('')}</div></div></div>`;
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${arr.map(r=>`<span class="blocked-chip" onclick="openCrmModal(${r.id})">${r.business_name||'-'} (${r.manager||'-'})</span>`).join('')}</div></div></div>`;
     });
   }
   if(nameDups.length){
-    html+=`<div style="font-size:13px;font-weight:700;margin:12px 0 8px">📋 업체명 중복 (${nameDups.length}그룹)</div>`;
-    nameDups.slice(0,20).forEach(arr=>{
+    html+=`<div style="font-size:13px;font-weight:700;margin:12px 0 8px">📋 업체명 완전일치 (${nameDups.length}그룹)</div>`;
+    nameDups.slice(0,15).forEach(arr=>{
       html+=`<div class="dup-detect-banner"><div><div style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:6px">🏢 ${arr[0].business_name}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">${arr.map(r=>`<span class="blocked-chip" style="cursor:pointer" onclick="openCrmModal(${r.id})">${r.stage||'가망'} | ${r.manager||'-'}</span>`).join('')}</div></div></div>`;
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${arr.map(r=>`<span class="blocked-chip" onclick="openCrmModal(${r.id})">${r.stage||'가망'} | ${r.manager||'-'}</span>`).join('')}</div></div></div>`;
+    });
+  }
+  if(fuzzyDups.length){
+    html+=`<div style="font-size:13px;font-weight:700;margin:12px 0 8px">🔍 유사 업체명 (${Math.min(fuzzyDups.length,20)}그룹 — 유사도 80%+)</div>`;
+    fuzzyDups.slice(0,20).forEach(({a,b,score})=>{
+      html+=`<div class="dup-detect-banner"><div style="flex:1"><div style="font-size:12px;font-weight:700;color:#b45309;margin-bottom:6px">유사도 ${Math.round(score*100)}%</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="blocked-chip" onclick="openCrmModal(${a.id})">${a.business_name} (${a.manager||'-'})</span>
+          <span style="color:var(--gray-400);align-self:center">↔</span>
+          <span class="blocked-chip" onclick="openCrmModal(${b.id})">${b.business_name} (${b.manager||'-'})</span>
+        </div></div></div>`;
     });
   }
   el.innerHTML=html;
@@ -3847,9 +3956,8 @@ async function installPWA(){
 }
 
 // ═══════════════════════════════════════════════
-// 공지사항 등록 시 카카오워크 알림 연동
+// 공지사항 등록
 // ═══════════════════════════════════════════════
-const _origSaveAnnounce=window.saveAnnounce;
 async function saveAnnounce(){
   const title=document.getElementById('aTitle').value.trim(),content_val=document.getElementById('aContent').value.trim();
   if(!title||!content_val){alert('제목과 내용을 입력하세요.');return}
@@ -4176,15 +4284,8 @@ function setupUploadBtn(){
 // ═══════════════════════════════════════════════
 // quickStageChange v2 → v1에 통합됨
 
-// saveCrmEdit에 contracted_at 처리
-const _origSaveCrmEdit=saveCrmEdit;
-async function saveCrmEdit(){
-  // contracted_at 처리를 위해 stage 체크
-  const newStage=document.getElementById('editStage')?.value;
-  await _origSaveCrmEdit();
-  if(newStage==='계약완료'&&curCrmId){
-    await sb.from('prospects').update({contracted_at:new Date().toISOString()}).eq('id',curCrmId).is('contracted_at',null);
-  }
+// saveCrmEdit 확장 기능은 원본에 통합됨 (중복 선언 제거)
+if(false){
 }
 
 
@@ -4198,16 +4299,7 @@ function openNaverMap(){
   window.open(`https://map.naver.com/v5/search/${encodeURIComponent(addr)}`,'_blank');
 }
 
-// openCrmModal에 지도 버튼 표시 추가
-const _origOpenCrmModal=openCrmModal;
-async function openCrmModal(id){
-  await _origOpenCrmModal(id);
-  // 지도 버튼
-  const mapBtn=document.getElementById('mapBtn');
-  if(mapBtn)mapBtn.style.display=curCrmData?.address?'flex':'none';
-  // 이전/다음 네비
-  updateModalNav(id);
-}
+// openCrmModal 확장 기능은 원본에 통합됨 (중복 선언 제거)
 
 // ═══════════════════════════════════════════════
 // 6. DB 상세 이전/다음 이동
@@ -4309,22 +4401,7 @@ function launchConfetti(){
 
 // quickStageChange confetti → 원본에 통합됨
 
-// saveCrmEdit에서 계약완료 시 축하
-const _origSaveCrmEditV2=saveCrmEdit;
-async function saveCrmEdit(){
-  const newStage=document.getElementById('editStage')?.value;
-  const wasContract=curCrmData?.stage==='계약완료';
-  await _origSaveCrmEditV2();
-  if(newStage==='계약완료'&&!wasContract)launchConfetti();
-}
-
-// saveCallLog stage 변경 시 축하
-const _origSaveCallLogV2=saveCallLog;
-async function saveCallLog(){
-  const stageChange=document.getElementById('callStageChange')?.value;
-  await _origSaveCallLogV2();
-  if(stageChange==='계약완료')launchConfetti();
-}
+// saveCrmEdit/saveCallLog 확장 기능은 원본에 통합됨 (중복 선언 제거)
 
 // ═══════════════════════════════════════════════
 // 4. 브라우저 푸시 알림
@@ -4456,21 +4533,9 @@ async function checkGoalAchievement(){
   }
 }
 
-// saveAct 이후 목표 달성 체크 (활동기록 저장 시)
-const _origSaveAct=saveAct;
-async function saveAct(){
-  await _origSaveAct();
-  await checkGoalAchievement();
-}
+// saveAct 확장 기능은 원본에 통합됨 (중복 선언 제거)
 
-// ═══════════════════════════════════════════════
-// bootApp 이후 초기화
-// ═══════════════════════════════════════════════
-const _origBootApp=bootApp;
-function bootApp(){
-  _origBootApp();
-  setTimeout(initPushBtn,800);
-}
+// bootApp 확장 기능은 원본에 통합됨 (중복 선언 제거)
 
 
 
@@ -4677,27 +4742,9 @@ function launchMiniConfetti() {
   draw();
 }
 
-// ── saveAct override - 뱃지 체크 포함 ──
-const _origSaveActV2 = saveAct;
-async function saveAct() {
-  await _origSaveActV2();
-  // 오늘 데이터 다시 조회해서 뱃지 체크
-  const { data } = await sb.from('calls').select('call_count,call_time').eq('manager', AU.id).eq('date', td());
-  let totalCalls = 0, totalTime = 0;
-  (data||[]).forEach(r => { totalCalls += r.call_count||0; totalTime += r.call_time||0; });
-  await checkAndAwardBadges(totalCalls, totalTime);
-}
+// saveAct V2 override 기능은 원본에 통합됨 (중복 선언 제거)
 
-// loadUserDash에서 뱃지 로드
-const _origLoadUserDash = loadUserDash;
-async function loadUserDash() {
-  await _origLoadUserDash();
-  // 뱃지 렌더
-  const { data: todayData } = await sb.from('calls').select('call_count,call_time').eq('manager', AU.id).eq('date', td());
-  let tc = 0, tt = 0;
-  (todayData||[]).forEach(r => { tc += r.call_count||0; tt += r.call_time||0; });
-  await renderBadges(tc, tt);
-}
+// loadUserDash 확장 기능은 원본에 통합됨 (중복 선언 제거)
 
 // ═══════════════════════════════════════════════════════
 // 2. 오늘 연락 예정 사이드바 뱃지 (로그인 시)
@@ -4780,52 +4827,12 @@ function resetCallTimer() {
   if (btn) btn.innerHTML = '▶ 시작';
 }
 
-// openCrmModal에서 타이머 초기화
-const _origOpenCrmModalV2 = openCrmModal;
-async function openCrmModal(id) {
-  await _origOpenCrmModalV2(id);
-  setTimeout(() => { initCallTimer(); resetCallTimer(); }, 100);
-}
-
-// saveCallLog에 타이머 시간 자동 포함
-const _origSaveCallLogV3 = saveCallLog;
-async function saveCallLog() {
-  // 타이머 시간을 duration에 반영
-  if (_timerSeconds > 0) {
-    const durationInput = document.getElementById('callDuration');
-    if (durationInput && !durationInput.value) {
-      durationInput.value = Math.ceil(_timerSeconds / 60);
-    }
-  }
-  await _origSaveCallLogV3();
-  resetCallTimer();
-}
+// openCrmModal/saveCallLog 타이머 확장 기능은 원본에 통합됨 (중복 선언 제거)
 
 // ═══════════════════════════════════════════════════════
 // 5. DB 메모 히스토리
 // ═══════════════════════════════════════════════════════
-// saveCrmEdit 시 기존 메모를 통화 기록처럼 별도 보관 → call_logs의 content로 기록
-// (별도 테이블 없이 call_logs에 type='memo'로 저장)
-// toggleEditForm에서 현재 메모 보여주되 히스토리는 통화기록 옆에 표시
-// - 구현: saveCrmEdit override로 memo 변경 시 call_logs에 기록
-
-const _origSaveCrmEditV3 = saveCrmEdit;
-async function saveCrmEdit() {
-  const newMemo = document.getElementById('editMemo')?.value.trim();
-  const oldMemo = curCrmData?.memo||'';
-  await _origSaveCrmEditV3();
-  // 메모가 변경됐으면 히스토리 저장
-  if (newMemo && newMemo !== oldMemo && curCrmId) {
-    await sb.from('call_logs').insert([{
-      prospect_id: curCrmId,
-      manager_id: AU.id,
-      manager_name: PR?.name||AU.email,
-      content: `[메모 변경]\n${newMemo}`,
-      result: '기타',
-      called_at: new Date().toISOString()
-    }]);
-  }
-}
+// saveCrmEdit 메모 히스토리 기능은 원본에 통합됨 (중복 선언 제거)
 
 // ═══════════════════════════════════════════════════════
 // 6. 일괄 담당자 변경 + 다음 연락 일괄 설정 (DB목록)
@@ -4998,13 +5005,7 @@ function initPerfCardSelects() {
   }
 }
 
-// admTab에서 perfcards 탭 진입 시 초기화
-const _origAdmTab = admTab;
-function admTab(tab, el) {
-  _origAdmTab(tab, el);
-  if (tab === 'perfcards') { initPerfCardSelects(); loadPerfCards(); }
-  if (tab === 'stale') { loadStaleDB(); }
-}
+// admTab 확장 기능은 원본에 통합됨 (중복 선언 제거)
 
 // ═══════════════════════════════════════════════════════
 // 10. 통화 결과 → 다음 연락 자동 추천
@@ -5060,86 +5061,7 @@ function similarityScore(a, b) {
   return 1 - dist/maxLen;
 }
 
-// runDupDetect override - 유사도 탐지 포함
-const _origRunDupDetect = runDupDetect;
-async function runDupDetect() {
-  const el = document.getElementById('dupDetectResult');
-  el.innerHTML = '<div class="empty">탐지 중... (유사도 분석 포함)</div>';
-
-  const { data } = await sb.from('prospects')
-    .select('id,business_name,phone,manager,stage')
-    .order('created_at',{ascending:false}).limit(2000);
-
-  if (!data?.length) { el.innerHTML='<div class="empty">데이터 없음</div>'; return; }
-
-  const phoneDups = [];
-  const nameDups = [];   // 완전일치
-  const fuzzyDups = [];  // 유사도 ≥ 0.8
-
-  // 전화번호 중복
-  const phoneMap = {};
-  data.forEach(r => {
-    const p=(r.phone||'').replace(/\D/g,'');
-    if(p.length>7){if(!phoneMap[p])phoneMap[p]=[];phoneMap[p].push(r);}
-  });
-  Object.values(phoneMap).filter(arr=>arr.length>1).forEach(arr=>phoneDups.push(arr));
-
-  // 업체명 완전일치
-  const nameMap = {};
-  data.forEach(r=>{
-    const n=(r.business_name||'').trim().toLowerCase();
-    if(n){if(!nameMap[n])nameMap[n]=[];nameMap[n].push(r);}
-  });
-  Object.values(nameMap).filter(arr=>arr.length>1).forEach(arr=>nameDups.push(arr));
-
-  // 유사도 탐지 (완전일치 제외)
-  const exactNames = new Set(Object.keys(nameMap).filter(k=>nameMap[k].length>1));
-  for(let i=0;i<Math.min(data.length,500);i++){
-    for(let j=i+1;j<Math.min(data.length,500);j++){
-      const na=(data[i].business_name||'').trim().toLowerCase();
-      const nb=(data[j].business_name||'').trim().toLowerCase();
-      if(exactNames.has(na)||exactNames.has(nb)) continue;
-      const score=similarityScore(na,nb);
-      if(score>=0.8&&score<1.0){
-        fuzzyDups.push({a:data[i],b:data[j],score});
-      }
-    }
-  }
-
-  const total=phoneDups.length+nameDups.length+fuzzyDups.length;
-  if(!total){el.innerHTML='<div class="empty" style="color:var(--green)">✅ 중복/유사 DB 없음!</div>';return;}
-
-  let html=`<div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:12px">⚠️ 중복/유사 ${total}그룹 발견</div>`;
-
-  if(phoneDups.length){
-    html+=`<div style="font-size:13px;font-weight:700;margin-bottom:8px">📱 전화번호 중복 (${phoneDups.length}그룹)</div>`;
-    phoneDups.slice(0,15).forEach(arr=>{
-      html+=`<div class="dup-detect-banner"><div><div style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:6px">☎ ${arr[0].phone}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">${arr.map(r=>`<span class="blocked-chip" onclick="openCrmModal(${r.id})">${r.business_name||'-'} (${r.manager||'-'})</span>`).join('')}</div></div></div>`;
-    });
-  }
-  if(nameDups.length){
-    html+=`<div style="font-size:13px;font-weight:700;margin:12px 0 8px">📋 업체명 완전일치 (${nameDups.length}그룹)</div>`;
-    nameDups.slice(0,15).forEach(arr=>{
-      html+=`<div class="dup-detect-banner"><div><div style="font-size:13px;font-weight:700;color:#b45309;margin-bottom:6px">🏢 ${arr[0].business_name}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">${arr.map(r=>`<span class="blocked-chip" onclick="openCrmModal(${r.id})">${r.stage||'가망'} | ${r.manager||'-'}</span>`).join('')}</div></div></div>`;
-    });
-  }
-  if(fuzzyDups.length){
-    html+=`<div style="font-size:13px;font-weight:700;margin:12px 0 8px">🔍 유사 업체명 (${Math.min(fuzzyDups.length,20)}그룹 — 유사도 80%+)</div>`;
-    fuzzyDups.slice(0,20).forEach(({a,b,score})=>{
-      html+=`<div class="dup-detect-banner">
-        <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#b45309;margin-bottom:6px">유사도 ${Math.round(score*100)}%</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <span class="blocked-chip" onclick="openCrmModal(${a.id})">${a.business_name} (${a.manager||'-'})</span>
-          <span style="color:var(--gray-400);align-self:center">↔</span>
-          <span class="blocked-chip" onclick="openCrmModal(${b.id})">${b.business_name} (${b.manager||'-'})</span>
-        </div></div>
-      </div>`;
-    });
-  }
-  el.innerHTML=html;
-}
+// runDupDetect 확장 기능은 원본에 통합됨 (중복 선언 제거)
 
 // ═══════════════════════════════════════════════════════
 // 13. 주소 → 지역 통계
@@ -5193,15 +5115,7 @@ async function generateCallScript() {
   if (btn) { btn.disabled=false; btn.textContent='🤖 AI 멘트'; }
 }
 
-// ═══════════════════════════════════════════════════════
-// bootApp 이후 초기화 보완
-// ═══════════════════════════════════════════════════════
-const _origSetupUploadBtn = setupUploadBtn;
-function setupUploadBtn() {
-  _origSetupUploadBtn();
-  // 사이드바 연락 뱃지 업데이트
-  setTimeout(updateCalendarSidebarBadge, 1000);
-}
+// setupUploadBtn 확장 기능은 bootApp 원본에 통합됨 (중복 선언 제거)
 
 
 </script>

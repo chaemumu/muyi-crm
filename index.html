@@ -834,85 +834,6 @@ body.dark .pg-wrap,body.dark .page{background:#0e0e12}
       </div>
     </div>
 
-    <!-- ■ 내 정보 (상단에 고정 표시) ■ -->
-    <div class="my-info-inline">
-      <div class="pg-wrap my-info-wrap">
-
-        <!-- 타이틀 -->
-        <div class="pg-head" style="margin-bottom:12px">
-          <div class="pg-title">👤 내 정보</div>
-        </div>
-
-        <!-- 프로필 -->
-        <div class="card">
-          <div class="card-t">🐾 프로필 설정</div>
-
-          <div class="form-group">
-            <label class="lbl">닉네임 *</label>
-            <input class="fi" id="myNickname" placeholder="표시될 이름">
-          </div>
-
-          <div class="form-group">
-            <label class="lbl">프로필 동물 선택</label>
-            <div id="animalPickerWrap" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
-            <input type="hidden" id="myAnimalEmoji" value="🐶">
-          </div>
-
-          <div id="myRoleDisplay" style="margin-bottom:12px;display:none">
-            <label class="lbl">권한 등급</label>
-            <div id="myRoleBadge" style="margin-top:4px"></div>
-          </div>
-
-          <button class="btn-p" onclick="saveProfile()">💾 저장</button>
-          <div id="profileMsg" class="stmsg"></div>
-        </div>
-
-        <!-- 비밀번호 -->
-        <div class="card">
-          <div class="card-t">🔒 비밀번호 변경</div>
-
-          <div class="form-group">
-            <label class="lbl">현재 비밀번호 *</label>
-            <input class="fi" id="curPw" type="password" placeholder="현재 비밀번호 입력">
-          </div>
-
-          <div class="form-group">
-            <label class="lbl">새 비밀번호 *</label>
-            <input class="fi" id="newPw" type="password" placeholder="8자 이상">
-          </div>
-
-          <div class="form-group">
-            <label class="lbl">새 비밀번호 확인 *</label>
-            <input class="fi" id="newPwConfirm" type="password" placeholder="재입력">
-          </div>
-
-          <button class="btn-p" onclick="changePw()">변경하기</button>
-          <div id="pwMsg" class="stmsg"></div>
-        </div>
-
-        <!-- MASTER 전용 -->
-        <div class="card" id="mypageMasterSection" style="display:none">
-          <div class="card-t">👥 사용자 관리 <small>MASTER 전용</small></div>
-
-          <div style="overflow-x:auto">
-            <table class="tbl">
-              <thead>
-                <tr>
-                  <th>이름</th>
-                  <th>이메일</th>
-                  <th>권한</th>
-                  <th>권한 변경</th>
-                  <th>비밀번호 재설정</th>
-                </tr>
-              </thead>
-              <tbody id="mypageUserBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
     <!-- ■ DASHBOARD ■ -->
     <div class="page active" id="pgDash">
       <div class="pg-wrap">
@@ -1199,6 +1120,82 @@ body.dark .pg-wrap,body.dark .page{background:#0e0e12}
               <table class="tbl" style="min-width:880px"><thead><tr><th class="check-col"><input type="checkbox" class="row-check" id="masterCheck" onclick="toggleMasterCheck(this)"></th><th>업체명</th><th>전화번호</th><th>업종</th><th>단계</th><th>담당자</th><th>다음 연락</th><th>등록일</th><th></th></tr></thead>
               <tbody id="listBody"></tbody></table>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ■ 내 정보 ■ -->
+    <div class="page" id="pgMypage">
+      <div class="pg-wrap">
+        <div class="pg-head">
+          <div><div class="pg-title">👤 내 정보</div><div class="pg-desc">프로필 및 계정 관리</div></div>
+        </div>
+
+        <!-- 프로필 -->
+        <div class="card">
+          <div class="card-t">🐾 프로필 설정</div>
+
+          <div class="form-group">
+            <label class="lbl">닉네임 *</label>
+            <input class="fi" id="myNickname" placeholder="표시될 이름">
+          </div>
+
+          <div class="form-group">
+            <label class="lbl">프로필 동물 선택</label>
+            <div id="animalPickerWrap" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
+            <input type="hidden" id="myAnimalEmoji" value="🐶">
+          </div>
+
+          <div id="myRoleDisplay" style="margin-bottom:12px;display:none">
+            <label class="lbl">권한 등급</label>
+            <div id="myRoleBadge" style="margin-top:4px"></div>
+          </div>
+
+          <button class="btn-p" onclick="saveProfile()">💾 저장</button>
+          <div id="profileMsg" class="stmsg"></div>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="card">
+          <div class="card-t">🔒 비밀번호 변경</div>
+
+          <div class="form-group">
+            <label class="lbl">현재 비밀번호 *</label>
+            <input class="fi" id="curPw" type="password" placeholder="현재 비밀번호 입력">
+          </div>
+
+          <div class="form-group">
+            <label class="lbl">새 비밀번호 *</label>
+            <input class="fi" id="newPw" type="password" placeholder="8자 이상">
+          </div>
+
+          <div class="form-group">
+            <label class="lbl">새 비밀번호 확인 *</label>
+            <input class="fi" id="newPwConfirm" type="password" placeholder="재입력">
+          </div>
+
+          <button class="btn-p" onclick="changePw()">변경하기</button>
+          <div id="pwMsg" class="stmsg"></div>
+        </div>
+
+        <!-- MASTER 전용 -->
+        <div class="card" id="mypageMasterSection" style="display:none">
+          <div class="card-t">👥 사용자 관리 <small>MASTER 전용</small></div>
+
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>이름</th>
+                  <th>이메일</th>
+                  <th>권한</th>
+                  <th>권한 변경</th>
+                  <th>비밀번호 재설정</th>
+                </tr>
+              </thead>
+              <tbody id="mypageUserBody"></tbody>
+            </table>
           </div>
         </div>
       </div>

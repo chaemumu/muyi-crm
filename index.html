@@ -745,6 +745,90 @@ body.dark select.fi option{background:#2c2c2e;color:#f5f5f7}
 body.dark #darkModeBtn{color:#e5e7eb;border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.07)}
 body.dark .pg-wrap,body.dark .page{background:#0e0e12}
 
+/* ── MODAL WIDE (상세 모달 2컬럼) ── */
+.modal-wide{max-width:960px!important}
+.modal-two-col{display:flex;min-height:480px}
+.modal-left{width:42%;border-right:1px solid var(--border2);padding:22px 24px;overflow-y:auto;max-height:calc(90vh - 72px)}
+.modal-right{width:58%;padding:22px 24px;display:flex;flex-direction:column;overflow-y:auto;max-height:calc(90vh - 72px)}
+
+/* ── INFO PANEL ── */
+.info-field{margin-bottom:14px}
+.info-lbl{display:block;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}
+.info-val{font-size:15px;font-weight:600;color:var(--gray-950);word-break:break-word}
+.modal-left-actions{display:flex;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border2);flex-wrap:wrap}
+
+/* ── STAGE BUTTONS IN DETAIL ── */
+.stage-btn-group{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.stage-sel-btn{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid transparent;transition:all .15s;font-family:inherit;opacity:.7}
+.stage-sel-btn:hover{opacity:1;transform:translateY(-1px)}
+.stage-sel-btn.active-stage{opacity:1;box-shadow:0 0 0 2px currentColor;transform:none}
+
+/* ── DAY BUTTONS (다음 연락) ── */
+.day-btn-group{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.day-btn{padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--gray-600);transition:all .15s;font-family:inherit}
+.day-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light);transform:translateY(-1px)}
+.day-btn:active{transform:translateY(0)}
+
+/* ── CALL PANEL ── */
+.call-input-panel{padding-bottom:18px;border-bottom:1px solid var(--border2);margin-bottom:18px}
+.call-history-panel{flex:1}
+.call-panel-title{font-size:15px;font-weight:800;color:var(--gray-950);margin-bottom:12px;letter-spacing:-.3px}
+
+/* ── CALL RESULT BUTTONS ── */
+.call-result-btns{display:flex;gap:8px;margin-bottom:12px}
+.call-result-btn{flex:1;padding:11px 6px;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;border:2px solid var(--border);background:var(--surface);color:var(--gray-600);transition:all .15s;font-family:inherit;text-align:center}
+.call-result-btn:hover{border-color:var(--gray-400);background:var(--gray-50);transform:translateY(-1px)}
+.call-result-btn.sel-success{border-color:#16a34a;background:#f0fdf4;color:#166534}
+.call-result-btn.sel-absent{border-color:#ca8a04;background:#fefce8;color:#713f12}
+.call-result-btn.sel-reject{border-color:#dc2626;background:#fff1f2;color:#9f1239}
+
+/* ── CALL LOG INITIAL ── */
+.call-log-initial{border-left-color:var(--purple)!important;background:#faf5ff!important}
+body.dark .call-log-initial{background:rgba(191,90,242,.1)!important;border-left-color:var(--purple)!important}
+.cl-initial-badge{background:#f3e8ff;color:#7c3aed;border-radius:20px;padding:1px 7px;font-size:10px;font-weight:700}
+
+/* ── CALENDAR EVENT ITEMS ── */
+.cal-event-item{border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:opacity .1s}
+.cal-event-item:hover{opacity:.8}
+.cal-ev-prospect{background:#ececfd;color:#4b4acf}
+.cal-ev-contact{background:#fffbeb;color:#92400e}
+.cal-ev-meeting{background:#fff3e8;color:#9a3412}
+.cal-ev-review{background:#faf5ff;color:#6d28d9}
+.cal-ev-contract{background:#f0fdf4;color:#166534}
+.cal-ev-lost{background:#fff1f2;color:#9f1239}
+
+/* ── NAVER PARSE STATUS ── */
+.naver-parse-status{font-size:12px;margin-top:5px;font-weight:600;min-height:16px}
+
+/* ── ADDRESS WARN ── */
+.addr-warn{font-size:12px;color:var(--red);margin-top:4px;font-weight:600;display:none}
+
+/* ── ASSIGN DROPDOWN ── */
+#assignUserGroup{display:none}
+
+/* ── RESPONSIVE for 2-col modal ── */
+@media(max-width:768px){
+  .modal-wide{max-width:100%!important}
+  .modal-two-col{flex-direction:column}
+  .modal-left{width:100%;border-right:none;border-bottom:1px solid var(--border2);max-height:none}
+  .modal-right{width:100%;max-height:none}
+  .modal-left{padding:16px}
+  .modal-right{padding:16px}
+}
+
+/* ── DARK MODE for new elements ── */
+body.dark .call-result-btn{background:#2c2c2e;border-color:rgba(255,255,255,.1);color:#d1d1d6}
+body.dark .call-result-btn:hover{background:#3a3a3c}
+body.dark .day-btn{background:#2c2c2e;border-color:rgba(255,255,255,.1);color:#d1d1d6}
+body.dark .day-btn:hover{border-color:var(--orange);color:var(--orange);background:rgba(255,107,0,.1)}
+body.dark .modal-left{border-color:rgba(255,255,255,.08)}
+body.dark .modal-left-actions{border-color:rgba(255,255,255,.08)}
+body.dark .call-input-panel{border-color:rgba(255,255,255,.08)}
+body.dark .info-lbl{color:var(--gray-500)}
+body.dark .info-val{color:#f5f5f7}
+body.dark .stage-sel-btn{opacity:.6}
+body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
+
 </style>
 </head>
 <body>
@@ -1043,41 +1127,42 @@ body.dark .pg-wrap,body.dark .page{background:#0e0e12}
               <div class="form-group">
                 <label class="lbl">업체명 *</label>
                 <div class="autocomplete-wrap">
-                  <input class="fi" id="rName" placeholder="상호명" oninput="onRegNameInput(this.value)">
+                  <input class="fi" id="rName" placeholder="상호명을 입력하세요" oninput="onRegNameInput(this.value)">
                   <div class="autocomplete-list" id="regNameAutoList" style="display:none"></div>
                 </div>
                 <div id="regDupWarn" style="font-size:13px;color:#dc2626;margin-top:6px;display:none"></div>
               </div>
-              <div class="form-group"><label class="lbl">전화번호 *</label><input class="fi" id="rPhone" placeholder="010-0000-0000" maxlength="13"></div>
+              <div class="form-group"><label class="lbl">대표연락처 *</label><input class="fi" id="rPhone" placeholder="010-0000-0000" maxlength="13"></div>
             </div>
             <div class="form-row">
-              <div class="form-group"><label class="lbl">주소</label><input class="fi" id="rAddress" placeholder="서울시 강남구 역삼동 123-4"></div>
+              <div class="form-group">
+                <label class="lbl">주소 <small style="color:var(--gray-400);font-weight:400">(지번주소)</small></label>
+                <input class="fi" id="rAddress" placeholder="예: 서울시 강남구 역삼동 123-4" onblur="checkAddressType(this.value,'rAddrWarn')">
+                <div class="addr-warn" id="rAddrWarn">⚠️ 지번 주소(구주소)만 입력 가능합니다. 예: 역삼동 123-4</div>
+              </div>
               <div class="form-group">
                 <label class="lbl">네이버 지도 URL <small style="color:#9fa6bc;font-weight:400">(선택)</small></label>
-                <input class="fi" id="rNaverUrl" placeholder="https://map.naver.com/...">
-                <small style="color:var(--gray-500);margin-top:4px;display:block">네이버 지도 URL 입력 시 업체명, 주소, 업종이 자동으로 입력됩니다.</small>
+                <input class="fi" id="rNaverUrl" placeholder="https://map.naver.com/..." oninput="onNaverUrlInput(this.value)">
+                <div class="naver-parse-status" id="naverParseStatus"></div>
               </div>
             </div>
             <div class="form-row">
-              <div class="form-group">
+              <div class="form-group" style="position:relative">
                 <label class="lbl">업종/태그</label>
-                <div style="position:relative" class="autocomplete-wrap">
-                  <input class="fi" id="rIndustry" value="음식점" placeholder="업종 입력" oninput="onIndustryInput(this.value,'rIndustryList')" onfocus="onIndustryInput(this.value,'rIndustryList')" autocomplete="off">
-                  <div class="autocomplete-list" id="rIndustryList" style="display:none;z-index:500;position:absolute;top:100%;left:0;right:0"></div>
-                  <div class="industry-picker" id="rIndustryPicker" style="display:none"></div>
-                </div>
+                <input class="fi" id="rIndustry" value="음식점" placeholder="업종 입력" oninput="onIndustryInput(this.value,'rIndustryList')" onfocus="onIndustryInput(this.value,'rIndustryList')" autocomplete="off">
+                <div class="autocomplete-list" id="rIndustryList" style="display:none;z-index:500;position:absolute;top:100%;left:0;right:0"></div>
+              </div>
+              <div class="form-group" id="assignUserGroup">
+                <label class="lbl">담당자 배정</label>
+                <select class="fi" id="rAssignUser">
+                  <option value="">본인 (자동)</option>
+                </select>
               </div>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="lbl">상태</label>
-                <div class="fi" id="rStatusDisplay" style="display:flex;align-items:center;gap:8px;background:#eef2ff;color:#1e10c7;font-weight:600;cursor:default">
-                  🔵 가망
-                </div>
-              </div>
-              <div class="form-group"><label class="lbl">다음 연락 예정일 <small style="color:#9fa6bc;font-weight:400">(기본: 내일)</small></label><input class="fi" id="rNextContact" type="date"></div>
+            <div class="form-group">
+              <label class="lbl">통화내용 <small style="color:var(--gray-400);font-weight:400">(선택 — 입력 시 첫 통화기록으로 저장)</small></label>
+              <textarea class="fi" id="rCallContent" rows="3" placeholder="첫 통화내용을 입력하면 초기등록 기록으로 저장됩니다." style="resize:vertical;min-height:80px"></textarea>
             </div>
-            <div class="form-group"><label class="lbl">메모</label><input class="fi" id="rMemo" placeholder="특이사항 (선택)"></div>
             <button class="btn-p" onclick="saveCRM()">➕ 가망 DB 등록</button>
             <div id="regMsg" class="stmsg">-</div>
           </div>
@@ -1682,116 +1767,129 @@ body.dark .pg-wrap,body.dark .page{background:#0e0e12}
 
 <!-- CRM 상세 모달 -->
 <div class="modal-overlay" id="crmModal" style="display:none" onclick="if(event.target===this)closeCrmModal()">
-  <div class="modal">
+  <div class="modal modal-wide">
     <div class="modal-head">
       <div style="flex:1;min-width:0"><div class="modal-title" id="crmModalTitle">-</div><div class="modal-sub" id="crmModalSub">-</div></div>
       <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
         <button class="btn-g btn-sm" id="modalPrevBtn" onclick="moveCrmModal(-1)" title="이전">◀</button>
-        <span id="modalIndexLabel" style="font-size:12px;color:#9fa6bc;white-space:nowrap"></span>
+        <span id="modalIndexLabel" style="font-size:12px;color:var(--gray-400);white-space:nowrap"></span>
         <button class="btn-g btn-sm" id="modalNextBtn" onclick="moveCrmModal(1)" title="다음">▶</button>
         <button class="btn-g btn-sm" id="mapBtn" onclick="openNaverMap()" title="네이버 지도" style="display:none">🗺️</button>
         <button class="modal-close" onclick="closeCrmModal()">✕</button>
       </div>
     </div>
-    <div class="modal-body">
-      <div id="crmEditForm" style="display:none">
-        <div class="form-row" style="margin-bottom:11px">
-          <div class="form-group" style="margin:0"><label class="lbl">업체명 *</label><input class="fi" id="editName"></div>
-          <div class="form-group" style="margin:0"><label class="lbl">전화번호 *</label><input class="fi" id="editPhone" maxlength="13"></div>
+    <div class="modal-two-col">
+      <!-- ── 좌측: 상세 정보 ── -->
+      <div class="modal-left">
+        <!-- 읽기 뷰 -->
+        <div id="crmInfoView">
+          <div class="info-field"><span class="info-lbl">업체명</span><span class="info-val" id="ivName">-</span></div>
+          <div class="info-field"><span class="info-lbl">업종</span><span class="info-val" id="ivIndustry">-</span></div>
+          <div class="info-field"><span class="info-lbl">담당자</span><span class="info-val" id="ivManager">-</span></div>
+          <div class="info-field">
+            <span class="info-lbl">상태</span>
+            <div class="stage-btn-group" id="ivStage"></div>
+          </div>
+          <div class="info-field"><span class="info-lbl">주소</span><span class="info-val" id="ivAddress">-</span></div>
+          <div class="info-field"><span class="info-lbl">대표연락처</span><span class="info-val" id="ivPhone">-</span></div>
+          <div class="info-field"><span class="info-lbl">서브연락처</span><span class="info-val" id="ivSubPhone">-</span></div>
+          <div class="info-field"><span class="info-lbl">대표특징</span><span class="info-val" id="ivFeature">-</span></div>
+          <div class="info-field">
+            <span class="info-lbl">URL</span>
+            <a id="ivUrl" href="#" target="_blank" style="color:var(--blue);font-size:14px;font-weight:600;display:none">🔗 링크 열기 ↗</a>
+            <span id="ivUrlEmpty" class="info-val">-</span>
+          </div>
+          <div class="info-field" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border2)">
+            <span class="info-lbl">다음 연락 예정일</span>
+            <div id="ivNextContact" style="font-size:15px;font-weight:700;color:var(--gray-950);margin-bottom:10px">미설정</div>
+            <div class="day-btn-group">
+              <button class="day-btn" onclick="setNextContactDay(1)">1일</button>
+              <button class="day-btn" onclick="setNextContactDay(2)">2일</button>
+              <button class="day-btn" onclick="setNextContactDay(3)">3일</button>
+              <button class="day-btn" onclick="setNextContactDay(4)">4일</button>
+              <button class="day-btn" onclick="setNextContactDay(5)">5일</button>
+              <button class="day-btn" onclick="setNextContactDay(6)">6일</button>
+              <button class="day-btn" onclick="setNextContactDay(7)">7일</button>
+            </div>
+          </div>
         </div>
-        <div class="form-row" style="margin-bottom:11px">
-          <div class="form-group" style="margin:0"><label class="lbl">주소</label><input class="fi" id="editAddress"></div>
-          <div class="form-group" style="margin:0"><label class="lbl">네이버 URL</label><input class="fi" id="editNaverUrl" placeholder="https://map.naver.com/..."></div>
-        </div>
-        <div class="form-row" style="margin-bottom:11px">
-          <div class="form-group" style="margin:0;position:relative" class="autocomplete-wrap"><label class="lbl">업종/태그</label>
+        <!-- 수정 폼 -->
+        <div id="crmEditForm" style="display:none">
+          <div class="form-group"><label class="lbl">업체명 *</label><input class="fi" id="editName"></div>
+          <div class="form-group"><label class="lbl">전화번호 *</label><input class="fi" id="editPhone" maxlength="13"></div>
+          <div class="form-group"><label class="lbl">서브연락처</label><input class="fi" id="editSubPhone" placeholder="서브 연락처 (선택)"></div>
+          <div class="form-group">
+            <label class="lbl">주소 <small style="color:var(--gray-400)">(지번주소)</small></label>
+            <input class="fi" id="editAddress" placeholder="예: 역삼동 123-4" onblur="checkAddressType(this.value,'editAddrWarn')">
+            <div class="addr-warn" id="editAddrWarn">⚠️ 지번 주소(구주소)만 입력 가능합니다.</div>
+          </div>
+          <div class="form-group"><label class="lbl">네이버 URL</label><input class="fi" id="editNaverUrl" placeholder="https://map.naver.com/..."></div>
+          <div class="form-group" style="position:relative">
+            <label class="lbl">업종/태그</label>
             <input class="fi" id="editIndustry" placeholder="업종 입력" oninput="onIndustryInput(this.value,'editIndustryList')" onfocus="onIndustryInput(this.value,'editIndustryList')" autocomplete="off">
             <div class="autocomplete-list" id="editIndustryList" style="display:none;z-index:500;position:absolute;top:100%;left:0;right:0"></div>
           </div>
-        </div>
-        <div class="form-row" style="margin-bottom:11px">
-          <div class="form-group" style="margin:0"><label class="lbl">영업 단계</label>
+          <div class="form-group"><label class="lbl">대표특징</label><input class="fi" id="editFeature" placeholder="간단한 특이사항"></div>
+          <div class="form-group"><label class="lbl">영업 단계</label>
             <select class="fi" id="editStage">
               <option value="가망">🔵 가망</option><option value="컨택중">🟡 컨택중</option>
               <option value="미팅확정">🔷 미팅 확정</option><option value="검토중">🟣 검토 중</option>
               <option value="계약완료">🟢 계약 완료</option><option value="영업종결">🔴 영업 종결</option>
             </select>
           </div>
-          <div class="form-group" style="margin:0"><label class="lbl">다음 연락 예정일</label><input class="fi" id="editNextContact" type="date"></div>
-        </div>
-        <div class="form-row" style="margin-bottom:11px">
-          <div class="form-group" style="margin:0"><label class="lbl">상태</label>
+          <div class="form-group"><label class="lbl">상태</label>
             <select class="fi" id="editStatus"><option value="가망">가망</option><option value="계약중">계약중</option></select>
           </div>
-          <div class="form-group" style="margin:0"><label class="lbl">실패 사유 (영업종결 시)</label>
+          <div class="form-group"><label class="lbl">실패 사유 (영업종결 시)</label>
             <select class="fi" id="editFailReason">
               <option value="">-</option><option value="가격">가격 문제</option><option value="타사계약">타사 계약</option>
               <option value="관심없음">관심 없음</option><option value="연락두절">연락 두절</option><option value="시기상조">시기 상조</option><option value="기타">기타</option>
             </select>
           </div>
+          <div id="contractSection" style="display:none">
+            <div class="divider"></div>
+            <div style="font-size:13px;font-weight:800;color:var(--gray-950);margin-bottom:10px">📋 계약 정보</div>
+            <div class="form-group"><label class="lbl">계약 종료일</label><input class="fi" id="contractEndDate" type="date"></div>
+            <div class="form-group"><label class="lbl">계약 항목</label><input class="fi" id="contractItems" placeholder="예: 배달앱 광고 3개월"></div>
+            <div class="form-group"><label class="lbl">계약 상태</label>
+              <select class="fi" id="contractStatus"><option value="active">진행중</option><option value="ended">종료</option><option value="refund">환불</option></select>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button class="btn-p btn-sm" onclick="saveCrmEdit()">💾 저장</button>
+            <button class="btn-g btn-sm" onclick="toggleEditForm(false)">취소</button>
+          </div>
+          <div id="editMsg" class="stmsg">-</div>
         </div>
-        <div class="form-group" style="margin-bottom:11px"><label class="lbl">메모</label><input class="fi" id="editMemo"></div>
-        <div style="display:flex;gap:9px;margin-bottom:16px">
-          <button class="btn-p btn-sm" onclick="saveCrmEdit()">💾 저장</button>
-          <button class="btn-g btn-sm" onclick="toggleEditForm(false)">취소</button>
+        <div class="modal-left-actions">
+          <button class="btn-g btn-sm" onclick="toggleEditForm(true)" id="editToggleBtn">✏️ 정보 수정</button>
+          <button class="btn-d" onclick="deleteCrmFromModal()" id="modalDeleteBtn" style="display:none">삭제</button>
         </div>
-        <div id="editMsg" class="stmsg">-</div>
-        <div class="divider"></div>
       </div>
-      <!-- 통화 기록 추가 -->
-      <div style="margin-bottom:18px">
-        <div style="font-size:15px;font-weight:700;color:#0f0c2e;margin-bottom:11px">📞 통화 기록 추가</div>
-        <div class="form-row" style="margin-bottom:11px">
-          <div class="form-group" style="margin:0"><label class="lbl">결과</label>
-            <select class="fi" id="callResult" onchange="onCallResultChange(this.value)"><option value="통화성공">통화 성공</option><option value="부재중">부재중</option><option value="거절">거절/수신거부</option><option value="기타">기타</option></select>
+      <!-- ── 우측: 통화 영역 ── -->
+      <div class="modal-right">
+        <!-- 통화 입력 -->
+        <div class="call-input-panel">
+          <div class="call-panel-title">📞 통화 기록</div>
+          <div class="call-result-btns">
+            <button class="call-result-btn" data-result="통화성공" onclick="selectCallResult('통화성공')">✅ 통화성공</button>
+            <button class="call-result-btn" data-result="부재중" onclick="selectCallResult('부재중')">📵 부재중</button>
+            <button class="call-result-btn" data-result="거절" onclick="selectCallResult('거절')">🚫 거절</button>
           </div>
-          <div class="form-group" style="margin:0"><label class="lbl">단계 변경 (선택)</label>
-            <select class="fi" id="callStageChange">
-              <option value="">변경 없음</option><option value="가망">가망</option><option value="컨택중">컨택중</option>
-              <option value="미팅확정">미팅 확정</option><option value="검토중">검토 중</option>
-              <option value="계약완료">계약 완료</option><option value="영업종결">영업 종결</option>
-            </select>
+          <input type="hidden" id="callResult" value="">
+          <div class="form-group">
+            <textarea class="fi" id="callContent" rows="4" placeholder="통화 내용을 입력하세요..." style="resize:none;min-height:100px"></textarea>
           </div>
+          <button class="btn-p" style="width:100%" onclick="saveCallLog()">기록 저장</button>
+          <div id="callLogMsg" class="stmsg">-</div>
         </div>
-        <!-- 템플릿 빠른 선택 -->
-        <div id="templateQuickList" style="margin-bottom:11px"></div>
-        <div style="margin-bottom:9px">
-          <button class="btn-g btn-sm" id="aiScriptBtn" onclick="generateCallScript()">🤖 AI 멘트 자동생성</button>
+        <!-- 통화 히스토리 -->
+        <div class="call-history-panel">
+          <div class="call-panel-title">📋 통화 히스토리</div>
+          <div id="callLogList"><div class="empty">통화 기록 없음</div></div>
         </div>
-        <div class="form-group" style="margin-bottom:8px">
-          <label class="lbl">통화 내용 *</label>
-          <textarea class="fi" id="callContent" rows="3" placeholder="통화 내용 입력" style="resize:vertical;min-height:80px"></textarea>
-        </div>
-        <div class="form-group" style="margin-bottom:11px">
-          <label class="lbl">다음 연락 예정일 (빠른 설정)</label>
-          <div class="quick-date-btns">
-            <button class="qdb" onclick="setNextContactQuick(1)">내일</button>
-            <button class="qdb" onclick="setNextContactQuick(3)">3일 후</button>
-            <button class="qdb" onclick="setNextContactQuick(7)">1주 후</button>
-            <button class="qdb" onclick="setNextContactQuick(14)">2주 후</button>
-            <button class="qdb" onclick="setNextContactQuick(30)">1달 후</button>
-          </div>
-          <input class="fi" id="callNextDate" type="date" style="margin-top:6px">
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-          <label class="lbl" style="margin:0;white-space:nowrap">⏱ 통화시간</label>
-          <input class="fi" id="callDuration" type="number" min="0" placeholder="0" style="width:80px;padding:8px 12px;text-align:center">
-          <span style="font-size:13px;color:var(--gray-500);font-weight:600">분</span>
-        </div>
-        <button class="btn-p btn-sm" onclick="saveCallLog()">📞 기록 저장</button>
-        <div id="callLogMsg" class="stmsg">-</div>
-      </div>
-      <div class="divider"></div>
-      <div>
-        <div style="font-size:15px;font-weight:700;color:#0f0c2e;margin-bottom:11px">📋 통화 히스토리</div>
-        <div id="callLogList"><div class="empty" style="padding:22px">통화 기록 없음</div></div>
       </div>
     </div>
-    <div class="modal-foot">
-      <button class="btn-g btn-sm" onclick="toggleEditForm(true)" id="editToggleBtn">✏️ 정보 수정</button>
-      <button class="btn-d" onclick="deleteCrmFromModal()" id="modalDeleteBtn" style="display:none">삭제</button>
-    </div>
-    <!-- 계약완료 애니메이션 캔버스 -->
     <div class="celeb-toast" id="celebToast">🎉 계약 완료! 축하합니다! 🎊</div>
     <canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:9999;display:none"></canvas>
   </div>
@@ -1969,53 +2067,79 @@ function debounce(fn,delay){
   };
 }
 
-// ════ 네이버 URL 파싱 ════
-function parseNaverUrl(url){
-  url=url.trim();
-  if(!url)return;
+// ════ 네이버 URL 파싱 + 자동 입력 ════
+const NAVER_CATEGORIES={
+  '한식':'음식점',
+  '중식':'음식점',
+  '일식':'음식점',
+  '양식':'음식점',
+  '카페':'음식점',
+  '편의점':'편의점',
+  '마트':'마트',
+  '병원':'병원',
+  '약국':'약국',
+  '미용실':'미용실',
+  '학원':'학원',
+  '헬스':'헬스장',
+  '호텔':'숙박',
+  '모텔':'숙박',
+  '펜션':'숙박',
+  '불동산':'부동산',
+  '은행':'금융',
+  '보험':'금융'
+};
 
-  // URL 검증: map.naver.com 확인
-  if(!url.includes('map.naver.com')){
-    console.warn('Invalid Naver URL');
+function parseNaverUrl(url){
+  const el=document.getElementById('naverParseStatus');
+  url=url.trim();
+  if(!url){if(el)el.textContent='';return}
+
+  // URL 검증
+  if(!url.includes('naver')&&!url.includes('map')){
+    if(el){el.textContent='⚠️ 네이버 지도 URL이 아닙니다.';el.style.color='var(--red)';}
     return;
   }
 
   try{
-    // 쿼리 파라미터 추출
-    const urlObj=new URL(url);
-    let query=urlObj.searchParams.get('query')||urlObj.searchParams.get('keyword')||urlObj.searchParams.get('search');
+    // placeId 추출
+    const placeMatch=url.match(/place[\/=](\d+)/);
+    if(placeMatch){
+      const placeId=placeMatch[1];
 
-    if(!query){
-      // URL에서 직접 파싱 시도
-      const match=url.match(/[?&](?:query|keyword|search)=([^&]+)/);
-      query=match?decodeURIComponent(match[1]):null;
-    }
+      // 쿼리 파라미터 추출
+      const urlObj=new URL(url);
+      let query=urlObj.searchParams.get('query')||urlObj.searchParams.get('keyword')||urlObj.searchParams.get('search');
 
-    if(query){
-      const rName=document.getElementById('rName');
-      if(rName&&!rName.value.trim()){
-        rName.value=query;
+      if(!query){
+        const m=url.match(/[?&](?:query|keyword|search)=([^&]+)/);
+        query=m?decodeURIComponent(m[1]):null;
       }
-    }
 
-    // placeId 추출 (향후 API 연동용)
-    const placeIdMatch=url.match(/place\/(\d+)/);
-    if(placeIdMatch){
-      const placeId=placeIdMatch[1];
-      // 향후: Naver API로 placeId 조회해서 카테고리 자동 입력
-    }
+      if(query){
+        const rName=document.getElementById('rName');
+        if(rName&&!rName.value.trim())rName.value=query;
 
+        // 카테고리 자동 입력
+        const rInd=document.getElementById('rIndustry');
+        if(rInd&&!rInd.value.trim()){
+          for(const[key,val] of Object.entries(NAVER_CATEGORIES)){
+            if(query.includes(key)){rInd.value=val;break;}
+          }
+        }
+      }
+
+      if(el){el.textContent='✓ 유효한 네이버 지도 URL입니다.';el.style.color='var(--green)';}
+    } else {
+      if(el){el.textContent='✓ URL 등록됨 (업체명/카테고리는 직접 입력)';el.style.color='var(--blue)';}
+    }
   }catch(err){
-    console.warn('Naver URL parsing failed:',err);
+    if(el){el.textContent='⚠️ URL 파싱 오류';el.style.color='var(--red)';}
   }
 }
 
-// ════ 네이버 URL 파싱 초기화 ════
 function initNaverUrlParsing(){
   const input=document.getElementById('rNaverUrl');
-  if(input){
-    input.addEventListener('input',debounce((e)=>parseNaverUrl(e.target.value),1000));
-  }
+  if(input)input.addEventListener('input',debounce((e)=>parseNaverUrl(e.target.value),400));
 }
 
 const td=()=>new Date().toISOString().slice(0,10);
@@ -2279,7 +2403,7 @@ async function checkContractExpiring(){
     .neq('contract_status','ended')
     .gte('contract_end_date',todayStr)
     .lte('contract_end_date',in7Str);
-  if(!isPriv())q=q.eq('manager',PR?.name||'');
+  if(!isPriv())q=q.eq('manager_id',PR?.name||'');
   const{data}=await q;
   if(!data?.length)return;
   data.forEach(r=>{
@@ -2543,7 +2667,7 @@ async function loadUserDash(){
   const{start:ms2}=periodRange('month');
   const{data:mn}=await sb.from('calls').select('call_count').eq('manager',AU.id).gte('date',ms2).lte('date',td());
   let mc=0;(mn||[]).forEach(r=>mc+=r.call_count||0);document.getElementById('uMonthCalls').textContent=mc;
-  const mgr=PR?.name||AU.email;
+  const mgr=AU.id;
   const{count}=await sb.from('prospects').select('*',{count:'exact',head:true}).eq('manager',mgr);
   document.getElementById('uMyCrm').textContent=count||0;
   const{count:cc}=await sb.from('prospects').select('*',{count:'exact',head:true}).eq('manager',mgr).eq('stage','계약완료');
@@ -2709,14 +2833,16 @@ function crmTab(tab,el){
   Object.values(map).forEach(id=>document.getElementById(id).style.display='none');
   document.querySelectorAll('#pgCrm .tab-bar .ti').forEach(t=>t.classList.remove('on'));
   el.classList.add('on');document.getElementById(map[tab]).style.display='block';
-  if(tab==='list'){loadList();initIndustryPickers();}if(tab==='check')loadBlockedInCheckTab();
+  if(tab==='list'){loadList();initIndustryPickers();}
+  if(tab==='check')loadBlockedInCheckTab();
+  if(tab==='reg')loadAssignUserDropdown();
 }
 
 // ── PIPELINE ──
 async function loadPipeline(){
-  const mgr=PR?.name||AU.email;
+  const mgr=AU.id;
   let q=sb.from('prospects').select('stage,id');
-  if(!isPriv())q=q.eq('manager',mgr);
+  if(!isPriv())q=q.eq('manager_id',mgr);
   const{data}=await q;
   const sc={};STAGES.forEach(s=>sc[s.key]=0);(data||[]).forEach(r=>sc[r.stage||'가망']++);
   const total=data?.length||0;
@@ -2731,9 +2857,9 @@ async function loadPipeline(){
 async function loadStageList(stageKey,stageLabel){
   document.getElementById('stageListWrap').style.display='block';
   document.getElementById('stageListTitle').innerHTML=stageBadge(stageKey)+` ${stageLabel}`;
-  const mgr=PR?.name||AU.email;
+  const mgr=AU.id;
   let q=sb.from('prospects').select('*').eq('stage',stageKey).order('created_at',{ascending:false});
-  if(!isPriv())q=q.eq('manager',mgr);
+  if(!isPriv())q=q.eq('manager_id',mgr);
   const{data}=await q;
   const tbody=document.getElementById('stageListBody');
   if(!data?.length){tbody.innerHTML='<tr><td colspan="7" class="empty">해당 단계 데이터 없음</td></tr>';return}
@@ -2775,60 +2901,115 @@ async function openCrmModal(id){
   curCrmId=id;
   const{data}=await sb.from('prospects').select('*').eq('id',id).maybeSingle();
   if(!data)return;curCrmData=data;
+
+  // 헤더
   document.getElementById('crmModalTitle').textContent=data.business_name||'-';
-  document.getElementById('crmModalSub').innerHTML=`${stageBadge(data.stage||'가망')} &nbsp;${maskPhone(data.phone)} &nbsp;담당: ${data.manager||'-'}`;
+  document.getElementById('crmModalSub').innerHTML=`${stageBadge(data.stage||'가망')} &nbsp;담당: ${data.manager||'-'}`;
+
+  // 좌측 정보 뷰 채우기
+  document.getElementById('ivName').textContent=data.business_name||'-';
+  document.getElementById('ivIndustry').textContent=data.industry||'-';
+  document.getElementById('ivManager').textContent=data.manager||'-';
+  document.getElementById('ivAddress').textContent=data.address||'-';
+  document.getElementById('ivPhone').textContent=maskPhone(data.phone);
+  document.getElementById('ivSubPhone').textContent=data.sub_phone||'-';
+  document.getElementById('ivFeature').textContent=data.feature||data.memo||'-';
+  const urlEl=document.getElementById('ivUrl'),urlEmptyEl=document.getElementById('ivUrlEmpty');
+  if(data.naver_url){urlEl.href=data.naver_url;urlEl.style.display='block';urlEmptyEl.style.display='none';}
+  else{urlEl.style.display='none';urlEmptyEl.style.display='block';}
+
+  // 다음 연락 예정일
+  document.getElementById('ivNextContact').textContent=data.next_contact_date||'미설정';
+
+  // 단계 버튼 그룹
+  const stageList=[
+    {key:'가망',label:'🔵 가망',cls:'sb-prospect'},
+    {key:'컨택중',label:'🟡 컨택중',cls:'sb-contact'},
+    {key:'미팅확정',label:'🔷 미팅확정',cls:'sb-meeting'},
+    {key:'검토중',label:'🟣 검토중',cls:'sb-review'},
+    {key:'계약완료',label:'🟢 계약완료',cls:'sb-contract'},
+    {key:'영업종결',label:'🔴 영업종결',cls:'sb-lost'}
+  ];
+  document.getElementById('ivStage').innerHTML=stageList.map(s=>
+    `<button class="stage-sel-btn badge ${s.cls}${s.key===data.stage?' active-stage':''}" onclick="quickChangeStage('${s.key}')">${s.label}</button>`
+  ).join('');
+
+  // 수정 폼 초기화
   toggleEditForm(false);
-  document.getElementById('modalDeleteBtn').style.display=((PR?.role||'')==='master')?'block':'none';
-  await loadCallHistory(id);await loadTemplateQuickList();
-  const isContract=data.stage==='계약완료';
-  const contractSection=document.getElementById('contractSection');
-  if(contractSection){
-    contractSection.style.display=isContract?'block':'none';
-    if(isContract){
-      document.getElementById('contractEndDate').value=data.contract_end_date||'';
+  document.getElementById('editName').value=data.business_name||'';
+  document.getElementById('editPhone').value=data.phone||'';
+  document.getElementById('editSubPhone').value=data.sub_phone||'';
+  document.getElementById('editAddress').value=data.address||'';
+  document.getElementById('editNaverUrl').value=data.naver_url||'';
+  document.getElementById('editIndustry').value=data.industry||'';
+  document.getElementById('editFeature').value=data.feature||data.memo||'';
+  document.getElementById('editStage').value=data.stage||'가망';
+  document.getElementById('editStatus').value=data.status||'가망';
+  document.getElementById('editFailReason').value=data.fail_reason||'';
+  const cs=document.getElementById('contractSection');
+  if(cs){const isC=data.stage==='계약완료';cs.style.display=isC?'block':'none';
+    if(isC){document.getElementById('contractEndDate').value=data.contract_end_date||'';
       document.getElementById('contractItems').value=data.contract_items||'';
-      document.getElementById('contractStatus').value=data.contract_status||'active';
-    }
-  }
-  const editBtn=document.getElementById('crmEditBtn');
-  if(editBtn){const canEdit=isPriv()||(data.manager===(PR?.name||''));editBtn.style.display=canEdit?'inline-flex':'none';}
+      document.getElementById('contractStatus').value=data.contract_status||'active';}}
+
+  // 권한
+  const canEdit=isPriv()||(data.manager===(PR?.name||''));
+  const editToggle=document.getElementById('editToggleBtn');
+  if(editToggle)editToggle.style.display=canEdit?'inline-flex':'none';
+  document.getElementById('modalDeleteBtn').style.display=((PR?.role||'')==='master')?'block':'none';
+
+  // 지도 버튼
   const mapBtn=document.getElementById('mapBtn');
   if(mapBtn)mapBtn.style.display=(data.address||data.naver_url)?'flex':'none';
+
+  // 통화 입력 초기화
+  selectCallResult('');
+  document.getElementById('callContent').value='';
+
+  await loadCallHistory(id);
   if(typeof updateModalNav==='function')updateModalNav(id);
   document.getElementById('crmModal').style.display='flex';
-  setTimeout(()=>{if(typeof initCallTimer==='function')initCallTimer();if(typeof resetCallTimer==='function')resetCallTimer();},100);
 }
 function closeCrmModal(){document.getElementById('crmModal').style.display='none';curCrmId=null;curCrmData=null;}
 
 async function loadCallHistory(id){
   const{data}=await sb.from('call_logs').select('*').eq('prospect_id',id).order('called_at',{ascending:false});
   const el=document.getElementById('callLogList');
-  if(!data?.length){el.innerHTML='<div class="empty" style="padding:22px">통화 기록 없음</div>';return}
-  const myName=PR?.name||AU?.email;
-  el.innerHTML=data.map(c=>`
-    <div class="call-log-item" id="cl-${c.id}">
-      <div class="cl-meta"><span class="cl-who">📞 ${c.manager_name||'-'}</span><span class="cl-time">${fmtDt(c.called_at)}</span><span class="cl-result cl-result-${c.result||'기타'}">${c.result||'기타'}</span></div>
-      <div class="cl-content" id="cl-txt-${c.id}">${c.content||''}</div>
-      ${(c.manager_name===myName||isPriv())?`
-      <div class="call-log-actions">
-        <button class="cl-edit-btn" onclick="startEditCallLog(${c.id},'${(c.content||'').replace(/'/g,"\'")}','${c.result||'기타'}')">✏️ 수정</button>
-        <button class="cl-edit-btn" style="color:#dc2626;border-color:#fecaca" onclick="deleteCallLog(${c.id})">🗑 삭제</button>
+  if(!data?.length){el.innerHTML='<div class="empty">통화 기록 없음</div>';return}
+  const myId=AU?.id;
+  el.innerHTML=data.map(c=>{
+    const isInitial=c.is_initial===true||c.is_initial==='true';
+    const canEdit=isPriv()||(c.manager_id===myId);
+    const dt=new Date(c.called_at);
+    const timeStr=`${dt.getFullYear()}.${String(dt.getMonth()+1).padStart(2,'0')}.${String(dt.getDate()).padStart(2,'0')} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+    const safeContent=(c.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return`<div class="call-log-item${isInitial?' call-log-initial':''}" id="cl-${c.id}">
+      <div class="cl-meta">
+        <span class="cl-who">${c.manager_name||'-'}${isInitial?` <span class="cl-initial-badge">초기등록</span>`:''}</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="cl-result cl-result-${c.result||'기타'}">${c.result||'-'}</span>
+          <span class="cl-time">${timeStr}</span>
+        </div>
+      </div>
+      <div class="cl-content" id="cl-txt-${c.id}">${safeContent}</div>
+      ${canEdit?`<div class="call-log-actions">
+        <button class="cl-edit-btn" onclick="startEditCallLog(${c.id},'${(c.content||'').replace(/'/g,'\\\'').replace(/\n/g,'\\n')}','${c.result||'기타'}')">수정</button>
+        <button class="cl-edit-btn" style="color:var(--red)" onclick="deleteCallLog(${c.id})">삭제</button>
       </div>
       <div class="cl-editing" id="cl-edit-${c.id}">
-        <select class="fi btn-sm" id="cl-result-${c.id}" style="margin-bottom:7px">
-          <option value="통화성공" ${c.result==='통화성공'?'selected':''}>통화 성공</option>
+        <select class="fi" id="cl-result-${c.id}" style="margin-bottom:7px;font-size:13px">
+          <option value="통화성공" ${c.result==='통화성공'?'selected':''}>통화성공</option>
           <option value="부재중" ${c.result==='부재중'?'selected':''}>부재중</option>
           <option value="거절" ${c.result==='거절'?'selected':''}>거절</option>
-          <option value="기타" ${c.result==='기타'?'selected':''}>기타</option>
         </select>
-        <textarea class="fi btn-sm" id="cl-content-${c.id}" rows="2" style="margin-bottom:7px;resize:vertical">${c.content||''}</textarea>
+        <textarea class="fi" id="cl-content-${c.id}" rows="3" style="margin-bottom:7px;resize:vertical;font-size:13px">${safeContent}</textarea>
         <div style="display:flex;gap:6px">
           <button class="btn-p btn-sm" onclick="saveEditCallLog(${c.id})">저장</button>
           <button class="btn-g btn-sm" onclick="cancelEditCallLog(${c.id})">취소</button>
         </div>
-      </div>`:''
-      }
-    </div>`).join('');
+      </div>`:''}
+    </div>`;
+  }).join('');
 }
 async function loadTemplateQuickList(){
   const{data}=await sb.from('call_templates').select('*').order('created_at',{ascending:false}).limit(5);
@@ -2845,19 +3026,23 @@ function applyTemplate(content){document.getElementById('callContent').value=con
 // saveCallLog → extra_js에서 정의
 
 function toggleEditForm(show){
+  document.getElementById('crmInfoView').style.display=show?'none':'block';
   document.getElementById('crmEditForm').style.display=show?'block':'none';
-  document.getElementById('editToggleBtn').textContent=show?'✕ 취소':'✏️ 정보 수정';
+  const btn=document.getElementById('editToggleBtn');
+  if(btn)btn.textContent=show?'✕ 취소':'✏️ 정보 수정';
   if(show&&curCrmData){
     document.getElementById('editName').value=curCrmData.business_name||'';
     document.getElementById('editPhone').value=curCrmData.phone||'';
+    document.getElementById('editSubPhone').value=curCrmData.sub_phone||'';
     document.getElementById('editAddress').value=curCrmData.address||'';
     document.getElementById('editNaverUrl').value=curCrmData.naver_url||'';
     document.getElementById('editIndustry').value=curCrmData.industry||'';
+    document.getElementById('editFeature').value=curCrmData.feature||curCrmData.memo||'';
     document.getElementById('editStage').value=curCrmData.stage||'가망';
-    document.getElementById('editNextContact').value=curCrmData.next_contact_date||'';
     document.getElementById('editStatus').value=curCrmData.status||'가망';
     document.getElementById('editFailReason').value=curCrmData.fail_reason||'';
-    document.getElementById('editMemo').value=curCrmData.memo||'';
+    const cs=document.getElementById('contractSection');
+    if(cs){const isC=curCrmData.stage==='계약완료';cs.style.display=isC?'block':'none';}
   }
 }
 async function saveCrmEdit(){
@@ -2865,30 +3050,48 @@ async function saveCrmEdit(){
   if(!name||!phone){setMsg('editMsg','업체명과 전화번호는 필수.',false);return}
   const stageVal=document.getElementById('editStage').value;
   const oldStage=curCrmData?.stage;
-  const newMemo=document.getElementById('editMemo').value.trim();
-  const oldMemo=curCrmData?.memo||'';
-  const payload={business_name:name,phone,address:document.getElementById('editAddress').value.trim()||null,
+  const newFeature=document.getElementById('editFeature').value.trim();
+  const payload={
+    business_name:name,phone,
+    address:document.getElementById('editAddress').value.trim()||null,
     naver_url:document.getElementById('editNaverUrl').value.trim()||null,
     industry:document.getElementById('editIndustry').value.trim()||null,
+    sub_phone:document.getElementById('editSubPhone').value.trim()||null,
+    feature:newFeature||null,
+    memo:newFeature||null,
     stage:stageVal,
-    next_contact_date:document.getElementById('editNextContact').value||null,
     status:document.getElementById('editStatus').value,
     fail_reason:document.getElementById('editFailReason').value||null,
-    memo:newMemo,
     contract_end_date:document.getElementById('contractEndDate')?.value||null,
     contract_items:document.getElementById('contractItems')?.value.trim()||null,
-    contract_status:document.getElementById('contractStatus')?.value||null};
+    contract_status:document.getElementById('contractStatus')?.value||null
+  };
   if(stageVal==='계약완료'&&oldStage!=='계약완료')payload.contracted_at=new Date().toISOString();
   const{error}=await sb.from('prospects').update(payload).eq('id',curCrmId);
   if(error){setMsg('editMsg','오류: '+error.message,false);return}
-  if(newMemo&&newMemo!==oldMemo&&curCrmId){
-    await sb.from('call_logs').insert([{prospect_id:curCrmId,manager_id:AU.id,manager_name:PR?.name||AU.email,content:`[메모 변경]\n${newMemo}`,result:'기타',called_at:new Date().toISOString()}]);
-  }
-  setMsg('editMsg','✓ 저장되었습니다.',true);curCrmData={...curCrmData,...payload};
+  setMsg('editMsg','✓ 저장되었습니다.',true);
+  curCrmData={...curCrmData,...payload};
+  // 정보 뷰 갱신
   document.getElementById('crmModalTitle').textContent=name;
-  document.getElementById('crmModalSub').innerHTML=`${stageBadge(stageVal)} &nbsp;${maskPhone(phone)} &nbsp;담당: ${curCrmData.manager||'-'}`;
-  const cs=document.getElementById('contractSection');
-  if(cs)cs.style.display=stageVal==='계약완료'?'block':'none';
+  document.getElementById('crmModalSub').innerHTML=`${stageBadge(stageVal)} &nbsp;담당: ${curCrmData.manager||'-'}`;
+  document.getElementById('ivName').textContent=name;
+  document.getElementById('ivPhone').textContent=maskPhone(phone);
+  document.getElementById('ivSubPhone').textContent=payload.sub_phone||'-';
+  document.getElementById('ivAddress').textContent=payload.address||'-';
+  document.getElementById('ivIndustry').textContent=payload.industry||'-';
+  document.getElementById('ivFeature').textContent=newFeature||'-';
+  const urlEl=document.getElementById('ivUrl'),urlEmptyEl=document.getElementById('ivUrlEmpty');
+  if(payload.naver_url){urlEl.href=payload.naver_url;urlEl.style.display='block';urlEmptyEl.style.display='none';}
+  else{urlEl.style.display='none';urlEmptyEl.style.display='block';}
+  // 단계 버튼 갱신
+  const stageList=[
+    {key:'가망',label:'🔵 가망',cls:'sb-prospect'},{key:'컨택중',label:'🟡 컨택중',cls:'sb-contact'},
+    {key:'미팅확정',label:'🔷 미팅확정',cls:'sb-meeting'},{key:'검토중',label:'🟣 검토중',cls:'sb-review'},
+    {key:'계약완료',label:'🟢 계약완료',cls:'sb-contract'},{key:'영업종결',label:'🔴 영업종결',cls:'sb-lost'}
+  ];
+  document.getElementById('ivStage').innerHTML=stageList.map(s=>
+    `<button class="stage-sel-btn badge ${s.cls}${s.key===stageVal?' active-stage':''}" onclick="quickChangeStage('${s.key}')">${s.label}</button>`
+  ).join('');
   if(stageVal==='계약완료'&&oldStage!=='계약완료'&&typeof launchConfetti==='function')launchConfetti();
   toggleEditForm(false);loadPipeline();
 }
@@ -2997,51 +3200,59 @@ async function saveCRM(){
   const mb=(blocked||[]).find(b=>name.toLowerCase().includes(b.brand_name.toLowerCase()));
   if(mb){setMsg('regMsg',`⛔ [${mb.brand_name}] 전지점 영업 불가 업체입니다.`,false);return}
   const role=(PR?.role||'user').toLowerCase();
-  // ── 중복 체크 ──
   const{data:dupData}=await sb.from('prospects').select('id,business_name,manager').ilike('business_name',name);
   if(dupData?.length){
     const dupInfo=dupData.map(d=>`${d.business_name}(담당:${d.manager||'-'})`).join(', ');
-    if(['user','junior'].includes(role)){
-      setMsg('regMsg',`⚠️ 이미 등록된 업체입니다: ${dupInfo}\n사원 계정은 중복 등록이 불가합니다.`,false);
-      return;
-    }else{
-      // admin/master: 경고 후 강제 허용
-      if(!confirm(`⚠️ 중복 업체 발견:\n${dupInfo}\n\n그래도 등록하시겠습니까?`))return;
-    }
+    if(['user','junior'].includes(role)){setMsg('regMsg',`⚠️ 이미 등록된 업체입니다: ${dupInfo}\n사원 계정은 중복 등록이 불가합니다.`,false);return;}
+    else{if(!confirm(`⚠️ 중복 업체 발견:\n${dupInfo}\n\n그래도 등록하시겠습니까?`))return;}
   }
-  const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
-  const tomorrowStr=tomorrow.toISOString().slice(0,10);
+  // 담당자 배정 처리
+  const assignSel=document.getElementById('rAssignUser');
+  const assignId=assignSel?.value||'';
+  let managerName=PR?.name||AU.email;
+  let managerId=AU.id;
+  if(assignId&&isPriv()){
+    const opt=assignSel.options[assignSel.selectedIndex];
+    managerName=opt.textContent||managerName;
+    managerId=assignId;
+  }
   const industryEl=document.getElementById('rIndustry');
   const payload={
     business_name:name,phone,
     address:document.getElementById('rAddress').value.trim()||null,
     industry:industryEl?.value||'음식점',
     stage:'가망',
-    next_contact_date:document.getElementById('rNextContact').value||tomorrowStr,
+    next_contact_date:null,
     status:'가망',
-    memo:document.getElementById('rMemo').value.trim()||'',
-    manager:PR?.name||AU.email,
+    manager:managerName,
+    manager_id:managerId,
     naver_url:document.getElementById('rNaverUrl').value.trim()||null
   };
-  const{error}=await sb.from('prospects').insert([payload]);
-  if(error){setMsg('regMsg','오류: '+error.message,false);}
-  else{
-    setMsg('regMsg','✓ 가망 DB 등록 완료',true);
-    ['rName','rPhone','rAddress','rMemo','rNaverUrl'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-    if(industryEl)industryEl.value='음식점';
-    const nc=document.getElementById('rNextContact');
-    if(nc){const t=new Date();t.setDate(t.getDate()+1);nc.value=t.toISOString().slice(0,10);}
-    loadPipeline();
+  const{data:inserted,error}=await sb.from('prospects').insert([payload]).select().single();
+  if(error){setMsg('regMsg','오류: '+error.message,false);return;}
+  // 통화내용이 있으면 call_logs에 초기 등록 기록 저장
+  const callContent=document.getElementById('rCallContent').value.trim();
+  if(callContent&&inserted?.id){
+    await sb.from('call_logs').insert([{
+      prospect_id:inserted.id,manager_id:AU.id,manager_name:PR?.name||AU.email,
+      content:callContent,result:'통화성공',is_initial:true,called_at:new Date().toISOString()
+    }]);
   }
+  setMsg('regMsg','✓ 가망 DB 등록 완료',true);
+  ['rName','rPhone','rAddress','rNaverUrl','rCallContent'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  if(industryEl)industryEl.value='음식점';
+  if(assignSel)assignSel.value='';
+  const ns=document.getElementById('naverParseStatus');if(ns)ns.textContent='';
+  loadPipeline();
 }
 
 // ── CRM 목록 ──
 // loadList → extra_js에서 정의
 // ── 엑셀 ──
 async function exportExcel(){
-  const mgr=PR?.name||AU.email;
+  const mgr=AU.id;
   let q=sb.from('prospects').select('*').order('created_at',{ascending:false});
-  if(!isPriv())q=q.eq('manager',mgr);
+  if(!isPriv())q=q.eq('manager_id',mgr);
   const{data}=await q;if(!data?.length){alert('데이터가 없습니다.');return}
   const rows=data.map(r=>({업체명:r.business_name,전화번호:r.phone,주소:r.address||'',업종:r.industry||'',영업단계:r.stage||'가망',상태:r.status||'가망',다음연락:r.next_contact_date||'',담당자:r.manager||'',메모:r.memo||'',등록일:fmtDate(r.created_at)}));
   const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,'CRM목록',ws);XLSX.writeFile(wb,'MUYI_CRM_'+td()+'.xlsx');
@@ -3078,7 +3289,7 @@ const VALID_STAGES=['가망','컨택중','검토중','미팅확정','계약완�
 async function uploadExcel(){
   if(!excelRows.length){setMsg('uploadMsg','미리보기를 먼저 확인하세요.',false);return}
   document.getElementById('uploadBtn').disabled=true;
-  const mgr=PR?.name||AU.email;
+  const mgr=AU.id;
   let ok=0,fail=0;
   const BATCH=50;
   for(let i=0;i<excelRows.length;i+=BATCH){
@@ -3153,17 +3364,18 @@ async function deleteAnnounce(id){
 }
 
 // ── 캘린더 ──
+const _stageEvCls={'가망':'cal-ev-prospect','컨택중':'cal-ev-contact','미팅확정':'cal-ev-meeting','검토중':'cal-ev-review','계약완료':'cal-ev-contract','영업종결':'cal-ev-lost'};
 async function renderCalendar(){
   const yr=calYear,mo=calMonth;
   document.getElementById('calMonthLabel').textContent=`${yr}년 ${mo+1}월`;
   const firstDay=new Date(yr,mo,1).getDay();
   const daysInMonth=new Date(yr,mo+1,0).getDate();
   const daysInPrev=new Date(yr,mo,0).getDate();
-  const mgr=PR?.name||AU.email;
+  const mgr=AU.id;
   const startStr=`${yr}-${String(mo+1).padStart(2,'0')}-01`;
   const endStr=`${yr}-${String(mo+1).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`;
-  let q=sb.from('prospects').select('id,business_name,next_contact_date,stage,manager').gte('next_contact_date',startStr).lte('next_contact_date',endStr);
-  if(!isPriv())q=q.eq('manager',mgr);
+  let q=sb.from('prospects').select('id,business_name,next_contact_date,stage,manager').gte('next_contact_date',startStr).lte('next_contact_date',endStr).not('stage','eq','영업종결');
+  if(!isPriv())q=q.eq('manager_id',mgr);
   const{data}=await q;
   const eventMap={};(data||[]).forEach(r=>{const d=r.next_contact_date;if(!eventMap[d])eventMap[d]=[];eventMap[d].push(r)});
   const dayHeaders=['일','월','화','수','목','금','토'];
@@ -3173,10 +3385,11 @@ async function renderCalendar(){
   for(let d=1;d<=daysInMonth;d++){
     const dateStr=`${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const isToday=dateStr===todayStr;const events=eventMap[dateStr]||[];
+    const cls=_stageEvCls;
     html+=`<div class="cal-day ${isToday?'today':''}" data-date="${dateStr}" onclick="selectCalDay(this,'${dateStr}')">
       <div class="cal-day-num">${d}</div>
-      ${events.slice(0,3).map(e=>`<div class="cal-event ${e.stage==='미팅확정'||e.stage==='검토중'?'urgent':''}" onclick="event.stopPropagation();openCrmModal(${e.id})">${e.business_name||'-'}</div>`).join('')}
-      ${events.length>3?`<div style="font-size:10px;color:#9fa6bc">+${events.length-3}건</div>`:''}
+      ${events.slice(0,4).map(e=>`<div class="cal-event-item ${cls[e.stage]||'cal-ev-prospect'}" onclick="event.stopPropagation();openCrmModal(${e.id})" title="${e.business_name||''}">${e.business_name||'-'}</div>`).join('')}
+      ${events.length>4?`<div style="font-size:10px;color:var(--gray-400);font-weight:600;margin-top:1px">+${events.length-4}건</div>`:''}
     </div>`;cellCount++;
   }
   const remaining=(7-cellCount%7)%7;
@@ -3192,9 +3405,9 @@ function selectCalDay(el, dateStr){
   showCalDay(dateStr);
 }
 async function showCalDay(dateStr){
-  const mgr=PR?.name||AU.email;
+  const mgr=AU.id;
   let q=sb.from('prospects').select('*').eq('next_contact_date',dateStr);
-  if(!isPriv())q=q.eq('manager',mgr);
+  if(!isPriv())q=q.eq('manager_id',mgr);
   const{data}=await q;
   const card=document.getElementById('calDayDetail');
   document.getElementById('calDayTitle').textContent=`📞 ${dateStr} 연락 예정 (${data?.length||0}건)`;
@@ -3476,10 +3689,10 @@ async function createUser(){
   ['nEmail','nPw','nNick'].forEach(id=>document.getElementById(id).value='');loadAdmUsers();
 }
 async function loadAdmCRM(){
-  const kw=document.getElementById('admKw').value.trim(),mgr=document.getElementById('admMgr').value,stage=document.getElementById('admStage').value;
+  const kw=document.getElementById('admKw').value.trim(),mgrId=document.getElementById('admMgr').value,stage=document.getElementById('admStage').value;
   let q=sb.from('prospects').select('*').order('created_at',{ascending:false});
   if(kw)q=q.or(`business_name.ilike.%${kw}%,phone.ilike.%${kw}%`);
-  if(mgr)q=q.eq('manager',mgr);if(stage)q=q.eq('stage',stage);
+  if(mgrId)q=q.eq('manager_id',mgrId);if(stage)q=q.eq('stage',stage);
   const{data}=await q;
   document.getElementById('admCnt').textContent=(data?.length||0)+'건';
   const tbody=document.getElementById('admCrmBody');
@@ -3504,21 +3717,21 @@ async function delCRM(id,btn){
   if(!error)btn.closest('tr').remove();else alert('실패: '+error.message);
 }
 async function loadMgrFilter(){
-  const{data}=await sb.from('users').select('name');
+  const{data}=await sb.from('users').select('id,name').order('name');
   const sel=document.getElementById('admMgr');
   sel.innerHTML='<option value="">전체 담당자</option>';
-  (data||[]).forEach(u=>{sel.innerHTML+=`<option value="${u.name}">${u.name}</option>`});
+  (data||[]).forEach(u=>{sel.innerHTML+=`<option value="${u.id}">${u.name}</option>`});
 }
 async function loadTpMgrFilter(){
-  const{data}=await sb.from('users').select('name');
+  const{data}=await sb.from('users').select('id,name').order('name');
   const sel=document.getElementById('tpMgr');if(!sel)return;
   sel.innerHTML='<option value="">전체 담당자</option>';
-  (data||[]).forEach(u=>{sel.innerHTML+=`<option value="${u.name}">${u.name}</option>`});
+  (data||[]).forEach(u=>{sel.innerHTML+=`<option value="${u.id}">${u.name}</option>`});
 }
 async function loadTeamPipeline(){
-  const mgr=document.getElementById('tpMgr')?.value||'';
+  const mgrId=document.getElementById('tpMgr')?.value||'';
   let q=sb.from('prospects').select('stage,manager,id,business_name,phone,created_at');
-  if(mgr)q=q.eq('manager',mgr);
+  if(mgrId)q=q.eq('manager_id',mgrId);
   const{data}=await q;
   const sc={};STAGES.forEach(s=>sc[s.key]=0);(data||[]).forEach(r=>sc[r.stage||'가망']++);
   const total=data?.length||0;
@@ -3683,7 +3896,7 @@ async function renderDashCal(){
   const endStr=`${yr}-${String(mo+1).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`;
   const mgr=PR?.name||AU?.email;
   let q=sb.from('prospects').select('id,business_name,next_contact_date,stage').gte('next_contact_date',startStr).lte('next_contact_date',endStr);
-  if(!isPriv())q=q.eq('manager',mgr);
+  if(!isPriv())q=q.eq('manager_id',mgr);
   const{data}=await q;
   const evMap={};(data||[]).forEach(r=>{if(!evMap[r.next_contact_date])evMap[r.next_contact_date]=[];evMap[r.next_contact_date].push(r)});
   const todayStr=td();
@@ -3726,32 +3939,22 @@ async function saveCallLog(){
   if(!curCrmId)return;
   const content=document.getElementById('callContent').value.trim();
   const result=document.getElementById('callResult').value;
-  const stageChange=document.getElementById('callStageChange').value;
-  const nextDate=document.getElementById('callNextDate')?.value||'';
+  if(!result){setMsg('callLogMsg','통화 결과를 선택하세요.',false);return}
   if(!content){setMsg('callLogMsg','통화 내용을 입력하세요.',false);return}
-  const timerSecs=typeof _timerSeconds!=='undefined'?_timerSeconds:0;
-  const durVal=parseInt(document.getElementById('callDuration')?.value)||(timerSecs>0?Math.ceil(timerSecs/60):0);
+
+  // 초기 등록 확인
+  const{data:existing}=await sb.from('call_logs').select('id',{count:'exact',head:true}).eq('prospect_id',curCrmId);
+  const isInitial=!existing||existing.length===0;
+
   const{error}=await sb.from('call_logs').insert([{
     prospect_id:curCrmId,manager_id:AU.id,manager_name:PR?.name||AU.email,
-    content,result,duration_minutes:durVal||null,called_at:new Date().toISOString()
+    content,result,is_initial:isInitial,called_at:new Date().toISOString()
   }]);
   if(error){setMsg('callLogMsg','오류: '+error.message,false);return}
-  const updates={};
-  if(stageChange)updates.stage=stageChange;
-  if(nextDate)updates.next_contact_date=nextDate;
-  if(Object.keys(updates).length>0)await sb.from('prospects').update(updates).eq('id',curCrmId);
-  if(stageChange==='계약완료'){
-    if(typeof sendKakaoWorkNotify==='function')sendKakaoWorkNotify('contract',{business_name:curCrmData?.business_name||'-',manager:PR?.name||AU.email,stage:'계약 완료'});
-    if(typeof launchConfetti==='function')launchConfetti();
-  }
   setMsg('callLogMsg','✓ 통화 기록 저장',true);
   document.getElementById('callContent').value='';
-  document.getElementById('callStageChange').value='';
-  if(document.getElementById('callNextDate'))document.getElementById('callNextDate').value='';
-  if(document.getElementById('callDuration'))document.getElementById('callDuration').value='';
+  selectCallResult('');
   await loadCallHistory(curCrmId);
-  if(stageChange&&curCrmData)curCrmData.stage=stageChange;
-  if(typeof resetCallTimer==='function')resetCallTimer();
 }
 
 // ═══════════════════════════════════════════════
@@ -4117,7 +4320,8 @@ async function loadList(){
   const sf=document.getElementById('listStageFilter').value;
   const ind=document.getElementById('listIndustry')?.value.trim()||'';
   let q=sb.from('prospects').select('*').order('created_at',{ascending:false}).limit(300);
-  if(!isPriv())q=q.eq('manager',PR?.name||AU.email);
+  // 담당자별 필터링: admin/master는 전체, user는 자신의 데이터만
+  if(!isPriv())q=q.eq('manager_id',AU.id);
   if(kw)q=q.or(`business_name.ilike.%${kw}%,manager.ilike.%${kw}%`);
   if(sf)q=q.eq('stage',sf);
   if(ind)q=q.ilike('industry','%'+ind+'%');
@@ -4367,7 +4571,7 @@ async function uploadExcel(){
   if(!['master','admin'].includes(role)){setMsg('uploadMsg','권한이 없습니다.',false);return}
   document.getElementById('uploadBtn').disabled=true;
   showSpinner('업로드 중...');
-  const mgr=PR?.name||AU.email;
+  const mgr=AU.id;
   const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
   const tomorrowStr=tomorrow.toISOString().slice(0,10);
   let ok=0,fail=0;
@@ -4570,7 +4774,7 @@ async function checkTodayContactsNotification(){
   if(lastNotify===today)return;
   const mgr=PR?.name||AU?.email;
   let q=sb.from('prospects').select('id,business_name').eq('next_contact_date',today);
-  if(!isPriv())q=q.eq('manager',mgr);
+  if(!isPriv())q=q.eq('manager_id',mgr);
   const{data}=await q;
   if(data?.length>0){
     new Notification('📞 MUYI CRM - 오늘 연락 예정',{
@@ -5258,6 +5462,95 @@ async function generateCallScript() {
 
 // setupUploadBtn 확장 기능은 bootApp 원본에 통합됨 (중복 선언 제거)
 
+// ═══════════════════════════════════════
+// ── 신규: 통화결과 버튼 선택 ──
+// ═══════════════════════════════════════
+function selectCallResult(result){
+  document.getElementById('callResult').value=result;
+  document.querySelectorAll('.call-result-btn').forEach(btn=>{
+    btn.classList.remove('sel-success','sel-absent','sel-reject');
+  });
+  if(!result)return;
+  const btn=document.querySelector(`.call-result-btn[data-result="${result}"]`);
+  if(!btn)return;
+  if(result==='통화성공')btn.classList.add('sel-success');
+  else if(result==='부재중')btn.classList.add('sel-absent');
+  else if(result==='거절')btn.classList.add('sel-reject');
+}
+
+// ═══════════════════════════════════════
+// ── 신규: 단계 인라인 변경 ──
+// ═══════════════════════════════════════
+async function quickChangeStage(stage){
+  if(!curCrmId)return;
+  const{error}=await sb.from('prospects').update({stage}).eq('id',curCrmId);
+  if(error){showToast('단계 변경 실패: '+error.message,'error');return;}
+  if(curCrmData)curCrmData.stage=stage;
+  const stageList=[
+    {key:'가망',label:'🔵 가망',cls:'sb-prospect'},{key:'컨택중',label:'🟡 컨택중',cls:'sb-contact'},
+    {key:'미팅확정',label:'🔷 미팅확정',cls:'sb-meeting'},{key:'검토중',label:'🟣 검토중',cls:'sb-review'},
+    {key:'계약완료',label:'🟢 계약완료',cls:'sb-contract'},{key:'영업종결',label:'🔴 영업종결',cls:'sb-lost'}
+  ];
+  const ivStageEl=document.getElementById('ivStage');
+  if(ivStageEl)ivStageEl.innerHTML=stageList.map(s=>
+    `<button class="stage-sel-btn badge ${s.cls}${s.key===stage?' active-stage':''}" onclick="quickChangeStage('${s.key}')">${s.label}</button>`
+  ).join('');
+  document.getElementById('crmModalSub').innerHTML=`${stageBadge(stage)} &nbsp;담당: ${curCrmData?.manager||'-'}`;
+  showToast(`단계 변경: ${stage}`,'success');
+  if(stage==='계약완료'){
+    if(typeof sendKakaoWorkNotify==='function')sendKakaoWorkNotify('contract',{business_name:curCrmData?.business_name||'-',manager:PR?.name||AU.email});
+    if(typeof launchConfetti==='function')launchConfetti();
+    await sb.from('prospects').update({contracted_at:new Date().toISOString()}).eq('id',curCrmId);
+  }
+  loadPipeline();
+}
+
+// ═══════════════════════════════════════
+// ── 신규: 다음 연락 예정일 n일 버튼 ──
+// ═══════════════════════════════════════
+async function setNextContactDay(n){
+  if(!curCrmId)return;
+  const d=new Date();d.setDate(d.getDate()+n);
+  const dateStr=d.toISOString().slice(0,10);
+  const{error}=await sb.from('prospects').update({next_contact_date:dateStr}).eq('id',curCrmId);
+  if(error){showToast('저장 실패','error');return;}
+  if(curCrmData)curCrmData.next_contact_date=dateStr;
+  const el=document.getElementById('ivNextContact');
+  if(el)el.textContent=dateStr;
+  showToast(`다음 연락일: ${dateStr}`,'success');
+}
+
+// [parseNaverUrl 함수는 라인 2071-2140에서 통합 구현됨]
+
+// ═══════════════════════════════════════
+// ── 신규: 주소 유형 검증 ──
+// ═══════════════════════════════════════
+function isRoadAddress(addr){
+  return/[가-힣]+(로|길)\s*\d+/.test(addr);
+}
+function checkAddressType(val,warnId){
+  const el=document.getElementById(warnId);
+  if(!el)return;
+  if(val&&isRoadAddress(val)){el.style.display='block';}
+  else{el.style.display='none';}
+}
+
+// ═══════════════════════════════════════
+// ── 신규: 담당자 배정 드롭다운 로딩 ──
+// ═══════════════════════════════════════
+async function loadAssignUserDropdown(){
+  if(!isPriv())return;
+  document.getElementById('assignUserGroup').style.display='block';
+  const sel=document.getElementById('rAssignUser');
+  if(!sel||sel.options.length>1)return; // 이미 로드됨
+  const{data:users}=await sb.from('users').select('id,name').not('role','eq','inactive').order('name');
+  (users||[]).forEach(u=>{
+    if(u.id===AU.id)return; // 본인은 제외 (기본값)
+    const opt=document.createElement('option');
+    opt.value=u.id;opt.textContent=u.name||u.email||u.id;
+    sel.appendChild(opt);
+  });
+}
 
 </script>
 

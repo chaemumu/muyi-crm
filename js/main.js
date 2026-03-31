@@ -441,12 +441,9 @@ const ADMIN_MAIN_TABS=[
 ];
 const ADMIN_SUB_TABS={
   account:[
-    {key:'createUser', label:'사용자 생성',   panel:'admCreateUser', load:null},
-    {key:'roleChange', label:'권한 변경',     panel:'admRoleChange', load:()=>loadAdmUsersRolePanel()},
-    {key:'pwReset',    label:'비밀번호 초기화',panel:'admPwResetPanel',load:()=>loadAdmUsersPwPanel()},
+    {key:'createUser', label:'사용자 생성', panel:'admCreateUser', load:null},
   ],
   data:[
-    {key:'dbUpload', label:'DB 업로드',   panel:'admDbUpload', load:null},
     {key:'dupcheck', label:'중복 탐지',    panel:'admDupCheck', load:null},
     {key:'blocked',  label:'영업불가 관리', panel:'admBlocked',  load:()=>loadBlockedAdmin()},
     {key:'stale',    label:'장기 종결 DB', panel:'admStale',    load:()=>loadStaleDB()},
@@ -512,11 +509,13 @@ const MASTER_PAGE_TABS=[
   {key:'mstrUsers',    label:'사용자 관리'},
   {key:'mstrRoles',    label:'권한 관리'},
   {key:'mstrDatabase', label:'전체 DB'},
+  {key:'mstrDbUpload', label:'DB 업로드'},
 ];
 const MASTER_TAB_PANEL_MAP={
   mstrUsers:'admUsers',
   mstrRoles:'admRoles',
   mstrDatabase:'admCrmWrap',
+  mstrDbUpload:'admDbUpload',
 };
 function setupMasterPage(initialTab='mstrUsers'){
   const role=(PR?.role||'').toLowerCase();
@@ -546,7 +545,7 @@ function masterTab_show(tab){
   });
 }
 function showMasterPanel(tab){
-  goPage('masterUsers');// legacy redirect
+  goPage('master');// legacy redirect
 }
 
 // ── 권한 관리 패널 (마스터 전용) ──
@@ -602,7 +601,7 @@ async function loadAdmUsersPwPanel(){
   el.innerHTML=`<table class="tbl"><thead><tr><th>이름</th><th>이메일</th><th>권한</th><th>비밀번호 초기화</th></tr></thead>
   <tbody>${filtered.map(u=>`<tr>
     <td><strong>${u.name||'-'}</strong></td>
-    <td style="font-size:13px;color:var(--gray-500)">${u.email||'-'}</td>
+    <td style="font-size:12px;font-family:monospace;color:var(--gray-700);background:var(--gray-50);padding:8px 6px;border-radius:4px">${u.email||'-'}</td>
     <td><span class="badge ${rlCls(u.role)}">${rlLbl(u.role)}</span></td>
     <td><button class="btn-g btn-sm" onclick="openPwResetModal('${u.id}','${u.email}','${(u.name||u.email).replace(/'/g,"\\'")}')">🔑 재설정 링크 발송</button></td>
   </tr>`).join('')}</tbody></table>`;
@@ -640,7 +639,9 @@ function closeDbUploadModal(){
   if(m)m.style.display='none';
 }
 function downloadCsvTemplate(){
-  const csv='\uFEFF업체명,전화번호,주소,업종,네이버URL\n홍길동치킨,010-1234-5678,서울시 강남구 테헤란로 1,음식점,';
+  const headers=['업체명','전화번호','영업단계','주소','업종','담당자','서브연락처','네이버URL','대표특징','상태'];
+  const example=['홍길동치킨','010-1234-5678','가망','서울시 강남구 테헤란로 1','음식점','담당자명','010-9876-5432','https://map.naver.com/...','직영점','가망'];
+  const csv='\uFEFF'+headers.join(',')+'\n'+example.join(',');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
@@ -681,9 +682,15 @@ async function doDbUpload(){
     const COL={
       business_name:['업체명','가게명','상호명','상호','name','business_name','업체'],
       phone:['전화번호','전화','연락처','phone','tel','핸드폰','휴대폰'],
-      address:['주소','address','addr'],
-      industry:['업종','카테고리','category','industry','업태'],
+      stage:['영업단계','단계','stage','상태값'],
+      address:['주소','address','addr','지번주소'],
+      industry:['업종','카테고리','category','industry','업태','분류'],
+      manager:['담당자','담당자명','담당','manager','담당사원'],
+      sub_phone:['서브연락처','서브전화','sub_phone','subPhone','보조연락처'],
       naver_url:['네이버URL','네이버url','naver_url','naverUrl','url','URL'],
+      feature:['대표특징','특징','feature','특이사항','비고','설명'],
+      status:['상태','status'],
+      memo:['비고','메모','memo','note','notes','비고사항'],
     };
     function mapCol(row,aliases){
       for(const a of aliases){
@@ -692,15 +699,21 @@ async function doDbUpload(){
       }
       return null;
     }
+    const VALID_STAGES=['가망','컨택중','미팅확정','검토중','계약완료','영업종결'];
+    const VALID_STATUS=['가망','계약중'];
     const payload=rawRows.map(row=>({
       business_name:mapCol(row,COL.business_name),
       phone:mapCol(row,COL.phone),
+      stage:(()=>{const s=mapCol(row,COL.stage);return s&&VALID_STAGES.includes(s)?s:'가망';})(),
       address:mapCol(row,COL.address)||null,
       industry:mapCol(row,COL.industry)||'기타',
-      naver_url:mapCol(row,COL.naver_url)||null,
-      stage:'가망',
-      manager:PR?.name||AU?.email||null,
+      manager:mapCol(row,COL.manager)||(PR?.name||AU?.email||null),
       manager_id:AU?.id||null,
+      sub_phone:mapCol(row,COL.sub_phone)||null,
+      naver_url:mapCol(row,COL.naver_url)||null,
+      feature:mapCol(row,COL.feature)||null,
+      status:(()=>{const s=mapCol(row,COL.status);return s&&VALID_STATUS.includes(s)?s:'가망';})(),
+      memo:mapCol(row,COL.memo)||null,
     })).filter(r=>r.business_name&&r.phone);
     if(!payload.length){
       setMsg('dbUploadMsg','⚠️ 유효한 데이터가 없습니다. (업체명·전화번호 필수)',false);
@@ -751,12 +764,55 @@ async function changeRole(uid,role){
 
 let pwResetTargetId=null,pwResetTargetEmail=null;
 
+function pwResetTab(tab){
+  const isEmail=tab==='email';
+  document.getElementById('pwSectionEmail').style.display=isEmail?'block':'none';
+  document.getElementById('pwSectionDirect').style.display=isEmail?'none':'block';
+  document.getElementById('pwTabEmail').style.cssText=isEmail?'flex:1;font-weight:700;background:var(--blue);color:#fff':'flex:1;font-weight:700';
+  document.getElementById('pwTabDirect').style.cssText=isEmail?'flex:1;font-weight:700':'flex:1;font-weight:700;background:var(--blue);color:#fff';
+  document.getElementById('pwResetMsg').textContent='-';
+  document.getElementById('pwResetMsg').className='stmsg';
+}
+
 function openPwResetModal(uid,email,name){
   pwResetTargetId=uid;pwResetTargetEmail=email;
-  document.getElementById('pwResetTargetLabel').textContent=`대상: ${name} (${email})`;
+  document.getElementById('pwResetTargetLabel').textContent=`대상: ${name}`;
+  document.getElementById('pwResetEmail').value=email;
+  document.getElementById('pwResetEmailDisplay').textContent=email;
   document.getElementById('pwResetMsg').className='stmsg';
   document.getElementById('pwResetMsg').textContent='-';
+  // 이메일 표시만 (수정 불가 - Auth 등록 이메일 사용)
+  document.getElementById('pwResetEmail').style.display='none';
+  document.getElementById('pwResetEmailDisplay').style.display='block';
+  document.getElementById('pwResetEmailEditBtn').style.display='none';
+  document.getElementById('pwResetEmailEditHint').style.display='none';
+  // 결과박스 초기화
+  const rb=document.getElementById('pwResetResultBox');if(rb)rb.style.display='none';
+  const np=document.getElementById('newPwForUser');if(np)np.value='';
+  // 기본 탭: 직접 변경 (이메일 rate limit 이슈 때문에)
+  pwResetTab('direct');
   document.getElementById('pwResetModal').style.display='flex';
+}
+
+function togglePwResetEmailEdit(){
+  const inputEl=document.getElementById('pwResetEmail');
+  const displayEl=document.getElementById('pwResetEmailDisplay');
+  const btnEl=document.getElementById('pwResetEmailEditBtn');
+  const isEditing=inputEl.style.display==='block';
+
+  if(isEditing){
+    // 편집 완료 → 표시 모드
+    displayEl.textContent=inputEl.value;
+    inputEl.style.display='none';
+    displayEl.style.display='block';
+    btnEl.textContent='✏️ 이메일 변경';
+  }else{
+    // 표시 모드 → 편집 모드
+    inputEl.style.display='block';
+    displayEl.style.display='none';
+    btnEl.textContent='✓ 확인';
+    inputEl.focus();
+  }
 }
 function closePwResetModal(){
   document.getElementById('pwResetModal').style.display='none';
@@ -775,19 +831,30 @@ function copyTempPw(){
 }
 
 async function sendResetEmail(){
-  if(!pwResetTargetEmail){setMsg('pwResetMsg','이메일 주소가 없습니다.',false);return}
+  // 등록된 사용자 이메일만 사용 (Auth에 등록된 이메일)
+  const email=pwResetTargetEmail;
+
+  if(!email){setMsg('pwResetMsg','사용자 이메일 정보가 없습니다.',false);return}
+
   const btn=document.getElementById('sendResetEmailBtn');
   btn.disabled=true;btn.textContent='발송 중...';
+  setMsg('pwResetMsg','재설정 링크를 발송하는 중입니다...',true);
+
   try{
-    const{error}=await sb.auth.resetPasswordForEmail(pwResetTargetEmail,{
+    const{error}=await sb.auth.resetPasswordForEmail(email,{
       redirectTo: window.location.origin + '/reset-password.html'
     });
-    if(error){setMsg('pwResetMsg','발송 오류: '+error.message,false);}
-    else{setMsg('pwResetMsg','✅ '+pwResetTargetEmail+'로 비밀번호 재설정 링크를 발송했습니다.',true);}
+    if(error){
+      const msg=(error.message==='User not found')?'⚠️ Auth 시스템에 등록되지 않은 이메일입니다. 어드민에게 문의하세요.':'발송에 실패했습니다. 다시 시도해주세요.';
+      setMsg('pwResetMsg',msg,false);
+    }else{
+      setMsg('pwResetMsg',`✅ ${email}로 비밀번호 재설정 링크를 발송했습니다.\n\n이메일을 확인하여 링크를 클릭하고 새 비밀번호를 설정해주세요.`,true);
+      setTimeout(closePwResetModal,3000);
+    }
   }catch(e){
-    setMsg('pwResetMsg','오류: '+e.message,false);
+    setMsg('pwResetMsg','오류가 발생했습니다. '+e.message,false);
   }
-  btn.disabled=false;btn.textContent='📧 재설정 링크 발송';
+  btn.disabled=false;btn.textContent='📧 재설정 링크 발송하기';
 }
 
 async function doResetPw(){

@@ -903,9 +903,9 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
       <div class="mi"        id="miCalendar" onclick="goPage('calendar')"> <span class="mi-ic">📅</span>일정 관리</div>
       <div class="nav-sec">관리</div>
       <div class="mi"        id="miAnnounce" onclick="goPage('announce')"> <span class="mi-ic">📣</span>공지사항<span class="mi-badge" id="announceBadge" style="display:none">N</span></div>
-      <div class="mi"        id="miAdmin"    onclick="goPage('admin')"    style="display:none"><span class="mi-ic">⚙️</span>관리자 설정</div>
-      <div class="nav-sec"   id="navSecMaster"                            style="display:none">마스터</div>
-      <div class="mi"        id="miMaster"   onclick="goPage('master')"   style="display:none"><span class="mi-ic">🛡️</span>마스터 관리</div>
+      <div class="mi"        id="miAdmin"    onclick="goPage('admin')"    style="display:none"><span class="mi-ic">⚙️</span>운영관리</div>
+      <div class="nav-sec"   id="navSecMaster"                            style="display:none">마스터 전용</div>
+      <div class="mi"        id="miMaster"   onclick="goPage('master')"   style="display:none"><span class="mi-ic">🛡️</span>마스터 설정</div>
       <div class="nav-sec">계정</div>
       <div class="mi"        id="miManual"   onclick="goPage('manual')">  <span class="mi-ic">📖</span>이용 안내</div>
       <div class="mi"        id="miMypage"   onclick="goPage('mypage')">  <span class="mi-ic">👤</span>내 정보</div>
@@ -1511,7 +1511,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
     <div class="page" id="pgAdmin">
       <div class="pg-wrap">
         <div class="pg-head">
-          <div><div class="pg-title">⚙️ 관리자 설정</div><div class="pg-desc">계정·데이터·운영 관리</div></div>
+          <div><div class="pg-title">⚙️ 운영 관리</div><div class="pg-desc">데이터·운영 관리</div></div>
           <div class="pg-actions"><button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button></div>
         </div>
         <!-- 2단 탭 구조: 메인 탭 + 서브 탭 -->
@@ -1537,33 +1537,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
             <div id="adm_createMsg" class="stmsg">-</div>
           </div>
         </div>
-        <div id="admRoleChange" style="display:none">
-          <div class="card">
-            <div class="card-t">권한 변경</div>
-            <div class="search-row" style="margin-bottom:12px">
-              <input class="fi" id="roleChangeSearch" placeholder="이름 검색" oninput="loadAdmUsersRolePanel()">
-            </div>
-            <table class="tbl"><thead><tr><th>이름</th><th>이메일</th><th>현재 권한</th><th>변경</th></tr></thead><tbody id="roleChangeBody"><tr><td colspan="4" class="empty">로딩 중...</td></tr></tbody></table>
-          </div>
-        </div>
-        <div id="admPwResetPanel" style="display:none">
-          <div class="card">
-            <div class="card-t">비밀번호 초기화</div>
-            <div class="search-row" style="margin-bottom:12px">
-              <input class="fi" id="pwResetSearch" placeholder="이름 또는 이메일 검색" oninput="loadAdmUsersPwPanel()">
-              <button class="btn-s btn-sm" onclick="loadAdmUsersPwPanel()">조회</button>
-            </div>
-            <div id="pwResetPanelList"><div class="empty">조회 버튼을 눌러주세요</div></div>
-          </div>
-        </div>
         <!-- ── 데이터관리 패널들 ── -->
-        <div id="admDbUpload" style="display:none">
-          <div class="card">
-            <div class="card-t">DB 업로드</div>
-            <p style="font-size:14px;color:var(--gray-500);margin-bottom:18px">CSV 또는 XLSX 파일로 가망 DB를 일괄 업로드합니다.<br>업체명·전화번호 컬럼이 포함된 파일을 사용하세요.</p>
-            <button class="btn-p" onclick="openDbUploadModal()">📤 DB 업로드</button>
-          </div>
-        </div>
         <div id="admTeamPipeline" style="display:none">
           <div class="card">
             <div class="card-t">팀 파이프라인 현황</div>
@@ -1839,6 +1813,14 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
             <table class="tbl"><thead><tr><th>이름</th><th>이메일</th><th>현재 권한</th><th>변경</th></tr></thead><tbody id="rolesBody"><tr><td colspan="4" class="empty">로딩 중...</td></tr></tbody></table>
           </div>
         </div>
+        <!-- DB 업로드 패널 -->
+        <div id="admDbUpload" style="display:none">
+          <div class="card">
+            <div class="card-t">DB 업로드</div>
+            <p style="font-size:14px;color:var(--gray-500);margin-bottom:18px">CSV 또는 XLSX 파일로 가망 DB를 일괄 업로드합니다.<br>업체명·전화번호 컬럼이 포함된 파일을 사용하세요.</p>
+            <button class="btn-p" onclick="openDbUploadModal()">📤 DB 업로드</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2021,16 +2003,60 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
 
 <!-- 비밀번호 재설정 모달 -->
 <div class="modal-overlay" id="pwResetModal" style="display:none" onclick="if(event.target===this)closePwResetModal()">
-  <div class="modal" style="max-width:420px;width:100%">
+  <div class="modal" style="max-width:500px;width:100%">
     <div class="modal-head">
       <div class="modal-title">🔑 비밀번호 재설정</div>
       <button class="modal-close" onclick="closePwResetModal()">✕</button>
     </div>
-    <div style="padding:20px">
-      <div id="pwResetTargetLabel" style="font-size:14px;color:var(--gray-600);margin-bottom:20px;padding:10px 14px;background:var(--gray-50);border-radius:10px;border:1px solid var(--border2)"></div>
-      <p style="font-size:14px;color:var(--gray-700);margin-bottom:20px;line-height:1.6">해당 사원의 이메일로 비밀번호 재설정 링크를 발송합니다.<br>사원이 링크를 클릭해 새 비밀번호를 직접 설정할 수 있습니다.</p>
-      <button class="btn-p" id="sendResetEmailBtn" onclick="sendResetEmail()" style="width:100%;margin-bottom:12px">📧 재설정 링크 발송</button>
-      <div id="pwResetMsg" class="stmsg">-</div>
+    <div style="padding:24px">
+      <!-- 사용자 정보 표시 -->
+      <div id="pwResetTargetLabel" style="font-size:13px;color:var(--gray-700);margin-bottom:20px;padding:12px 14px;background:var(--blue-50,#f0f4ff);border-radius:8px;border:1px solid var(--blue-200,#bfdbfe)"></div>
+
+      <!-- 이메일 입력 -->
+      <div style="margin-bottom:18px">
+        <label class="lbl" style="font-weight:600">📧 재설정 링크를 받을 이메일</label>
+        <div style="background:var(--gray-100);padding:10px 12px;border-radius:6px;margin-top:8px;margin-bottom:8px;border-left:3px solid var(--blue);font-family:inherit;font-size:13px;word-break:break-all;color:var(--gray-900)" id="pwResetEmailDisplay">-</div>
+        <input type="email" class="fi" id="pwResetEmail" placeholder="사용자 이메일" style="margin-top:6px;display:none">
+        <small style="display:block;color:var(--gray-500);margin-top:6px">
+          ⓘ 이 이메일로 비밀번호 재설정 링크가 발송됩니다.<br>
+          <span id="pwResetEmailEditHint" style="color:var(--gray-400);font-size:12px">(수정하려면 아래를 클릭)</span>
+        </small>
+      </div>
+      <button class="btn-g btn-sm" id="pwResetEmailEditBtn" onclick="togglePwResetEmailEdit()" style="width:100%;margin-bottom:16px;display:none">✏️ 이메일 변경</button>
+
+      <!-- 탭: 이메일 vs 직접변경 -->
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button id="pwTabEmail" onclick="pwResetTab('email')" class="btn-g btn-sm" style="flex:1;font-weight:700;background:var(--blue);color:#fff">📧 이메일 발송</button>
+        <button id="pwTabDirect" onclick="pwResetTab('direct')" class="btn-g btn-sm" style="flex:1;font-weight:700">🔑 직접 변경</button>
+      </div>
+
+      <!-- 이메일 발송 섹션 -->
+      <div id="pwSectionEmail">
+        <div style="padding:10px 12px;background:#fff8ed;border-left:3px solid #f59e0b;border-radius:6px;font-size:12px;color:#92400e;margin-bottom:14px">
+          ⚠️ Supabase 무료 플랜은 단시간 반복 요청 시 이메일이 차단될 수 있습니다.<br>안 되면 <strong>직접 변경</strong> 탭을 사용하세요.
+        </div>
+        <button class="btn-p" id="sendResetEmailBtn" onclick="sendResetEmail()" style="width:100%;padding:12px;font-weight:600">📧 재설정 링크 발송하기</button>
+      </div>
+
+      <!-- 직접 비밀번호 변경 섹션 -->
+      <div id="pwSectionDirect" style="display:none">
+        <div style="margin-bottom:12px">
+          <label class="lbl">새 비밀번호 (8자 이상)</label>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <input type="text" class="fi" id="newPwForUser" placeholder="새 비밀번호 입력" style="flex:1;font-family:monospace">
+            <button class="btn-g btn-sm" onclick="generateTempPw()" style="white-space:nowrap">🎲 자동생성</button>
+          </div>
+        </div>
+        <button class="btn-p" id="doResetPwBtn" onclick="doResetPw()" style="width:100%;padding:12px;font-weight:600">🔑 비밀번호 변경</button>
+        <div id="pwResetResultBox" style="display:none;margin-top:14px;padding:12px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px">
+          <div style="font-size:12px;color:#166534;margin-bottom:6px;font-weight:600">✅ 변경 완료! 아래 비밀번호를 사용자에게 전달하세요:</div>
+          <div id="pwResetResultPw" style="font-family:monospace;font-size:16px;font-weight:800;letter-spacing:2px;color:#0f172a;margin-bottom:8px"></div>
+          <button onclick="copyTempPw()" class="btn-g btn-sm">📋 복사</button>
+        </div>
+      </div>
+
+      <!-- 메시지 -->
+      <div id="pwResetMsg" class="stmsg" style="margin-top:12px">-</div>
     </div>
   </div>
 </div>

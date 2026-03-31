@@ -208,6 +208,7 @@ async function openExcelUploadModal(){
     masterArea.style.display='block';
     adminArea.style.display='none';
     requestBtn.style.display='none';
+    loadUploadManagerSel();
     // 승인 대기 목록 표시
     await loadUploadApprovals(approvalList);
   } else if(role==='admin'){
@@ -223,6 +224,7 @@ async function openExcelUploadModal(){
       masterArea.style.display='block';
       adminArea.style.display='none';
       requestBtn.style.display='none';
+      loadUploadManagerSel();
       setMsg('uploadMsg',`✅ MASTER 승인 완료 (${fmtDate(approved.reviewed_at)}). 업로드 가능합니다.`,true);
       uploadBtn.style.display='flex';
     }
@@ -301,42 +303,69 @@ function previewExcel(input){
     const ws=wb.Sheets[wb.SheetNames[0]];
     const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
     if(rows.length<2){setMsg('uploadMsg','데이터가 없습니다.',false);return}
-    excelRows=rows.slice(1).filter(r=>r[0]);
+    excelRows=rows.slice(1).filter(r=>(r[0]||r[1]));
     document.getElementById('excelPreviewLabel').textContent=`미리보기 (총 ${excelRows.length}건, 최대 5건 표시)`;
     const preview=excelRows.slice(0,5);
-    const headers=['업체명','전화번호','주소','업종','단계','메모'];
-    document.getElementById('excelPreviewTable').innerHTML=`<thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${preview.map(r=>`<tr>${[0,1,2,3,4,5,6].map(i=>`<td>${r[i]||''}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    const hdrs=['업체명','대표전화','보조전화','담당자명','주소','업종','단계','메모','다음연락일'];
+    document.getElementById('excelPreviewTable').innerHTML=
+      `<thead><tr>${hdrs.map(h=>`<th>${h}</th>`).join('')}</tr></thead>`+
+      `<tbody>${preview.map(r=>`<tr>${hdrs.map((_,i)=>`<td>${r[i]||''}</td>`).join('')}</tr>`).join('')}</tbody>`;
     document.getElementById('excelPreview').style.display='block';
     document.getElementById('uploadBtn').style.display='flex';
-    setMsg('uploadMsg',`총 ${excelRows.length}건 확인됨. 업로드 버튼을 눌러 시작하세요.`,true);
+    setMsg('uploadMsg',`총 ${excelRows.length}건 확인됨. 담당 사원 선택 후 업로드 버튼을 누르세요.`,true);
   };
   reader.readAsBinaryString(file);
 }
+
+async function loadUploadManagerSel(){
+  const sel=document.getElementById('uploadManagerSel');
+  if(!sel)return;
+  const{data}=await sb.from('users').select('id,name').order('name');
+  sel.innerHTML='<option value="">담당자 선택</option>';
+  (data||[]).forEach(u=>{
+    const opt=document.createElement('option');
+    opt.value=u.id;opt.dataset.name=u.name;opt.textContent=u.name;
+    sel.appendChild(opt);
+  });
+  // 본인 선택 기본값
+  const myOpt=Array.from(sel.options).find(o=>o.value===AU?.id);
+  if(myOpt)myOpt.selected=true;
+}
+
 const VALID_STAGES=['가망','컨택중','검토중','미팅확정','계약완료','영업종결'];
 async function uploadExcel(){
   if(!excelRows.length){setMsg('uploadMsg','파일을 먼저 선택하세요.',false);return}
   const role=(PR?.role||'user').toLowerCase();
   if(!['master','admin'].includes(role)){setMsg('uploadMsg','권한이 없습니다.',false);return}
+  const sel=document.getElementById('uploadManagerSel');
+  const mgrId=sel?.value||AU.id;
+  const mgrName=sel?.options[sel.selectedIndex]?.dataset?.name||PR?.name||'';
+  if(!mgrId){setMsg('uploadMsg','담당 사원을 선택하세요.',false);return}
   document.getElementById('uploadBtn').disabled=true;
   showSpinner('업로드 중...');
-  const mgr=AU.id;
   const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
   const tomorrowStr=tomorrow.toISOString().slice(0,10);
   let ok=0,fail=0;
   const BATCH=50;
   for(let i=0;i<excelRows.length;i+=BATCH){
     const batch=excelRows.slice(i,i+BATCH).map(r=>({
-      business_name:(r[0]||'').toString().trim(),
+      business_name:(r[0]||'').toString().trim()||null,
       phone:(r[1]||'').toString().trim(),
-      address:(r[2]||'').toString().trim()||null,
-      industry:(r[3]||'').toString().trim()||'음식점',
-      stage:VALID_STAGES.includes((r[4]||'').toString().trim())?(r[4]||'').toString().trim():'가망',
-      memo:(r[5]||'').toString().trim()||'',
-      next_contact_date:(r[6]||'').toString().trim()||tomorrowStr,
-      status:'가망',manager:mgr
-    })).filter(r=>r.business_name);
+      sub_phone:(r[2]||'').toString().trim()||null,
+      name:(r[3]||'').toString().trim()||null,
+      address:(r[4]||'').toString().trim()||null,
+      industry:(r[5]||'').toString().trim()||null,
+      stage:VALID_STAGES.includes((r[6]||'').toString().trim())?(r[6]||'').toString().trim():'가망',
+      memo:(r[7]||'').toString().trim()||null,
+      next_contact_date:(r[8]||'').toString().trim()||tomorrowStr,
+      naver_url:(r[9]||'').toString().trim()||null,
+      feature:(r[10]||'').toString().trim()||null,
+      status:'가망',
+      manager:mgrName,
+      manager_id:mgrId
+    })).filter(r=>r.phone);
     const{error}=await sb.from('prospects').insert(batch);
-    if(error)fail+=batch.length;else ok+=batch.length;
+    if(error){fail+=batch.length;console.error(error);}else ok+=batch.length;
     document.getElementById('spinnerText').textContent=`업로드 중... ${Math.min(i+BATCH,excelRows.length)}/${excelRows.length}건`;
   }
   hideSpinner();

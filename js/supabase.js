@@ -36,12 +36,11 @@ const SIDEBAR_ALL_GROUPS=[
     {id:'miAnnounce', page:'announce', label:'공지사항',    icon:'📣', roles:['user','admin','master']},
     {id:'miManual',   page:'manual',   label:'이용 안내',   icon:'📖', roles:['user','admin','master']},
   ]},
-  {label:'관리자',items:[
-    {id:'miAdmin', page:'admin', label:'관리자 설정', icon:'⚙️', roles:['admin','master']},
+  {label:'관리자 전용',items:[
+    {id:'miAdmin', page:'admin', label:'운영관리', icon:'⚙️', roles:['admin','master']},
   ]},
   {label:'마스터 전용',roles:['master'],items:[
-    {id:'miMasterUsers', page:'masterUsers', label:'사용자 관리', icon:'👥', roles:['master']},
-    {id:'miMasterRoles', page:'masterRoles', label:'권한 관리',   icon:'🔑', roles:['master']},
+    {id:'miMaster', page:'master', label:'마스터 전용', icon:'🛡️', roles:['master']},
   ]},
   {label:'계정',items:[
     {id:'miMypage', page:'mypage', label:'내 정보', icon:'👤', roles:['user','admin','master']},
@@ -403,19 +402,9 @@ const PAGE_ACCESS={
 function goPage(page){
   const role=(PR?.role||'user').toLowerCase();
 
-  // ── 마스터 전용 서브페이지: pgMaster를 탭 지정해서 오픈 ──
+  // ── 마스터 전용 서브페이지: 레거시 호환성 (masterUsers/masterRoles → master) ──
   if(page==='masterUsers'||page==='masterRoles'){
-    const allowed=PAGE_ACCESS[page];
-    if(!allowed?.includes(role)){goPage('dash');return;}
-    ['dash','crm','calendar','announce','manual','admin','master','mypage'].forEach(p=>{
-      const pg=document.getElementById('pg'+cap(p));
-      if(pg)pg.classList.toggle('active',p==='master');
-    });
-    // 사이드바 active 상태 정확히 지정
-    document.querySelectorAll('.mi').forEach(el=>el.classList.remove('active'));
-    document.getElementById(page==='masterUsers'?'miMasterUsers':'miMasterRoles')?.classList.add('active');
-    closeSidebar();
-    setupMasterPage(page==='masterUsers'?'mstrUsers':'mstrRoles');
+    goPage('master');
     return;
   }
 

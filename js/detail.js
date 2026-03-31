@@ -28,19 +28,6 @@ async function openCrmModal(id){
   // 다음 연락 예정일
   document.getElementById('ivNextContact').textContent=data.next_contact_date||'미설정';
 
-  // 단계 버튼 그룹
-  const stageList=[
-    {key:'가망',label:'🔵 가망',cls:'sb-prospect'},
-    {key:'컨택중',label:'🟡 컨택중',cls:'sb-contact'},
-    {key:'미팅확정',label:'🔷 미팅확정',cls:'sb-meeting'},
-    {key:'검토중',label:'🟣 검토중',cls:'sb-review'},
-    {key:'계약완료',label:'🟢 계약완료',cls:'sb-contract'},
-    {key:'영업종결',label:'🔴 영업종결',cls:'sb-lost'}
-  ];
-  document.getElementById('ivStage').innerHTML=stageList.map(s=>
-    `<button class="stage-sel-btn badge ${s.cls}${s.key===data.stage?' active-stage':''}" onclick="quickChangeStage('${s.key}')">${s.label}</button>`
-  ).join('');
-
   // 수정 폼 초기화
   toggleEditForm(false);
   document.getElementById('editName').value=data.business_name||'';
@@ -141,15 +128,6 @@ async function saveCrmEdit(){
     catch(e){urlEl.textContent=payload.naver_url.length>50?payload.naver_url.slice(0,50)+'…':payload.naver_url;}
     urlEl.style.display='block';urlEmptyEl.style.display='none';
   }else{urlEl.style.display='none';urlEmptyEl.style.display='block';}
-  // 단계 버튼 갱신
-  const stageList=[
-    {key:'가망',label:'🔵 가망',cls:'sb-prospect'},{key:'컨택중',label:'🟡 컨택중',cls:'sb-contact'},
-    {key:'미팅확정',label:'🔷 미팅확정',cls:'sb-meeting'},{key:'검토중',label:'🟣 검토중',cls:'sb-review'},
-    {key:'계약완료',label:'🟢 계약완료',cls:'sb-contract'},{key:'영업종결',label:'🔴 영업종결',cls:'sb-lost'}
-  ];
-  document.getElementById('ivStage').innerHTML=stageList.map(s=>
-    `<button class="stage-sel-btn badge ${s.cls}${s.key===stageVal?' active-stage':''}" onclick="quickChangeStage('${s.key}')">${s.label}</button>`
-  ).join('');
   if(stageVal==='계약완료'&&oldStage!=='계약완료'&&typeof launchConfetti==='function')launchConfetti();
   toggleEditForm(false);loadPipeline();
 }
@@ -224,18 +202,10 @@ async function moveCrmModal(dir){
 // ── 단계 인라인 변경 (모달 내) ──
 async function quickChangeStage(stage){
   if(!curCrmId)return;
+  document.querySelectorAll('.stage-quick-drop.open').forEach(d=>d.classList.remove('open'));
   const{error}=await sb.from('prospects').update({stage}).eq('id',curCrmId);
   if(error){showToast('단계 변경 실패: '+error.message,'error');return;}
   if(curCrmData)curCrmData.stage=stage;
-  const stageList=[
-    {key:'가망',label:'🔵 가망',cls:'sb-prospect'},{key:'컨택중',label:'🟡 컨택중',cls:'sb-contact'},
-    {key:'미팅확정',label:'🔷 미팅확정',cls:'sb-meeting'},{key:'검토중',label:'🟣 검토중',cls:'sb-review'},
-    {key:'계약완료',label:'🟢 계약완료',cls:'sb-contract'},{key:'영업종결',label:'🔴 영업종결',cls:'sb-lost'}
-  ];
-  const ivStageEl=document.getElementById('ivStage');
-  if(ivStageEl)ivStageEl.innerHTML=stageList.map(s=>
-    `<button class="stage-sel-btn badge ${s.cls}${s.key===stage?' active-stage':''}" onclick="quickChangeStage('${s.key}')">${s.label}</button>`
-  ).join('');
   document.getElementById('crmModalSub').innerHTML=`${stageBadge(stage)} &nbsp;담당: ${curCrmData?.manager||'-'}`;
   showToast(`단계 변경: ${stage}`,'success');
   if(stage==='계약완료'){
@@ -244,6 +214,19 @@ async function quickChangeStage(stage){
     await sb.from('prospects').update({contracted_at:new Date().toISOString()}).eq('id',curCrmId);
   }
   loadPipeline();
+}
+
+// ── 헤더 단계 배지 드롭다운 ──
+function toggleHeaderStageDrop(e){
+  e.stopPropagation();
+  const drop=document.getElementById('stageHeaderDrop');
+  if(!drop)return;
+  const isOpen=drop.classList.contains('open');
+  document.querySelectorAll('.stage-quick-drop.open').forEach(d=>d.classList.remove('open'));
+  if(!isOpen){
+    drop.innerHTML=STAGES.map(s=>`<div class="stage-q-item" onclick="quickChangeStage('${s.key}')">${s.icon} ${s.label}</div>`).join('');
+    drop.classList.add('open');
+  }
 }
 
 // ── 빠른 단계 변경 드롭다운 (목록에서) ──

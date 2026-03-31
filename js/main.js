@@ -368,7 +368,9 @@ async function showCalDay(dateStr){
 
 // ── 공지사항 ──
 async function loadAnnouncements(){
-  if(!isPriv()){goPage('dash');return;}
+  // 전체 사용자 접근 가능 — 관리자/마스터만 작성 버튼 표시
+  const writeBtn=document.getElementById('announceWriteBtn');
+  if(writeBtn)writeBtn.style.display=isPriv()?'flex':'none';
   const{data}=await sb.from('announcements').select('*').order('is_pinned',{ascending:false}).order('created_at',{ascending:false});
   const pinned=(data||[]).filter(a=>a.is_pinned);
   const normal=(data||[]).filter(a=>!a.is_pinned);
@@ -431,72 +433,111 @@ async function deleteAnnounce(id){
   await sb.from('announcements').delete().eq('id',id);loadAnnouncements();
 }
 
-// ── 관리자 페이지 ──
-const MASTER_ONLY_PANELS=[];
-
-const ADMIN_TABS=[
-  {key:'pipeline',label:'팀 파이프라인'},
-  {key:'blocked',label:'영업 불가 업체'},
-  {key:'goal',label:'목표 설정'},
-  {key:'templates',label:'템플릿 관리'},
-  {key:'report',label:'📊 주간 리포트'},
-  {key:'dupcheck',label:'🔍 중복 탐지'},
-  {key:'stale',label:'⚠️ 장기 종결 DB'},
-  {key:'perfcards',label:'👤 사원별 성과'},
-  {key:'assign',label:'📤 DB 배정'}
+// ════ 관리자 설정 — 2단 탭 구조 ════
+const ADMIN_MAIN_TABS=[
+  {key:'account', label:'계정관리'},
+  {key:'data',    label:'데이터관리'},
+  {key:'ops',     label:'운영관리'},
 ];
-
-const TAB_PANEL_MAP={
-  pipeline:'admTeamPipeline',
-  blocked:'admBlocked',goal:'admGoal',templates:'admTemplates',
-  report:'admReport',dupcheck:'admDupCheck',
-  stale:'admStale',perfcards:'admPerfCards',assign:'admAssign'
+const ADMIN_SUB_TABS={
+  account:[
+    {key:'createUser', label:'사용자 생성',   panel:'admCreateUser', load:null},
+    {key:'roleChange', label:'권한 변경',     panel:'admRoleChange', load:()=>loadAdmUsersRolePanel()},
+    {key:'pwReset',    label:'비밀번호 초기화',panel:'admPwResetPanel',load:()=>loadAdmUsersPwPanel()},
+  ],
+  data:[
+    {key:'dbUpload', label:'DB 업로드',   panel:'admDbUpload', load:null},
+    {key:'dupcheck', label:'중복 탐지',    panel:'admDupCheck', load:null},
+    {key:'blocked',  label:'영업불가 관리', panel:'admBlocked',  load:()=>loadBlockedAdmin()},
+    {key:'stale',    label:'장기 종결 DB', panel:'admStale',    load:()=>loadStaleDB()},
+    {key:'assign',   label:'DB 배정',     panel:'admAssign',   load:()=>{loadAssignUsers();loadAssignList();}},
+  ],
+  ops:[
+    {key:'pipeline',  label:'팀 파이프라인', panel:'admTeamPipeline',load:()=>{loadTpMgrFilter();loadTeamPipeline();}},
+    {key:'goal',      label:'목표 설정',     panel:'admGoal',        load:()=>loadGoalHist()},
+    {key:'templates', label:'템플릿 관리',   panel:'admTemplates',   load:()=>loadTemplateAdmin()},
+    {key:'report',    label:'리포트',        panel:'admReport',      load:()=>loadWeeklyReport()},
+    {key:'perfcards', label:'사원별 성과',   panel:'admPerfCards',   load:()=>{if(typeof initPerfCardSelects==='function')initPerfCardSelects();loadPerfCards();}},
+    {key:'kakaowork', label:'카카오워크',    panel:'admKakaoWork',   load:()=>loadKakaoWorkSettings()},
+  ],
 };
+let _adminMainTab='account',_adminSubTab='createUser';
 
 function setupAdminPage(){
   const role=(PR?.role||'').toLowerCase();
-  if(!['master','admin'].includes(role)){goPage('dash');return}
-  document.getElementById('adminDesc').textContent='관리자 기능';
-  const tabBar=document.getElementById('adminTabBar');
-  tabBar.innerHTML=ADMIN_TABS.map((t,i)=>{
-    if(t.action)return `<div class="ti" onclick="${t.action}">${t.label}</div>`;
-    return `<div class="ti${i===0?' on':''}" onclick="admTab('${t.key}',this)">${t.label}</div>`;
-  }).join('');
-  admTab_show('pipeline');
-  loadTpMgrFilter();
-  loadTeamPipeline();
+  if(!['master','admin'].includes(role)){goPage('dash');return;}
+  renderAdminMainTabs('account');
 }
+function renderAdminMainTabs(mainKey){
+  _adminMainTab=mainKey;
+  const bar=document.getElementById('adminMainTabBar');
+  if(!bar)return;
+  bar.innerHTML=ADMIN_MAIN_TABS.map(t=>
+    `<div class="ti${t.key===mainKey?' on':''}" onclick="renderAdminMainTabs('${t.key}')">${t.label}</div>`
+  ).join('');
+  const subs=ADMIN_SUB_TABS[mainKey]||[];
+  renderAdminSubTabs(mainKey,subs[0]?.key);
+}
+function renderAdminSubTabs(mainKey,subKey){
+  _adminSubTab=subKey;
+  const subs=ADMIN_SUB_TABS[mainKey]||[];
+  const bar=document.getElementById('adminSubTabBar');
+  if(!bar)return;
+  bar.innerHTML=subs.map(t=>
+    `<div class="ti${t.key===subKey?' on':''}" onclick="renderAdminSubTabs('${mainKey}','${t.key}')">${t.label}</div>`
+  ).join('');
+  // 모든 패널 숨김
+  Object.values(ADMIN_SUB_TABS).flat().forEach(t=>{
+    const el=document.getElementById(t.panel);if(el)el.style.display='none';
+  });
+  // 현재 패널 표시 + 데이터 로드
+  const cur=subs.find(t=>t.key===subKey);
+  if(cur){
+    const el=document.getElementById(cur.panel);
+    if(el)el.style.display='block';
+    if(cur.load)cur.load();
+  }
+}
+// 레거시 호환 — 기존 admTab 호출 지점에서 사용
+function admTab(tab,el){
+  for(const[mainKey,subs] of Object.entries(ADMIN_SUB_TABS)){
+    const found=subs.find(s=>s.key===tab);
+    if(found){renderAdminMainTabs(mainKey);setTimeout(()=>renderAdminSubTabs(mainKey,tab),50);return;}
+  }
+}
+function admTab_show(){}// no-op, renderAdminSubTabs가 담당
 
+// ════ 마스터 전용 페이지 ════
 const MASTER_PAGE_TABS=[
-  {key:'mstrUsers',    label:'👥 사용자 관리'},
-  {key:'mstrDatabase', label:'🗄️ 전체 DB'},
-  {key:'mstrKakaoWork',label:'💬 Kakao Work'},
-  {key:'mstrBackup',   label:'💾 백업'},
+  {key:'mstrUsers',    label:'사용자 관리'},
+  {key:'mstrRoles',    label:'권한 관리'},
+  {key:'mstrDatabase', label:'전체 DB'},
 ];
 const MASTER_TAB_PANEL_MAP={
   mstrUsers:'admUsers',
+  mstrRoles:'admRoles',
   mstrDatabase:'admCrmWrap',
-  mstrKakaoWork:'admKakaoWork',
-  mstrBackup:'mstrBackup',
 };
-function setupMasterPage(){
+function setupMasterPage(initialTab='mstrUsers'){
   const role=(PR?.role||'').toLowerCase();
-  if(role!=='master'){goPage('dash');return}
+  if(role!=='master'){goPage('dash');return;}
   const tabBar=document.getElementById('masterTabBar');
-  tabBar.innerHTML=MASTER_PAGE_TABS.map((t,i)=>
-    `<div class="ti${i===0?' on':''}" onclick="masterTab('${t.key}',this)">${t.label}</div>`
+  if(!tabBar)return;
+  tabBar.innerHTML=MASTER_PAGE_TABS.map(t=>
+    `<div class="ti${t.key===initialTab?' on':''}" onclick="masterTab('${t.key}',this)">${t.label}</div>`
   ).join('');
-  masterTab_show('mstrUsers');
-  loadAdmUsers();
-  loadMgrFilter();
+  masterTab_show(initialTab);
+  if(initialTab==='mstrUsers')loadAdmUsers();
+  if(initialTab==='mstrRoles')loadAdmUsersRoles();
+  if(initialTab==='mstrDatabase'){loadAdmCRM();loadMgrFilter();}
 }
 function masterTab(tab,el){
   document.querySelectorAll('#masterTabBar .ti').forEach(t=>t.classList.remove('on'));
   if(el)el.classList.add('on');
   masterTab_show(tab);
-  if(tab==='mstrUsers'){loadAdmUsers();loadMgrFilter();}
-  if(tab==='mstrDatabase'){loadAdmCRM();}
-  if(tab==='mstrKakaoWork')loadKakaoWorkSettings();
+  if(tab==='mstrUsers')loadAdmUsers();
+  if(tab==='mstrRoles')loadAdmUsersRoles();
+  if(tab==='mstrDatabase'){loadAdmCRM();loadMgrFilter();}
 }
 function masterTab_show(tab){
   Object.entries(MASTER_TAB_PANEL_MAP).forEach(([key,panelId])=>{
@@ -505,30 +546,184 @@ function masterTab_show(tab){
   });
 }
 function showMasterPanel(tab){
-  // legacy - redirect to master page
-  goPage('master');
-  setTimeout(()=>masterTab('mstr'+tab.charAt(0).toUpperCase()+tab.slice(1), document.querySelector('#masterTabBar .ti')),100);
+  goPage('masterUsers');// legacy redirect
 }
 
-function admTab(tab,el){
-  document.querySelectorAll('#adminTabBar .ti').forEach(t=>t.classList.remove('on'));
-  if(el)el.classList.add('on');admTab_show(tab);
-  if(tab==='blocked')loadBlockedAdmin();
-  if(tab==='pipeline'){loadTpMgrFilter();loadTeamPipeline();}
-  if(tab==='goal')loadGoalHist();
-  if(tab==='templates')loadTemplateAdmin();
-  if(tab==='report')loadWeeklyReport();
-  if(tab==='dupcheck')loadDupCheck();
-  if(tab==='stale')loadStaleDB();
-  if(tab==='perfcards'){if(typeof initPerfCardSelects==='function')initPerfCardSelects();loadPerfCards();}
-  if(tab==='assign'){loadAssignUsers();loadAssignList();}
+// ── 권한 관리 패널 (마스터 전용) ──
+async function loadAdmUsersRoles(){
+  const{data}=await sb.from('users').select('*').order('name');
+  const tbody=document.getElementById('rolesBody');
+  if(!tbody)return;
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="4" class="empty">사용자 없음</td></tr>';return;}
+  tbody.innerHTML=data.map(u=>`<tr>
+    <td><strong>${u.name||'-'}</strong></td>
+    <td style="color:var(--gray-500);font-size:13px">${u.email||'-'}</td>
+    <td><span class="badge ${rlCls(u.role)}">${rlLbl(u.role)}</span></td>
+    <td><select class="role-sel" onchange="changeRole('${u.id}',this.value)">
+      <option value="junior" ${u.role==='junior'?'selected':''}>신입사원</option>
+      <option value="user" ${u.role==='user'?'selected':''}>사원</option>
+      <option value="admin" ${u.role==='admin'?'selected':''}>관리자</option>
+      <option value="master" ${u.role==='master'?'selected':''}>MASTER</option>
+      <option value="inactive" ${u.role==='inactive'?'selected':''}>비활성</option>
+    </select></td>
+  </tr>`).join('');
 }
 
-function admTab_show(tab){
-  Object.entries(TAB_PANEL_MAP).forEach(([key,panelId])=>{
-    const el=document.getElementById(panelId);
-    if(el)el.style.display=(key===tab)?'block':'none';
-  });
+// ── 관리자 설정 > 계정관리 > 권한 변경 패널 ──
+async function loadAdmUsersRolePanel(){
+  const kw=(document.getElementById('roleChangeSearch')?.value||'').toLowerCase();
+  const{data}=await sb.from('users').select('*').order('name');
+  const filtered=(data||[]).filter(u=>!kw||u.name?.toLowerCase().includes(kw)||u.email?.toLowerCase().includes(kw));
+  const tbody=document.getElementById('roleChangeBody');
+  if(!tbody)return;
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="4" class="empty">사용자 없음</td></tr>';return;}
+  tbody.innerHTML=filtered.map(u=>`<tr>
+    <td><strong>${u.name||'-'}</strong></td>
+    <td style="color:var(--gray-500);font-size:13px">${u.email||'-'}</td>
+    <td><span class="badge ${rlCls(u.role)}">${rlLbl(u.role)}</span></td>
+    <td><select class="role-sel" onchange="changeRole('${u.id}',this.value)">
+      <option value="junior" ${u.role==='junior'?'selected':''}>신입사원</option>
+      <option value="user" ${u.role==='user'?'selected':''}>사원</option>
+      <option value="admin" ${u.role==='admin'?'selected':''}>관리자</option>
+      <option value="master" ${u.role==='master'?'selected':''}>MASTER</option>
+      <option value="inactive" ${u.role==='inactive'?'selected':''}>비활성</option>
+    </select></td>
+  </tr>`).join('');
+}
+
+// ── 관리자 설정 > 계정관리 > 비밀번호 초기화 패널 ──
+async function loadAdmUsersPwPanel(){
+  const kw=(document.getElementById('pwResetSearch')?.value||'').toLowerCase();
+  const{data}=await sb.from('users').select('*').order('name');
+  const filtered=(data||[]).filter(u=>!kw||u.name?.toLowerCase().includes(kw)||u.email?.toLowerCase().includes(kw));
+  const el=document.getElementById('pwResetPanelList');
+  if(!el)return;
+  if(!filtered.length){el.innerHTML='<div class="empty">사용자 없음</div>';return;}
+  el.innerHTML=`<table class="tbl"><thead><tr><th>이름</th><th>이메일</th><th>권한</th><th>비밀번호 초기화</th></tr></thead>
+  <tbody>${filtered.map(u=>`<tr>
+    <td><strong>${u.name||'-'}</strong></td>
+    <td style="font-size:13px;color:var(--gray-500)">${u.email||'-'}</td>
+    <td><span class="badge ${rlCls(u.role)}">${rlLbl(u.role)}</span></td>
+    <td><button class="btn-g btn-sm" onclick="openPwResetModal('${u.id}','${u.email}','${(u.name||u.email).replace(/'/g,"\\'")}')">🔑 재설정 링크 발송</button></td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+// ── 관리자 설정 > 계정관리 > 사용자 생성 ──
+async function createUserAdmin(){
+  const email=document.getElementById('adm_nEmail')?.value.trim();
+  const pw=document.getElementById('adm_nPw')?.value.trim();
+  const nick=document.getElementById('adm_nNick')?.value.trim();
+  const role=document.getElementById('adm_nRole')?.value;
+  if(!email||!pw||!nick){setMsg('adm_createMsg','모든 항목을 입력하세요.',false);return;}
+  if(pw.length<8){setMsg('adm_createMsg','비밀번호는 8자 이상.',false);return;}
+  const{data,error}=await sb.auth.signUp({email,password:pw});
+  if(error){setMsg('adm_createMsg','오류: '+error.message,false);return;}
+  const uid=data.user?.id;
+  if(uid)await sb.from('users').upsert([{id:uid,name:nick,role,email}]);
+  setMsg('adm_createMsg','✓ 계정 생성 완료 — 이메일 인증 발송됨',true);
+  ['adm_nEmail','adm_nPw','adm_nNick'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  // 권한 변경 패널 갱신
+  if(_adminSubTab==='roleChange')loadAdmUsersRolePanel();
+}
+
+// ════ DB 업로드 ════
+function openDbUploadModal(){
+  const m=document.getElementById('dbUploadModal');
+  if(m)m.style.display='flex';
+  const f=document.getElementById('dbUploadFile');
+  if(f)f.value='';
+  const msg=document.getElementById('dbUploadMsg');
+  if(msg){msg.textContent='-';msg.className='stmsg';}
+}
+function closeDbUploadModal(){
+  const m=document.getElementById('dbUploadModal');
+  if(m)m.style.display='none';
+}
+function downloadCsvTemplate(){
+  const csv='\uFEFF업체명,전화번호,주소,업종,네이버URL\n홍길동치킨,010-1234-5678,서울시 강남구 테헤란로 1,음식점,';
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='MUYI_DB_업로드양식.csv';
+  document.body.appendChild(a);a.click();
+  URL.revokeObjectURL(url);a.remove();
+}
+async function doDbUpload(){
+  const fileEl=document.getElementById('dbUploadFile');
+  const file=fileEl?.files[0];
+  if(!file){setMsg('dbUploadMsg','파일을 선택해주세요.',false);return;}
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(!['csv','xlsx','xls'].includes(ext)){setMsg('dbUploadMsg','CSV 또는 XLSX 파일만 지원합니다.',false);return;}
+  const btn=document.getElementById('doDbUploadBtn');
+  if(btn){btn.disabled=true;btn.textContent='처리 중...';}
+  setMsg('dbUploadMsg','파일 읽는 중...', true);
+  try{
+    let rawRows=[];
+    if(ext==='csv'){
+      const text=await file.text();
+      const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
+      if(lines.length<2){setMsg('dbUploadMsg','⚠️ 데이터가 없습니다.',false);if(btn){btn.disabled=false;btn.textContent='업로드';}return;}
+      const headers=lines[0].split(',').map(h=>h.replace(/^\uFEFF/,'').replace(/^"|"$/g,'').trim());
+      rawRows=lines.slice(1).map(line=>{
+        const cols=line.split(',');
+        const obj={};
+        headers.forEach((h,i)=>obj[h]=(cols[i]||'').replace(/^"|"$/g,'').trim());
+        return obj;
+      });
+    }else{
+      if(typeof XLSX==='undefined'){setMsg('dbUploadMsg','XLSX 라이브러리를 불러오는 중 오류가 발생했습니다.',false);if(btn){btn.disabled=false;btn.textContent='업로드';}return;}
+      const buf=await file.arrayBuffer();
+      const wb=XLSX.read(buf,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      rawRows=XLSX.utils.sheet_to_json(ws,{defval:''});
+    }
+    // 컬럼 자동 매핑
+    const COL={
+      business_name:['업체명','가게명','상호명','상호','name','business_name','업체'],
+      phone:['전화번호','전화','연락처','phone','tel','핸드폰','휴대폰'],
+      address:['주소','address','addr'],
+      industry:['업종','카테고리','category','industry','업태'],
+      naver_url:['네이버URL','네이버url','naver_url','naverUrl','url','URL'],
+    };
+    function mapCol(row,aliases){
+      for(const a of aliases){
+        const v=row[a];
+        if(v!==undefined&&v!==null&&String(v).trim()!=='')return String(v).trim();
+      }
+      return null;
+    }
+    const payload=rawRows.map(row=>({
+      business_name:mapCol(row,COL.business_name),
+      phone:mapCol(row,COL.phone),
+      address:mapCol(row,COL.address)||null,
+      industry:mapCol(row,COL.industry)||'기타',
+      naver_url:mapCol(row,COL.naver_url)||null,
+      stage:'가망',
+      manager:PR?.name||AU?.email||null,
+      manager_id:AU?.id||null,
+    })).filter(r=>r.business_name&&r.phone);
+    if(!payload.length){
+      setMsg('dbUploadMsg','⚠️ 유효한 데이터가 없습니다. (업체명·전화번호 필수)',false);
+      if(btn){btn.disabled=false;btn.textContent='업로드';}return;
+    }
+    setMsg('dbUploadMsg',`총 ${payload.length}건 업로드 중...`,true);
+    let success=0,failed=0;
+    const BATCH=100;
+    for(let i=0;i<payload.length;i+=BATCH){
+      const{error}=await sb.from('prospects').insert(payload.slice(i,i+BATCH));
+      if(error)failed+=Math.min(BATCH,payload.length-i);
+      else success+=Math.min(BATCH,payload.length-i);
+    }
+    const msg=`✅ ${success}건 업로드 완료${failed>0?` / ⚠️ ${failed}건 실패`:''}`;
+    setMsg('dbUploadMsg',msg,true);
+    showToast(msg,'success');
+    if(fileEl)fileEl.value='';
+    if(success>0)setTimeout(closeDbUploadModal,2500);
+  }catch(err){
+    setMsg('dbUploadMsg','오류: '+err.message,false);
+    console.error('DB Upload error:',err);
+  }
+  if(btn){btn.disabled=false;btn.textContent='업로드';}
 }
 
 async function loadAdmUsers(){
@@ -559,8 +754,6 @@ let pwResetTargetId=null,pwResetTargetEmail=null;
 function openPwResetModal(uid,email,name){
   pwResetTargetId=uid;pwResetTargetEmail=email;
   document.getElementById('pwResetTargetLabel').textContent=`대상: ${name} (${email})`;
-  document.getElementById('newPwForUser').value='';
-  document.getElementById('pwResetResultBox').style.display='none';
   document.getElementById('pwResetMsg').className='stmsg';
   document.getElementById('pwResetMsg').textContent='-';
   document.getElementById('pwResetModal').style.display='flex';
@@ -587,7 +780,7 @@ async function sendResetEmail(){
   btn.disabled=true;btn.textContent='발송 중...';
   try{
     const{error}=await sb.auth.resetPasswordForEmail(pwResetTargetEmail,{
-      redirectTo: window.location.origin + window.location.pathname + '?reset=true'
+      redirectTo: window.location.origin + '/reset-password.html'
     });
     if(error){setMsg('pwResetMsg','발송 오류: '+error.message,false);}
     else{setMsg('pwResetMsg','✅ '+pwResetTargetEmail+'로 비밀번호 재설정 링크를 발송했습니다.',true);}
@@ -1520,26 +1713,7 @@ async function backupAllData(){
   }finally{hideSpinner();}
 }
 
-// ── CSV 양식 다운로드 ──
-function downloadCsvTemplate(){
-  const headers=['업체명','전화번호','주소','업종','단계','메모','다음연락일'];
-  const examples=[
-    ['맛있는 식당','010-1234-5678','서울시 강남구 역삼동 123','음식점','가망','첫 통화 예정','2026-04-01'],
-    ['예쁜 카페','010-9876-5432','서울시 마포구 합정동 456','카페','컨택중','2차 통화 진행중','2026-04-03'],
-    ['스타일 헤어','02-1234-5678','서울시 용산구 이태원동 789','헤어샵','검토중','견적 검토 중',''],
-  ];
-  const ws=XLSX.utils.aoa_to_sheet([headers,...examples]);
-  ws['!cols']=[{wch:20},{wch:16},{wch:30},{wch:12},{wch:10},{wch:25},{wch:14}];
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,'업로드양식',ws);
-  XLSX.writeFile(wb,'MUYI_CRM_업로드양식.xlsx');
-}
-
-// ── 엑셀 업로드 버튼 권한 처리 ──
 function setupUploadBtn(){
-  const role=(PR?.role||'user').toLowerCase();
-  const btn=document.getElementById('excelUploadBtn');
-  if(btn&&['master','admin'].includes(role))btn.style.display='flex';
   setTimeout(initPushBtn,600);
 }
 

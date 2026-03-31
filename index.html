@@ -897,16 +897,16 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
       </div>
     </div>
     <div class="sb-nav">
-      <div class="nav-sec">WORKSPACE</div>
+      <div class="nav-sec">업무</div>
       <div class="mi active" id="miDash"     onclick="goPage('dash')">    <span class="mi-ic">📊</span>대시보드</div>
-      <div class="mi"        id="miCrm"      onclick="goPage('crm')">     <span class="mi-ic">📋</span>영업 DB</div>
-      <div class="mi"        id="miCalendar" onclick="goPage('calendar')"> <span class="mi-ic">📅</span>캘린더</div>
-      <div class="nav-sec">MANAGEMENT</div>
+      <div class="mi"        id="miCrm"      onclick="goPage('crm')">     <span class="mi-ic">📋</span>영업 관리</div>
+      <div class="mi"        id="miCalendar" onclick="goPage('calendar')"> <span class="mi-ic">📅</span>일정 관리</div>
+      <div class="nav-sec">관리</div>
       <div class="mi"        id="miAnnounce" onclick="goPage('announce')"> <span class="mi-ic">📣</span>공지사항<span class="mi-badge" id="announceBadge" style="display:none">N</span></div>
-      <div class="mi"        id="miAdmin"    onclick="goPage('admin')"    style="display:none"><span class="mi-ic">⚙️</span>Admin</div>
-      <div class="nav-sec"   id="navSecMaster"                            style="display:none">MASTER</div>
-      <div class="mi"        id="miMaster"   onclick="goPage('master')"   style="display:none"><span class="mi-ic">🛡️</span>Master Console</div>
-      <div class="nav-sec">ACCOUNT</div>
+      <div class="mi"        id="miAdmin"    onclick="goPage('admin')"    style="display:none"><span class="mi-ic">⚙️</span>관리자 설정</div>
+      <div class="nav-sec"   id="navSecMaster"                            style="display:none">마스터</div>
+      <div class="mi"        id="miMaster"   onclick="goPage('master')"   style="display:none"><span class="mi-ic">🛡️</span>마스터 관리</div>
+      <div class="nav-sec">계정</div>
       <div class="mi"        id="miManual"   onclick="goPage('manual')">  <span class="mi-ic">📖</span>이용 안내</div>
       <div class="mi"        id="miMypage"   onclick="goPage('mypage')">  <span class="mi-ic">👤</span>내 정보</div>
     </div>
@@ -916,12 +916,8 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
   </div>
 
   <div class="main" id="mainArea">
-    <div id="topBar" style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--surface);border-bottom:1px solid var(--border2);position:sticky;top:0;z-index:50;gap:10px">
+    <div id="topBar" style="display:flex;align-items:center;justify-content:space-between;padding:0;background:transparent;border:none;position:sticky;top:0;z-index:50;gap:0">
       <button class="mob-menu-btn" onclick="openSidebar()" style="display:none">☰</button>
-      <img id="topLogo" src="./logo.png" alt="MUYI" style="height:40px;width:auto;object-fit:contain;filter:brightness(0) saturate(100%) invert(24%) sepia(94%) saturate(1338%) hue-rotate(240deg);">
-      <div style="display:flex;align-items:center;gap:8px">
-        <button id="darkModeBtn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span id="darkModeLabel">다크모드</span></button>
-      </div>
     </div>
 
     <!-- ■ DASHBOARD ■ -->
@@ -930,6 +926,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
         <div class="pg-head">
           <div><div class="pg-title" id="greeting">대시보드</div><div class="pg-desc" id="dateStr"></div></div>
           <div class="pg-actions">
+            <button id="darkModeBtn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span id="darkModeLabel">다크모드</span></button>
             <button id="pushNotifyBtn" onclick="setupPushNotification()" style="display:none;background:#fff;border:1.5px solid #e4e7f0;border-radius:9px;padding:8px 14px;cursor:pointer;font-size:14px;display:none;align-items:center;gap:6px">🔔 알림 설정</button>
             
             <div class="period-row" style="margin:0">
@@ -1077,9 +1074,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
         <div class="pg-head">
           <div><div class="pg-title">CRM 관리</div><div class="pg-desc">영업 파이프라인 및 가망고객 관리</div></div>
           <div class="pg-actions">
-            <button class="btn-g btn-sm" id="excelUploadBtn" style="display:none" onclick="openExcelUploadModal()">⬆ DB 일괄 업로드</button>
-            <button class="btn-g btn-sm" onclick="downloadCsvTemplate()">📋 업로드 양식</button>
-            <button class="btn-g btn-sm" onclick="exportExcel()">⬇ 엑셀 다운로드</button>
+            <button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button>
           </div>
         </div>
         <div class="card" style="margin-bottom:16px">
@@ -1286,6 +1281,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
         <div class="pg-head">
           <div><div class="pg-title">📅 연락 캘린더</div><div class="pg-desc">다음 연락 예정일 기반 일정 관리</div></div>
           <div class="pg-actions">
+            <button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button>
             <button class="btn-g btn-sm" onclick="moveMonth(-1)">◀ 이전달</button>
             <span id="calMonthLabel" style="font-size:16px;font-weight:700;color:#0f0c2e;padding:0 8px"></span>
             <button class="btn-g btn-sm" onclick="moveMonth(1)">다음달 ▶</button>
@@ -1307,8 +1303,9 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
       <div class="pg-wrap">
         <div class="pg-head">
           <div><div class="pg-title">📣 공지사항</div><div class="pg-desc">팀 공지 및 안내사항</div></div>
-          <div class="pg-actions" id="announceWriteBtn" style="display:none">
-            <button class="btn-p" onclick="openAnnounceModal()">✏️ 공지 작성</button>
+          <div class="pg-actions">
+            <button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button>
+            <button class="btn-p" id="announceWriteBtn" onclick="openAnnounceModal()" style="display:none">✏️ 공지 작성</button>
           </div>
         </div>
         <div id="pinnedAnnounceList"></div>
@@ -1319,7 +1316,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
     <!-- ■ 이용안내 ■ -->
     <div class="page" id="pgManual">
       <div class="pg-wrap" style="max-width:1000px;margin:0 auto">
-        <div class="pg-head"><div><div class="pg-title">📖 이용 안내</div><div class="pg-desc">MUYI CRM 사용 가이드</div></div></div>
+        <div class="pg-head"><div><div class="pg-title">📖 이용 안내</div><div class="pg-desc">MUYI CRM 사용 가이드</div></div><div class="pg-actions"><button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button></div></div>
         <div id="myRoleBanner" class="my-role-banner" style="display:none"></div>
 
         <!-- 탭 바 -->
@@ -1510,10 +1507,63 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
     </div>
 
     <!-- ■ 관리자 ■ -->
+    <!-- ■ 관리자 설정 ■ -->
     <div class="page" id="pgAdmin">
       <div class="pg-wrap">
-        <div class="pg-head"><div><div class="pg-title">⚙️ 관리자</div><div class="pg-desc" id="adminDesc"></div></div></div>
-        <div class="tab-bar" id="adminTabBar"></div>
+        <div class="pg-head">
+          <div><div class="pg-title">⚙️ 관리자 설정</div><div class="pg-desc">계정·데이터·운영 관리</div></div>
+          <div class="pg-actions"><button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button></div>
+        </div>
+        <!-- 2단 탭 구조: 메인 탭 + 서브 탭 -->
+        <div style="background:var(--surface);border-radius:var(--radius-lg);margin-bottom:20px;border:1px solid var(--border2);overflow:hidden;box-shadow:var(--shadow-sm)">
+          <div class="tab-bar" id="adminMainTabBar" style="margin:0;padding:0 16px;border-bottom:1.5px solid var(--border2)"></div>
+          <div class="tab-bar" id="adminSubTabBar" style="margin:0;padding:0 16px;background:var(--gray-50)"></div>
+        </div>
+        <!-- ── 계정관리 패널들 ── -->
+        <div id="admCreateUser" style="display:none">
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-t">신규 계정 생성</div>
+            <div class="form-row">
+              <div class="form-group"><label class="lbl">이메일 *</label><input class="fi" id="adm_nEmail" type="email" placeholder="user@muyi.co.kr"></div>
+              <div class="form-group"><label class="lbl">임시 비밀번호 * (8자↑)</label><input class="fi" id="adm_nPw" type="password" placeholder="임시 비밀번호"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="lbl">사원명 *</label><input class="fi" id="adm_nNick" placeholder="홍길동"></div>
+              <div class="form-group"><label class="lbl">권한 *</label>
+                <select class="fi" id="adm_nRole"><option value="junior">신입사원</option><option value="user">사원</option><option value="admin">관리자</option><option value="master">MASTER</option><option value="inactive">비활성</option></select>
+              </div>
+            </div>
+            <button class="btn-p" onclick="createUserAdmin()">계정 생성</button>
+            <div id="adm_createMsg" class="stmsg">-</div>
+          </div>
+        </div>
+        <div id="admRoleChange" style="display:none">
+          <div class="card">
+            <div class="card-t">권한 변경</div>
+            <div class="search-row" style="margin-bottom:12px">
+              <input class="fi" id="roleChangeSearch" placeholder="이름 검색" oninput="loadAdmUsersRolePanel()">
+            </div>
+            <table class="tbl"><thead><tr><th>이름</th><th>이메일</th><th>현재 권한</th><th>변경</th></tr></thead><tbody id="roleChangeBody"><tr><td colspan="4" class="empty">로딩 중...</td></tr></tbody></table>
+          </div>
+        </div>
+        <div id="admPwResetPanel" style="display:none">
+          <div class="card">
+            <div class="card-t">비밀번호 초기화</div>
+            <div class="search-row" style="margin-bottom:12px">
+              <input class="fi" id="pwResetSearch" placeholder="이름 또는 이메일 검색" oninput="loadAdmUsersPwPanel()">
+              <button class="btn-s btn-sm" onclick="loadAdmUsersPwPanel()">조회</button>
+            </div>
+            <div id="pwResetPanelList"><div class="empty">조회 버튼을 눌러주세요</div></div>
+          </div>
+        </div>
+        <!-- ── 데이터관리 패널들 ── -->
+        <div id="admDbUpload" style="display:none">
+          <div class="card">
+            <div class="card-t">DB 업로드</div>
+            <p style="font-size:14px;color:var(--gray-500);margin-bottom:18px">CSV 또는 XLSX 파일로 가망 DB를 일괄 업로드합니다.<br>업체명·전화번호 컬럼이 포함된 파일을 사용하세요.</p>
+            <button class="btn-p" onclick="openDbUploadModal()">📤 DB 업로드</button>
+          </div>
+        </div>
         <div id="admTeamPipeline" style="display:none">
           <div class="card">
             <div class="card-t">팀 파이프라인 현황</div>
@@ -1697,7 +1747,35 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
             <div id="perfCardGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px"></div>
           </div>
         </div>
-
+        <!-- ── 카카오워크 패널 (운영관리) ── -->
+        <div id="admKakaoWork" style="display:none">
+          <div class="card">
+            <div class="card-t">💬 카카오워크 웹훅 설정</div>
+            <div style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:11px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#3730a3;line-height:1.8">
+              <strong>📋 등록 방법</strong><br>
+              1. 카카오워크 앱 → 채널 선택 → 연동 서비스<br>
+              2. 웹훅 추가 → URL 복사<br>
+              3. 아래에 붙여넣기 후 저장
+            </div>
+            <div class="form-group"><label class="lbl">웹훅 URL</label>
+              <input class="fi" id="kwWebhookUrl" placeholder="https://hook.kakaowork.com/...">
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+              <button class="btn-p btn-sm" onclick="saveKwWebhook()">💾 저장</button>
+              <button class="btn-g btn-sm" onclick="testKwWebhook()">🧪 테스트 발송</button>
+            </div>
+            <div id="kwMsg" class="stmsg">-</div>
+            <div class="divider"></div>
+            <div style="font-size:14px;font-weight:700;color:var(--gray-950);margin-bottom:12px">알림 설정</div>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;margin-bottom:8px">
+              <input type="checkbox" id="kwNotifyContract" style="width:17px;height:17px;accent-color:#1e10c7"> 계약 완료 시 알림 발송
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
+              <input type="checkbox" id="kwNotifyAnnounce" style="width:17px;height:17px;accent-color:#1e10c7"> 새 공지사항 등록 시 알림 발송
+            </label>
+            <button class="btn-s btn-sm" style="margin-top:14px" onclick="saveKwSettings()">알림 설정 저장</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1706,11 +1784,13 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
       <div class="pg-wrap">
         <div class="pg-head">
           <div>
-            <div class="pg-title">🛡️ Master Console</div>
+            <div class="pg-title">🛡️ 마스터 전용</div>
             <div class="pg-desc">최고 관리자 전용 기능</div>
           </div>
+          <div class="pg-actions"><button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button></div>
         </div>
         <div class="tab-bar" id="masterTabBar"></div>
+        <!-- 사용자 관리 패널 -->
         <div id="admUsers" style="display:none">
           <div class="card" style="margin-bottom:16px">
             <div class="card-t">신규 계정 생성</div>
@@ -1752,52 +1832,42 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
             </div>
           </div>
         </div>
-        <div id="admKakaoWork" style="display:none">
+        <!-- 권한 관리 패널 -->
+        <div id="admRoles" style="display:none">
           <div class="card">
-            <div class="card-t">💬 카카오워크 웹훅 설정</div>
-            <div style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:11px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#3730a3;line-height:1.8">
-              <strong>📋 카카오워크 웹훅 URL 등록 방법</strong><br>
-              1. 카카오워크 앱 → 채널 선택 → 연동 서비스<br>
-              2. 웹훅 추가 → URL 복사<br>
-              3. 아래에 붙여넣기 후 저장
-            </div>
-            <div class="form-group"><label class="lbl">웹훅 URL</label>
-              <input class="fi" id="kwWebhookUrl" placeholder="https://hook.kakaowork.com/...">
-            </div>
-            <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
-              <button class="btn-p btn-sm" onclick="saveKwWebhook()">💾 저장</button>
-              <button class="btn-g btn-sm" onclick="testKwWebhook()">🧪 테스트 발송</button>
-            </div>
-            <div id="kwMsg" class="stmsg">-</div>
-            <div class="divider"></div>
-            <div style="font-size:14px;font-weight:700;color:#0f0c2e;margin-bottom:12px">알림 설정</div>
-            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;margin-bottom:8px">
-              <input type="checkbox" id="kwNotifyContract" style="width:17px;height:17px;accent-color:#1e10c7"> 계약 완료 시 알림 발송
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
-              <input type="checkbox" id="kwNotifyAnnounce" style="width:17px;height:17px;accent-color:#1e10c7"> 새 공지사항 등록 시 알림 발송
-            </label>
-            <button class="btn-s btn-sm" style="margin-top:14px" onclick="saveKwSettings()">알림 설정 저장</button>
-          </div>
-        </div>
-        <div id="mstrBackup" style="display:none">
-          <div class="card">
-            <div class="card-t">💾 전체 데이터 백업</div>
-            <div style="background:#f8f9fc;border-radius:11px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#374151;line-height:1.8">
-              전체 CRM 데이터를 JSON 및 CSV 형식으로 백업합니다.<br>
-              <span style="color:#9fa6bc">백업 파일은 즉시 다운로드됩니다.</span>
-            </div>
-            <button class="btn-p" onclick="backupAllData()">💾 전체 백업 시작</button>
+            <div class="card-t">권한 관리 <small>역할 변경 시 즉시 적용됩니다</small></div>
+            <table class="tbl"><thead><tr><th>이름</th><th>이메일</th><th>현재 권한</th><th>변경</th></tr></thead><tbody id="rolesBody"><tr><td colspan="4" class="empty">로딩 중...</td></tr></tbody></table>
           </div>
         </div>
       </div>
     </div>
 
+<!-- DB 업로드 모달 -->
+<div class="modal-overlay" id="dbUploadModal" style="display:none" onclick="if(event.target===this)closeDbUploadModal()">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-head">
+      <div><div class="modal-title">DB 업로드</div><div class="modal-sub">CSV / XLSX 파일로 가망 DB 일괄 등록</div></div>
+      <button class="modal-close" onclick="closeDbUploadModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="lbl">파일 선택</label>
+        <input type="file" id="dbUploadFile" class="fi" accept=".csv,.xlsx,.xls" style="cursor:pointer">
+      </div>
+      <div id="dbUploadMsg" class="stmsg">-</div>
+    </div>
+    <div class="modal-foot" style="justify-content:space-between">
+      <button class="btn-g" onclick="downloadCsvTemplate()">⬇ CSV 양식 다운로드</button>
+      <button class="btn-p" id="doDbUploadBtn" onclick="doDbUpload()">업로드</button>
+    </div>
+  </div>
+</div>
+
 <!-- CRM 상세 모달 -->
 <div class="modal-overlay" id="crmModal" style="display:none" onclick="if(event.target===this)closeCrmModal()">
   <div class="modal modal-wide">
     <div class="modal-head">
-      <div style="flex:1;min-width:0"><div class="modal-title" id="crmModalTitle">-</div><div class="modal-sub" id="crmModalSub">-</div></div>
+      <div style="flex:1;min-width:0"><div class="modal-title" id="crmModalTitle">-</div><div class="stage-quick-wrap"><div class="modal-sub" id="crmModalSub" style="cursor:pointer;user-select:none" onclick="toggleHeaderStageDrop(event)">-</div><div class="stage-quick-drop" id="stageHeaderDrop"></div></div></div>
       <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
         <button class="btn-g btn-sm" id="modalPrevBtn" onclick="moveCrmModal(-1)" title="이전">◀</button>
         <span id="modalIndexLabel" style="font-size:12px;color:var(--gray-400);white-space:nowrap"></span>
@@ -1817,10 +1887,6 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
             <div class="info-field"><span class="info-lbl">업체명</span><span class="info-val" id="ivName">-</span></div>
             <div class="info-field"><span class="info-lbl">업종</span><span class="info-val" id="ivIndustry">-</span></div>
             <div class="info-field"><span class="info-lbl">담당자</span><span class="info-val" id="ivManager">-</span></div>
-            <div class="info-field">
-              <span class="info-lbl">영업 단계</span>
-              <div class="stage-btn-group" id="ivStage"></div>
-            </div>
           </div>
           <!-- 연락처 정보 -->
           <div class="info-section-card">
@@ -1953,59 +2019,18 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
   </div>
 </div>
 
-<!-- DB 일괄 업로드 모달 -->
-<div class="modal-overlay" id="excelUploadModal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
-  <div class="modal">
+<!-- 비밀번호 재설정 모달 -->
+<div class="modal-overlay" id="pwResetModal" style="display:none" onclick="if(event.target===this)closePwResetModal()">
+  <div class="modal" style="max-width:420px;width:100%">
     <div class="modal-head">
-      <div>
-        <div class="modal-title" id="uploadModalTitle">⬆ DB 일괄 업로드</div>
-        <div class="modal-sub">업체명·전화번호·주소·업종·단계·메모·다음연락일 지원</div>
-      </div>
-      <button class="modal-close" onclick="document.getElementById('excelUploadModal').style.display='none'">✕</button>
+      <div class="modal-title">🔑 비밀번호 재설정</div>
+      <button class="modal-close" onclick="closePwResetModal()">✕</button>
     </div>
-    <div class="modal-body">
-      <!-- MASTER/승인된ADMIN 영역 -->
-      <div id="uploadMasterArea">
-        <div style="background:#f8f9fc;border-radius:11px;padding:13px 16px;margin-bottom:13px;font-size:13px;color:#374151;line-height:1.8">
-          <strong>📋 컬럼 순서:</strong> 업체명 | 전화번호 | 주소 | 업종 | 단계 | 메모 | 다음연락일(YYYY-MM-DD)<br>
-          <span style="color:#9fa6bc">단계: 가망/컨택중/검토중/미팅확정/계약완료/영업종결</span>
-        </div>
-        <div class="form-group">
-          <label class="lbl">파일 선택 (.xlsx, .xls, .csv)</label>
-          <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" class="fi" onchange="previewExcel(this)">
-        </div>
-        <div id="excelPreview" style="display:none">
-          <div style="font-size:13px;font-weight:700;color:#0f0c2e;margin-bottom:7px" id="excelPreviewLabel"></div>
-          <div style="overflow-x:auto;max-height:220px;overflow-y:auto">
-            <table class="tbl" id="excelPreviewTable"></table>
-          </div>
-        </div>
-      </div>
-      <!-- ADMIN 승인 요청 영역 -->
-      <div id="uploadAdminArea" style="display:none">
-        <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:11px;padding:13px 16px;margin-bottom:13px;font-size:13px;color:#92400e;line-height:1.6">
-          ⚠️ ADMIN은 MASTER 승인 후 업로드 가능합니다.<br>파일을 선택하고 사유를 입력하면 승인 요청이 전송됩니다.
-        </div>
-        <div class="form-group">
-          <label class="lbl">파일 선택 (미리보기)</label>
-          <input type="file" id="excelFileAdmin" accept=".xlsx,.xls,.csv" class="fi" onchange="previewExcelAdmin(this)">
-        </div>
-        <div id="excelPreviewAdmin" style="display:none;margin-bottom:11px">
-          <div style="font-size:13px;font-weight:600;color:#374151" id="excelPreviewAdminLabel"></div>
-        </div>
-        <div class="form-group">
-          <label class="lbl">업로드 사유 *</label>
-          <input class="fi" id="uploadMemo" placeholder="예: 3월 영업 대상 신규 추가 1,200건">
-        </div>
-      </div>
-      <!-- MASTER - 승인 대기 목록 -->
-      <div id="uploadApprovalList"></div>
-      <div id="uploadMsg" class="stmsg" style="margin-top:11px">-</div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn-g btn-sm" onclick="document.getElementById('excelUploadModal').style.display='none'">닫기</button>
-      <button class="btn-p btn-sm" id="uploadBtn" onclick="uploadExcel()" style="display:none">⬆ 업로드 시작</button>
-      <button class="btn-s btn-sm" id="uploadRequestBtn" onclick="requestUploadApproval()" style="display:none">📨 MASTER 승인 요청</button>
+    <div style="padding:20px">
+      <div id="pwResetTargetLabel" style="font-size:14px;color:var(--gray-600);margin-bottom:20px;padding:10px 14px;background:var(--gray-50);border-radius:10px;border:1px solid var(--border2)"></div>
+      <p style="font-size:14px;color:var(--gray-700);margin-bottom:20px;line-height:1.6">해당 사원의 이메일로 비밀번호 재설정 링크를 발송합니다.<br>사원이 링크를 클릭해 새 비밀번호를 직접 설정할 수 있습니다.</p>
+      <button class="btn-p" id="sendResetEmailBtn" onclick="sendResetEmail()" style="width:100%;margin-bottom:12px">📧 재설정 링크 발송</button>
+      <div id="pwResetMsg" class="stmsg">-</div>
     </div>
   </div>
 </div>

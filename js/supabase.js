@@ -26,79 +26,48 @@ const TIER_INFO={
   master:{chip:'tc-master',label:'MASTER',name:'최고 관리자',desc:'시스템 전체 관리',feats:[{ok:true,txt:'모든 ADMIN 권한 포함'},{ok:true,txt:'계정 생성 및 권한 변경'},{ok:true,txt:'INACTIVE 권한 부여'},{ok:true,txt:'전체 DB 조회/삭제'},{ok:true,txt:'담당자별 DB 이관'},{ok:true,txt:'비밀번호 재설정'}]},
 };
 
-// ════ SaaS 메뉴 구조 ════
-const SIDEBAR_GROUPS={
-  user:[
-    {label:'WORKSPACE',items:[
-      {id:'miDash',     page:'dash',     label:'대시보드', icon:'📊'},
-      {id:'miCrm',      page:'crm',      label:'영업 DB',  icon:'📋'},
-      {id:'miCalendar', page:'calendar', label:'캘린더',   icon:'📅'},
-    ]},
-    {label:'MANAGEMENT',items:[
-      {id:'miAnnounce', page:'announce', label:'공지사항', icon:'📣'},
-    ]},
-    {label:'ACCOUNT',items:[
-      {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
-      {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
-    ]}
-  ],
-  admin:[
-    {label:'WORKSPACE',items:[
-      {id:'miDash',     page:'dash',     label:'대시보드', icon:'📊'},
-      {id:'miCrm',      page:'crm',      label:'영업 DB',  icon:'📋'},
-      {id:'miCalendar', page:'calendar', label:'캘린더',   icon:'📅'},
-    ]},
-    {label:'MANAGEMENT',items:[
-      {id:'miAnnounce', page:'announce', label:'공지사항', icon:'📣'},
-      {id:'miAdmin',    page:'admin',    label:'Admin',    icon:'⚙️'},
-    ]},
-    {label:'ACCOUNT',items:[
-      {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
-      {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
-    ]}
-  ],
-  master:[
-    {label:'WORKSPACE',items:[
-      {id:'miDash',     page:'dash',     label:'대시보드', icon:'📊'},
-      {id:'miCrm',      page:'crm',      label:'영업 DB',  icon:'📋'},
-      {id:'miCalendar', page:'calendar', label:'캘린더',   icon:'📅'},
-    ]},
-    {label:'MANAGEMENT',items:[
-      {id:'miAnnounce', page:'announce', label:'공지사항', icon:'📣'},
-      {id:'miAdmin',    page:'admin',    label:'Admin',    icon:'⚙️'},
-    ]},
-    {label:'MASTER',items:[
-      {id:'miMaster', page:'master', label:'Master Console', icon:'🛡️'},
-    ]},
-    {label:'ACCOUNT',items:[
-      {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
-      {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
-    ]}
-  ]
-};
+// ════ SaaS 통합 사이드바 구조 ════
+// 권한별 렌더링 분리 — display:none 사용 금지
+const SIDEBAR_ALL_GROUPS=[
+  {label:'메뉴',items:[
+    {id:'miDash',     page:'dash',     label:'대시보드',   icon:'📊', roles:['user','admin','master']},
+    {id:'miCrm',      page:'crm',      label:'CRM 관리',   icon:'📋', roles:['user','admin','master']},
+    {id:'miCalendar', page:'calendar', label:'연락 캘린더', icon:'📅', roles:['user','admin','master']},
+    {id:'miAnnounce', page:'announce', label:'공지사항',    icon:'📣', roles:['user','admin','master']},
+    {id:'miManual',   page:'manual',   label:'이용 안내',   icon:'📖', roles:['user','admin','master']},
+  ]},
+  {label:'관리자',items:[
+    {id:'miAdmin', page:'admin', label:'관리자 설정', icon:'⚙️', roles:['admin','master']},
+  ]},
+  {label:'마스터 전용',roles:['master'],items:[
+    {id:'miMasterUsers', page:'masterUsers', label:'사용자 관리', icon:'👥', roles:['master']},
+    {id:'miMasterRoles', page:'masterRoles', label:'권한 관리',   icon:'🔑', roles:['master']},
+  ]},
+  {label:'계정',items:[
+    {id:'miMypage', page:'mypage', label:'내 정보', icon:'👤', roles:['user','admin','master']},
+  ]},
+];
 
 function renderSidebar(role){
   const nav=document.querySelector('.sb-nav');
   if(!nav)return;
   role=(role||'user').toLowerCase();
   nav.innerHTML='';
-  const groups=SIDEBAR_GROUPS[role]||SIDEBAR_GROUPS.user;
-  groups.forEach(group=>{
+  SIDEBAR_ALL_GROUPS.forEach(group=>{
+    // 섹션 자체가 역할 제한이 있으면 체크
+    if(group.roles&&!group.roles.includes(role))return;
+    const visibleItems=group.items.filter(m=>m.roles.includes(role));
+    if(!visibleItems.length)return;
     const sec=document.createElement('div');
     sec.className='nav-sec';
+    if(group.secId)sec.id=group.secId;
     sec.textContent=group.label;
     nav.appendChild(sec);
-    group.items.forEach(m=>{
+    visibleItems.forEach(m=>{
       const div=document.createElement('div');
       div.id=m.id;
       div.className='mi';
-      div.onclick=()=>{
-        if(m.masterPanel){
-          goPage('admin');
-          return;
-        }
-        goPage(m.page);
-      };
+      div.onclick=()=>goPage(m.page);
       div.innerHTML=`<span class="mi-ic">${m.icon}</span>${m.label}`;
       nav.appendChild(div);
     });
@@ -213,33 +182,25 @@ function closeSidebar(){document.getElementById('sidebar').classList.remove('ope
 
 // 다크모드
 function _syncDarkBtn(isDark){
-  const btn=document.getElementById('darkModeBtn');
-  const lbl=document.getElementById('darkModeLabel');
-  if(!btn)return;
-  if(isDark){
-    btn.style.background='rgba(255,255,255,.07)';
-    btn.style.borderColor='rgba(255,255,255,.2)';
-    btn.style.color='#e5e7eb';
-    btn.firstChild.textContent='☀️ ';
-    if(lbl)lbl.textContent='라이트모드';
-  }else{
-    btn.style.background='none';
-    btn.style.borderColor='';
-    btn.style.color='';
-    btn.firstChild.textContent='🌙 ';
-    if(lbl)lbl.textContent='다크모드';
-  }
+  const btns=document.querySelectorAll('#darkModeBtn,.dark-mode-btn');
+  btns.forEach(btn=>{
+    const lbl=btn.querySelector('.dark-mode-label')||document.getElementById('darkModeLabel');
+    if(isDark){
+      btn.style.background='rgba(255,255,255,.07)';
+      btn.style.borderColor='rgba(255,255,255,.2)';
+      btn.style.color='#e5e7eb';
+      btn.firstChild.textContent='☀️ ';
+      if(lbl)lbl.textContent='라이트모드';
+    }else{
+      btn.style.background='none';
+      btn.style.borderColor='';
+      btn.style.color='';
+      btn.firstChild.textContent='🌙 ';
+      if(lbl)lbl.textContent='다크모드';
+    }
+  });
 }
-function _syncLogo(isDark){
-  const logo=document.getElementById('topLogo');
-  if(!logo)return;
-  if(isDark){
-    logo.style.display='none';
-  }else{
-    logo.style.display='';
-    logo.style.filter='brightness(0) saturate(100%) invert(24%) sepia(94%) saturate(1338%) hue-rotate(240deg)';
-  }
-}
+function _syncLogo(isDark){}
 function toggleDark(){
   document.body.classList.toggle('dark');
   const isDark=document.body.classList.contains('dark');
@@ -390,6 +351,10 @@ async function fetchProfile(){const{data}=await sb.from('users').select('*').eq(
 function bootApp(){
   const role=(PR?.role||'user').toLowerCase();
   if(role==='inactive'){sb.auth.signOut();AU=null;PR=null;document.getElementById('loginErr').textContent='⛔ 접근 권한이 없습니다. MASTER에게 문의하세요.';return}
+  // pgMaster가 mainArea 바깥에 있을 경우 이동
+  const mainArea=document.getElementById('mainArea');
+  const pgMaster=document.getElementById('pgMaster');
+  if(pgMaster&&mainArea&&pgMaster.parentElement!==mainArea)mainArea.appendChild(pgMaster);
   document.getElementById('loginWrap').style.display='none';
   document.getElementById('app').style.display='block';
   const name=PR?.name||AU.email.split('@')[0];
@@ -402,9 +367,6 @@ function bootApp(){
   // ✅ 동적 사이드바 렌더링 (권한 기반)
   renderSidebar(role);
 
-  // 엑셀 업로드 버튼 권한
-  const excelBtn=document.getElementById('excelUploadBtn');
-  if(excelBtn&&['master','admin'].includes(role))excelBtn.style.display='flex';
   loadAnnounceBadge();goPage('dash');
   setTimeout(checkMustChangePw,500);
   setTimeout(checkContractExpiring,3000);
@@ -433,11 +395,29 @@ const PAGE_ACCESS={
   mypage:['user','admin','master'],
   announce:['user','admin','master'],
   admin:['admin','master'],
-  master:['master']
+  master:['master'],
+  masterUsers:['master'],
+  masterRoles:['master'],
 };
 
 function goPage(page){
   const role=(PR?.role||'user').toLowerCase();
+
+  // ── 마스터 전용 서브페이지: pgMaster를 탭 지정해서 오픈 ──
+  if(page==='masterUsers'||page==='masterRoles'){
+    const allowed=PAGE_ACCESS[page];
+    if(!allowed?.includes(role)){goPage('dash');return;}
+    ['dash','crm','calendar','announce','manual','admin','master','mypage'].forEach(p=>{
+      const pg=document.getElementById('pg'+cap(p));
+      if(pg)pg.classList.toggle('active',p==='master');
+    });
+    // 사이드바 active 상태 정확히 지정
+    document.querySelectorAll('.mi').forEach(el=>el.classList.remove('active'));
+    document.getElementById(page==='masterUsers'?'miMasterUsers':'miMasterRoles')?.classList.add('active');
+    closeSidebar();
+    setupMasterPage(page==='masterUsers'?'mstrUsers':'mstrRoles');
+    return;
+  }
 
   // 라우트 보호: 권한 없는 페이지 접근 차단
   const allowed=PAGE_ACCESS[page];
@@ -450,18 +430,10 @@ function goPage(page){
     const pg=document.getElementById('pg'+cap(p));if(pg)pg.classList.toggle('active',p===page);
     const m=document.getElementById('mi'+cap(p));if(m)m.classList.toggle('active',p===page);
   });
-  // master role: miMaster active on 'master' page, miAdmin active on 'admin' page
-  const isMaster=(PR?.role||'').toLowerCase()==='master';
-  const miMaster=document.getElementById('miMaster');
-  const miAdmin=document.getElementById('miAdmin');
-  if(isMaster&&page==='master'){
-    if(miMaster)miMaster.classList.add('active');
-    if(miAdmin)miAdmin.classList.remove('active');
-  }
   closeSidebar();
   if(page==='dash')     loadDash();
   if(page==='admin')    setupAdminPage();
-  if(page==='master')   setupMasterPage();
+  if(page==='master')   setupMasterPage('mstrUsers');
   if(page==='announce') loadAnnouncements();
   if(page==='manual')   loadManual();
   if(page==='calendar') renderCalendar();

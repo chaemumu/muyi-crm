@@ -453,7 +453,7 @@ const ADMIN_MAIN_TABS=[
 ];
 const ADMIN_SUB_TABS={
   account:[
-    {key:'createUser', label:'사용자 생성', panel:'admCreateUser', load:null},
+    {key:'createUser', label:'사용자 생성', panel:'admCreateUser', load:()=>{const sel=document.getElementById('adm_nRole');if(sel)sel.innerHTML=getAllowedRoleOpts('');}},
   ],
   data:[
     {key:'dupcheck', label:'중복 탐지',    panel:'admDupCheck', load:null},
@@ -751,13 +751,7 @@ async function loadAdmUsers(){
     <td><strong>${u.name||'-'}</strong></td>
     <td style="color:#6b7494;font-size:13px">${u.email||'-'}</td>
     <td><span class="badge ${rlCls(u.role)}">${rlLbl(u.role)}</span></td>
-    <td><select class="role-sel" onchange="changeRole('${u.id}',this.value)">
-      <option value="junior" ${u.role==='junior'?'selected':''}>신입사원</option>
-      <option value="user" ${u.role==='user'?'selected':''}>사원</option>
-      <option value="admin" ${u.role==='admin'?'selected':''}>관리자</option>
-      <option value="master" ${u.role==='master'?'selected':''}>MASTER</option>
-      <option value="inactive" ${u.role==='inactive'?'selected':''}>비활성</option>
-    </select></td>
+    <td><select class="role-sel" onchange="changeRole('${u.id}',this.value)">${getAllowedRoleOpts(u.role)}</select></td>
     <td><button class="btn-g btn-sm" onclick="openPwResetModal('${u.id}','${u.email}','${u.name||u.email}')">🔑 재설정</button></td>
   </tr>`).join('');
 }

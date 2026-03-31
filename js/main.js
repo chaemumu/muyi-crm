@@ -324,7 +324,7 @@ async function renderCalendar(){
   const mgr=AU.id;
   const startStr=`${yr}-${String(mo+1).padStart(2,'0')}-01`;
   const endStr=`${yr}-${String(mo+1).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`;
-  let q=sb.from('prospects').select('id,business_name,next_contact_date,stage,manager').gte('next_contact_date',startStr).lte('next_contact_date',endStr).not('stage','eq','영업종결');
+  let q=sb.from('prospects').select('id,business_name,next_contact_date,stage,manager').gte('next_contact_date',startStr).lte('next_contact_date',endStr).eq('stage','미팅확정');
   if(!isPriv())q=q.eq('manager_id',mgr);
   const{data}=await q;
   const eventMap={};(data||[]).forEach(r=>{const d=r.next_contact_date;if(!eventMap[d])eventMap[d]=[];eventMap[d].push(r)});

@@ -49,7 +49,7 @@ async function loadCallHistory(id){
     const safeContent=(c.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     return`<div class="call-log-item${isInitial?' call-log-initial':''}" id="cl-${c.id}">
       <div class="cl-meta">
-        <span class="cl-who">${c.manager_name||'-'}${isInitial?` <span class="cl-initial-badge">초기등록</span>`:''}</span>
+        <span class="cl-who">${c.manager_name||'-'}</span>
         <div style="display:flex;align-items:center;gap:6px">
           <span class="cl-result cl-result-${c.result||'기타'}">${c.result||'-'}</span>
           <span class="cl-time">${timeStr}</span>

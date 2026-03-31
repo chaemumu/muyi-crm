@@ -29,69 +29,51 @@ const TIER_INFO={
 // ════ SaaS 메뉴 구조 ════
 const SIDEBAR_GROUPS={
   user:[
-    {
-      label:'영업',
-      items:[
-        {id:'miDash',     page:'dash',     label:'대시보드',  icon:'📊'},
-        {id:'miCrm',      page:'crm',      label:'영업 DB',   icon:'📋'},
-        {id:'miCalendar', page:'calendar', label:'캘린더',    icon:'📅'},
-      ]
-    },
-    {
-      label:'내 정보',
-      items:[
-        {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
-        {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
-      ]
-    }
+    {label:'WORKSPACE',items:[
+      {id:'miDash',     page:'dash',     label:'대시보드', icon:'📊'},
+      {id:'miCrm',      page:'crm',      label:'영업 DB',  icon:'📋'},
+      {id:'miCalendar', page:'calendar', label:'캘린더',   icon:'📅'},
+    ]},
+    {label:'MANAGEMENT',items:[
+      {id:'miAnnounce', page:'announce', label:'공지사항', icon:'📣'},
+    ]},
+    {label:'ACCOUNT',items:[
+      {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
+      {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
+    ]}
   ],
   admin:[
-    {
-      label:'영업',
-      items:[
-        {id:'miDash',     page:'dash',     label:'대시보드',  icon:'📊'},
-        {id:'miCrm',      page:'crm',      label:'영업 DB',   icon:'📋'},
-        {id:'miCalendar', page:'calendar', label:'캘린더',    icon:'📅'},
-      ]
-    },
-    {
-      label:'관리',
-      items:[
-        {id:'miAnnounce', page:'announce', label:'공지사항',    icon:'📣'},
-        {id:'miAdmin',    page:'admin',    label:'관리자 설정', icon:'⚙️'},
-      ]
-    },
-    {
-      label:'내 정보',
-      items:[
-        {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
-        {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
-      ]
-    }
+    {label:'WORKSPACE',items:[
+      {id:'miDash',     page:'dash',     label:'대시보드', icon:'📊'},
+      {id:'miCrm',      page:'crm',      label:'영업 DB',  icon:'📋'},
+      {id:'miCalendar', page:'calendar', label:'캘린더',   icon:'📅'},
+    ]},
+    {label:'MANAGEMENT',items:[
+      {id:'miAnnounce', page:'announce', label:'공지사항', icon:'📣'},
+      {id:'miAdmin',    page:'admin',    label:'Admin',    icon:'⚙️'},
+    ]},
+    {label:'ACCOUNT',items:[
+      {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
+      {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
+    ]}
   ],
   master:[
-    {
-      label:'영업',
-      items:[
-        {id:'miDash',     page:'dash',     label:'대시보드', icon:'📊'},
-        {id:'miCrm',      page:'crm',      label:'영업 DB',  icon:'📋'},
-        {id:'miCalendar', page:'calendar', label:'캘린더',   icon:'📅'},
-      ]
-    },
-    {
-      label:'관리',
-      items:[
-        {id:'miAnnounce', page:'announce', label:'공지사항',  icon:'📣'},
-        {id:'miMaster',   page:'admin',    label:'통합 관리', icon:'🛡️'},
-      ]
-    },
-    {
-      label:'내 정보',
-      items:[
-        {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
-        {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
-      ]
-    }
+    {label:'WORKSPACE',items:[
+      {id:'miDash',     page:'dash',     label:'대시보드', icon:'📊'},
+      {id:'miCrm',      page:'crm',      label:'영업 DB',  icon:'📋'},
+      {id:'miCalendar', page:'calendar', label:'캘린더',   icon:'📅'},
+    ]},
+    {label:'MANAGEMENT',items:[
+      {id:'miAnnounce', page:'announce', label:'공지사항', icon:'📣'},
+      {id:'miAdmin',    page:'admin',    label:'Admin',    icon:'⚙️'},
+    ]},
+    {label:'MASTER',items:[
+      {id:'miMaster', page:'master', label:'Master Console', icon:'🛡️'},
+    ]},
+    {label:'ACCOUNT',items:[
+      {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
+      {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
+    ]}
   ]
 };
 
@@ -449,8 +431,9 @@ const PAGE_ACCESS={
   calendar:['user','admin','master'],
   manual:['user','admin','master'],
   mypage:['user','admin','master'],
-  announce:['admin','master'],
-  admin:['admin','master']
+  announce:['user','admin','master'],
+  admin:['admin','master'],
+  master:['master']
 };
 
 function goPage(page){
@@ -463,21 +446,22 @@ function goPage(page){
     return;
   }
 
-  ['dash','crm','calendar','announce','manual','admin','mypage'].forEach(p=>{
+  ['dash','crm','calendar','announce','manual','admin','master','mypage'].forEach(p=>{
     const pg=document.getElementById('pg'+cap(p));if(pg)pg.classList.toggle('active',p===page);
     const m=document.getElementById('mi'+cap(p));if(m)m.classList.toggle('active',p===page);
   });
-  // master role은 miMaster를 admin 페이지 active로, miAdmin은 inactive
+  // master role: miMaster active on 'master' page, miAdmin active on 'admin' page
   const isMaster=(PR?.role||'').toLowerCase()==='master';
   const miMaster=document.getElementById('miMaster');
   const miAdmin=document.getElementById('miAdmin');
-  if(isMaster){
-    if(miMaster)miMaster.classList.toggle('active',page==='admin');
+  if(isMaster&&page==='master'){
+    if(miMaster)miMaster.classList.add('active');
     if(miAdmin)miAdmin.classList.remove('active');
   }
   closeSidebar();
   if(page==='dash')     loadDash();
   if(page==='admin')    setupAdminPage();
+  if(page==='master')   setupMasterPage();
   if(page==='announce') loadAnnouncements();
   if(page==='manual')   loadManual();
   if(page==='calendar') renderCalendar();

@@ -432,23 +432,7 @@ async function deleteAnnounce(id){
 }
 
 // ── 관리자 페이지 ──
-const MASTER_ONLY_PANELS=['admUsers','admCrmWrap','admKakaoWork'];
-
-const MASTER_TABS=[
-  {key:'users',label:'사용자 관리'},
-  {key:'allcrm',label:'전체 DB'},
-  {key:'pipeline',label:'팀 파이프라인'},
-  {key:'blocked',label:'영업 불가 업체'},
-  {key:'goal',label:'목표 설정'},
-  {key:'templates',label:'템플릿 관리'},
-  {key:'report',label:'📊 주간 리포트'},
-  {key:'dupcheck',label:'🔍 중복 탐지'},
-  {key:'kakaowork',label:'💬 카카오워크'},
-  {key:'stale',label:'⚠️ 장기 종결 DB'},
-  {key:'perfcards',label:'👤 사원별 성과'},
-  {key:'assign',label:'📤 DB 배정'},
-  {key:'backup',label:'💾 전체 백업',action:'backupAllData()'}
-];
+const MASTER_ONLY_PANELS=[];
 
 const ADMIN_TABS=[
   {key:'pipeline',label:'팀 파이프라인'},
@@ -463,78 +447,78 @@ const ADMIN_TABS=[
 ];
 
 const TAB_PANEL_MAP={
-  users:'admUsers',allcrm:'admCrmWrap',pipeline:'admTeamPipeline',
+  pipeline:'admTeamPipeline',
   blocked:'admBlocked',goal:'admGoal',templates:'admTemplates',
-  report:'admReport',dupcheck:'admDupCheck',kakaowork:'admKakaoWork',
+  report:'admReport',dupcheck:'admDupCheck',
   stale:'admStale',perfcards:'admPerfCards',assign:'admAssign'
 };
 
 function setupAdminPage(){
   const role=(PR?.role||'').toLowerCase();
   if(!['master','admin'].includes(role)){goPage('dash');return}
-
   document.getElementById('adminDesc').textContent='관리자 기능';
-
-  // master는 MASTER_ONLY_PANELS 유지, admin은 제거
-  if(role!=='master'){
-    MASTER_ONLY_PANELS.forEach(id=>{
-      const el=document.getElementById(id);
-      if(el)el.style.display='none';
-    });
-  } else {
-    MASTER_ONLY_PANELS.forEach(id=>{
-      const el=document.getElementById(id);
-      if(el)el.style.display='';
-    });
-  }
-
-  const tabs=role==='master'?MASTER_TABS:ADMIN_TABS;
-  const defaultTab=tabs[0].key;
-
   const tabBar=document.getElementById('adminTabBar');
-  tabBar.innerHTML=tabs.map((t,i)=>{
+  tabBar.innerHTML=ADMIN_TABS.map((t,i)=>{
     if(t.action)return `<div class="ti" onclick="${t.action}">${t.label}</div>`;
     return `<div class="ti${i===0?' on':''}" onclick="admTab('${t.key}',this)">${t.label}</div>`;
   }).join('');
-
-  admTab_show(defaultTab);
-  if(defaultTab==='users'){loadAdmUsers();loadMgrFilter();}
-  else if(defaultTab==='pipeline'){loadTpMgrFilter();loadTeamPipeline();}
+  admTab_show('pipeline');
+  loadTpMgrFilter();
+  loadTeamPipeline();
 }
 
-function showMasterPanel(tab){
-  const allTabs=document.querySelectorAll('#adminTabBar .ti');
-  allTabs.forEach(t=>t.classList.remove('on'));
-  // 해당 탭 버튼 active 처리
-  allTabs.forEach(t=>{
-    if(t.getAttribute('onclick')&&t.getAttribute('onclick').includes(`'${tab}'`))t.classList.add('on');
+const MASTER_PAGE_TABS=[
+  {key:'mstrUsers',    label:'👥 사용자 관리'},
+  {key:'mstrDatabase', label:'🗄️ 전체 DB'},
+  {key:'mstrKakaoWork',label:'💬 Kakao Work'},
+  {key:'mstrBackup',   label:'💾 백업'},
+];
+const MASTER_TAB_PANEL_MAP={
+  mstrUsers:'admUsers',
+  mstrDatabase:'admCrmWrap',
+  mstrKakaoWork:'admKakaoWork',
+  mstrBackup:'mstrBackup',
+};
+function setupMasterPage(){
+  const role=(PR?.role||'').toLowerCase();
+  if(role!=='master'){goPage('dash');return}
+  const tabBar=document.getElementById('masterTabBar');
+  tabBar.innerHTML=MASTER_PAGE_TABS.map((t,i)=>
+    `<div class="ti${i===0?' on':''}" onclick="masterTab('${t.key}',this)">${t.label}</div>`
+  ).join('');
+  masterTab_show('mstrUsers');
+  loadAdmUsers();
+  loadMgrFilter();
+}
+function masterTab(tab,el){
+  document.querySelectorAll('#masterTabBar .ti').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');
+  masterTab_show(tab);
+  if(tab==='mstrUsers'){loadAdmUsers();loadMgrFilter();}
+  if(tab==='mstrDatabase'){loadAdmCRM();}
+  if(tab==='mstrKakaoWork')loadKakaoWorkSettings();
+}
+function masterTab_show(tab){
+  Object.entries(MASTER_TAB_PANEL_MAP).forEach(([key,panelId])=>{
+    const el=document.getElementById(panelId);
+    if(el)el.style.display=(key===tab)?'block':'none';
   });
-  admTab_show(tab);
-  if(tab==='users'){loadAdmUsers();loadMgrFilter();}
-  if(tab==='allcrm')loadAdmCRM();
-  if(tab==='kakaowork')loadKakaoWorkSettings();
-  if(tab==='pipeline'){loadTpMgrFilter();loadTeamPipeline();}
-  if(tab==='blocked')loadBlockedAdmin();
-  if(tab==='goal')loadGoalHist();
-  if(tab==='templates')loadTemplateAdmin();
-  if(tab==='report')loadWeeklyReport();
-  if(tab==='dupcheck')loadDupCheck();
-  if(tab==='stale')loadStaleDB();
-  if(tab==='perfcards'){if(typeof initPerfCardSelects==='function')initPerfCardSelects();loadPerfCards();}
-  if(tab==='assign'){loadAssignUsers();loadAssignList();}
+}
+function showMasterPanel(tab){
+  // legacy - redirect to master page
+  goPage('master');
+  setTimeout(()=>masterTab('mstr'+tab.charAt(0).toUpperCase()+tab.slice(1), document.querySelector('#masterTabBar .ti')),100);
 }
 
 function admTab(tab,el){
   document.querySelectorAll('#adminTabBar .ti').forEach(t=>t.classList.remove('on'));
   if(el)el.classList.add('on');admTab_show(tab);
-  if(tab==='allcrm')loadAdmCRM();
   if(tab==='blocked')loadBlockedAdmin();
   if(tab==='pipeline'){loadTpMgrFilter();loadTeamPipeline();}
   if(tab==='goal')loadGoalHist();
   if(tab==='templates')loadTemplateAdmin();
   if(tab==='report')loadWeeklyReport();
   if(tab==='dupcheck')loadDupCheck();
-  if(tab==='kakaowork')loadKakaoWorkSettings();
   if(tab==='stale')loadStaleDB();
   if(tab==='perfcards'){if(typeof initPerfCardSelects==='function')initPerfCardSelects();loadPerfCards();}
   if(tab==='assign'){loadAssignUsers();loadAssignList();}

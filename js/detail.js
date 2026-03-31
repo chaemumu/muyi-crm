@@ -17,8 +17,13 @@ async function openCrmModal(id){
   document.getElementById('ivSubPhone').textContent=data.sub_phone||'-';
   document.getElementById('ivFeature').textContent=data.feature||data.memo||'-';
   const urlEl=document.getElementById('ivUrl'),urlEmptyEl=document.getElementById('ivUrlEmpty');
-  if(data.naver_url){urlEl.href=data.naver_url;urlEl.style.display='block';urlEmptyEl.style.display='none';}
-  else{urlEl.style.display='none';urlEmptyEl.style.display='block';}
+  if(data.naver_url){
+    urlEl.href=data.naver_url;
+    // 표시 텍스트: 도메인+경로 요약 (너무 길면 앞 50자)
+    try{const u=new URL(data.naver_url);urlEl.textContent=u.hostname+(u.pathname.length>1?u.pathname:'');}
+    catch(e){urlEl.textContent=data.naver_url.length>50?data.naver_url.slice(0,50)+'…':data.naver_url;}
+    urlEl.style.display='block';urlEmptyEl.style.display='none';
+  }else{urlEl.style.display='none';urlEmptyEl.style.display='block';}
 
   // 다음 연락 예정일
   document.getElementById('ivNextContact').textContent=data.next_contact_date||'미설정';
@@ -60,9 +65,6 @@ async function openCrmModal(id){
   if(editToggle)editToggle.style.display=canEdit?'inline-flex':'none';
   document.getElementById('modalDeleteBtn').style.display=((PR?.role||'')==='master')?'block':'none';
 
-  // 지도 버튼
-  const mapBtn=document.getElementById('mapBtn');
-  if(mapBtn)mapBtn.style.display=(data.address||data.naver_url)?'flex':'none';
 
   // 통화 입력 초기화
   selectCallResult('');
@@ -133,8 +135,12 @@ async function saveCrmEdit(){
   document.getElementById('ivIndustry').textContent=payload.industry||'-';
   document.getElementById('ivFeature').textContent=newFeature||'-';
   const urlEl=document.getElementById('ivUrl'),urlEmptyEl=document.getElementById('ivUrlEmpty');
-  if(payload.naver_url){urlEl.href=payload.naver_url;urlEl.style.display='block';urlEmptyEl.style.display='none';}
-  else{urlEl.style.display='none';urlEmptyEl.style.display='block';}
+  if(payload.naver_url){
+    urlEl.href=payload.naver_url;
+    try{const u=new URL(payload.naver_url);urlEl.textContent=u.hostname+(u.pathname.length>1?u.pathname:'');}
+    catch(e){urlEl.textContent=payload.naver_url.length>50?payload.naver_url.slice(0,50)+'…':payload.naver_url;}
+    urlEl.style.display='block';urlEmptyEl.style.display='none';
+  }else{urlEl.style.display='none';urlEmptyEl.style.display='block';}
   // 단계 버튼 갱신
   const stageList=[
     {key:'가망',label:'🔵 가망',cls:'sb-prospect'},{key:'컨택중',label:'🟡 컨택중',cls:'sb-contact'},

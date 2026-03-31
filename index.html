@@ -472,8 +472,6 @@ textarea.fi{resize:vertical;min-height:80px;line-height:1.6}
 .pwa-install-btn.show{display:flex}
 
 /* ── MAP BTN ── */
-#mapBtn{background:#03c75a!important;color:#fff!important;border-color:#03c75a!important}
-#mapBtn:hover{background:#02a84d!important}
 
 /* ── HIGHLIGHT ── */
 .hl{background:#ffd60a;border-radius:2px;padding:0 2px;font-weight:700;color:var(--gray-950)}
@@ -1804,7 +1802,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
         <button class="btn-g btn-sm" id="modalPrevBtn" onclick="moveCrmModal(-1)" title="이전">◀</button>
         <span id="modalIndexLabel" style="font-size:12px;color:var(--gray-400);white-space:nowrap"></span>
         <button class="btn-g btn-sm" id="modalNextBtn" onclick="moveCrmModal(1)" title="다음">▶</button>
-        <button class="btn-g btn-sm" id="mapBtn" onclick="openNaverMap()" title="네이버 지도" style="display:none">🗺️</button>
+
         <button class="modal-close" onclick="closeCrmModal()">✕</button>
       </div>
     </div>
@@ -1833,7 +1831,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
             <div class="info-field"><span class="info-lbl">대표특징</span><span class="info-val" id="ivFeature">-</span></div>
             <div class="info-field">
               <span class="info-lbl">URL</span>
-              <a id="ivUrl" href="#" target="_blank" style="color:var(--blue);font-size:13px;font-weight:700;display:none">🔗 링크 열기 ↗</a>
+              <a id="ivUrl" href="#" target="_blank" style="color:var(--blue);font-size:12px;font-weight:500;display:none;word-break:break-all;line-height:1.5;text-decoration:underline;text-underline-offset:2px"></a>
               <span id="ivUrlEmpty" class="info-val">-</span>
             </div>
           </div>

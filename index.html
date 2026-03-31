@@ -1133,7 +1133,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
                 </div>
                 <div id="regDupWarn" style="font-size:13px;color:#dc2626;margin-top:6px;display:none"></div>
               </div>
-              <div class="form-group"><label class="lbl">대표연락처 *</label><input class="fi" id="rPhone" placeholder="010-0000-0000" maxlength="13"></div>
+              <div class="form-group"><label class="lbl">대표연락처 *</label><input class="fi" id="rPhone" placeholder="010-0000-0000" maxlength="13" oninput="formatPhoneInput(this)"></div>
             </div>
             <div class="form-row">
               <div class="form-group">
@@ -1530,7 +1530,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
             <div class="form-row">
               <div class="form-group"><label class="lbl">사원명 *</label><input class="fi" id="adm_nNick" placeholder="홍길동"></div>
               <div class="form-group"><label class="lbl">권한 *</label>
-                <select class="fi" id="adm_nRole"><option value="junior">신입사원</option><option value="user">사원</option><option value="admin">관리자</option><option value="master">MASTER</option><option value="inactive">비활성</option></select>
+                <select class="fi" id="adm_nRole"></select>
               </div>
             </div>
             <button class="btn-p" onclick="createUserAdmin()">계정 생성</button>
@@ -1775,7 +1775,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
             <div class="form-row">
               <div class="form-group"><label class="lbl">사원명 *</label><input class="fi" id="nNick" placeholder="홍길동"></div>
               <div class="form-group"><label class="lbl">권한 *</label>
-                <select class="fi" id="nRole"><option value="junior">신입사원</option><option value="user">사원</option><option value="admin">관리자</option><option value="master">MASTER</option><option value="inactive">비활성</option></select>
+                <select class="fi" id="nRole"></select>
               </div>
             </div>
             <button class="btn-p" onclick="createUser()">계정 생성</button>
@@ -1913,8 +1913,8 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
         <!-- 수정 폼 -->
         <div id="crmEditForm" style="display:none">
           <div class="form-group"><label class="lbl">업체명 *</label><input class="fi" id="editName"></div>
-          <div class="form-group"><label class="lbl">전화번호 *</label><input class="fi" id="editPhone" maxlength="13"></div>
-          <div class="form-group"><label class="lbl">서브연락처</label><input class="fi" id="editSubPhone" placeholder="서브 연락처 (선택)"></div>
+          <div class="form-group"><label class="lbl">전화번호 *</label><input class="fi" id="editPhone" maxlength="13" oninput="formatPhoneInput(this)" placeholder="010-0000-0000"></div>
+          <div class="form-group"><label class="lbl">서브연락처</label><input class="fi" id="editSubPhone" placeholder="010-0000-0000" maxlength="13" oninput="formatPhoneInput(this)"></div>
           <div class="form-group">
             <label class="lbl">주소 <small style="color:var(--gray-400)">(지번주소)</small></label>
             <input class="fi" id="editAddress" placeholder="예: 역삼동 123-4" onblur="checkAddressType(this.value,'editAddrWarn')">

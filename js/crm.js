@@ -45,15 +45,15 @@ async function loadStageList(stageKey,stageLabel){
       ncBadge=`<span class="next-contact-badge ${isToday?'today':isPast?'past':''}">${isPast?'⚠️ ':isToday?'📞 ':'📅 '}${r.next_contact_date}</span>`;
     }
     // 계약 종료 임박 표시
-    const today=new Date();
+    const todayDate=new Date();
     let contractBadge='';
     if(r.stage==='계약완료'&&r.contract_end_date){
       const endDate=new Date(r.contract_end_date);
-      const daysLeft=Math.ceil((endDate-today)/(1000*60*60*24));
+      const daysLeft=Math.ceil((endDate-todayDate)/(1000*60*60*24));
       if(daysLeft<=7&&daysLeft>=0)contractBadge=`<span style="background:#fee2e2;color:#dc2626;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;margin-left:4px">D-${daysLeft}</span>`;
       else if(daysLeft<0)contractBadge=`<span style="background:#f3f4f6;color:#6b7280;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;margin-left:4px">종료</span>`;
     }
-    return`<tr class="tbl-clickrow ${r.stage==='계약완료'&&r.contract_end_date&&new Date(r.contract_end_date)<today?'row-ended':''}" onclick="openCrmModal(${r.id})">
+    return`<tr class="tbl-clickrow ${r.stage==='계약완료'&&r.contract_end_date&&new Date(r.contract_end_date)<todayDate?'row-ended':''}" onclick="openCrmModal(${r.id})">
       <td><strong>${r.business_name||'-'}</strong>${contractBadge}</td>
       <td>${maskPhone(r.phone)}</td>
       <td>${r.industry?`<span class="tag-chip industry">${r.industry}</span>`:'-'}</td>
@@ -454,7 +454,7 @@ async function loadAdmCRM(){
   tbody.innerHTML=data.map(r=>`<tr class="tbl-clickrow" onclick="openCrmModal(${r.id})">
     <td><strong>${r.business_name||'-'}</strong></td><td>${r.phone||'-'}</td>
     <td>${r.industry?`<span class="tag-chip industry">${r.industry}</span>`:'-'}</td>
-    <td>${stageBadge(r.stage||'가망')}</td><td>${stBadge(r.status||'가망'||'가망')}</td>
+    <td>${stageBadge(r.stage||'가망')}</td><td>${stBadge(r.status||'가망')}</td>
     <td><select class="role-sel" onchange="transferCrm(${r.id},this.value)" onclick="event.stopPropagation()">
       <option value="${r.manager||''}">${r.manager||'-'}</option>
       ${un.filter(n=>n!==r.manager).map(n=>`<option value="${n}">${n}</option>`).join('')}

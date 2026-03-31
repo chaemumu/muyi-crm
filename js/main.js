@@ -463,6 +463,8 @@ let _adminMainTab='account',_adminSubTab='createUser';
 function setupAdminPage(){
   const role=(PR?.role||'').toLowerCase();
   if(!['master','admin'].includes(role)){goPage('dash');return;}
+  const sel=document.getElementById('adm_nRole');
+  if(sel)sel.innerHTML=getAllowedRoleOpts('');
   renderAdminMainTabs('account');
 }
 function renderAdminMainTabs(mainKey){
@@ -520,6 +522,8 @@ const MASTER_TAB_PANEL_MAP={
 function setupMasterPage(initialTab='mstrUsers'){
   const role=(PR?.role||'').toLowerCase();
   if(role!=='master'){goPage('dash');return;}
+  const sel=document.getElementById('nRole');
+  if(sel)sel.innerHTML=getAllowedRoleOpts('');
   const tabBar=document.getElementById('masterTabBar');
   if(!tabBar)return;
   tabBar.innerHTML=MASTER_PAGE_TABS.map(t=>
@@ -558,13 +562,7 @@ async function loadAdmUsersRoles(){
     <td><strong>${u.name||'-'}</strong></td>
     <td style="color:var(--gray-500);font-size:13px">${u.email||'-'}</td>
     <td><span class="badge ${rlCls(u.role)}">${rlLbl(u.role)}</span></td>
-    <td><select class="role-sel" onchange="changeRole('${u.id}',this.value)">
-      <option value="junior" ${u.role==='junior'?'selected':''}>신입사원</option>
-      <option value="user" ${u.role==='user'?'selected':''}>사원</option>
-      <option value="admin" ${u.role==='admin'?'selected':''}>관리자</option>
-      <option value="master" ${u.role==='master'?'selected':''}>MASTER</option>
-      <option value="inactive" ${u.role==='inactive'?'selected':''}>비활성</option>
-    </select></td>
+    <td><select class="role-sel" onchange="changeRole('${u.id}',this.value)">${getAllowedRoleOpts(u.role)}</select></td>
   </tr>`).join('');
 }
 
@@ -580,13 +578,7 @@ async function loadAdmUsersRolePanel(){
     <td><strong>${u.name||'-'}</strong></td>
     <td style="color:var(--gray-500);font-size:13px">${u.email||'-'}</td>
     <td><span class="badge ${rlCls(u.role)}">${rlLbl(u.role)}</span></td>
-    <td><select class="role-sel" onchange="changeRole('${u.id}',this.value)">
-      <option value="junior" ${u.role==='junior'?'selected':''}>신입사원</option>
-      <option value="user" ${u.role==='user'?'selected':''}>사원</option>
-      <option value="admin" ${u.role==='admin'?'selected':''}>관리자</option>
-      <option value="master" ${u.role==='master'?'selected':''}>MASTER</option>
-      <option value="inactive" ${u.role==='inactive'?'selected':''}>비활성</option>
-    </select></td>
+    <td><select class="role-sel" onchange="changeRole('${u.id}',this.value)">${getAllowedRoleOpts(u.role)}</select></td>
   </tr>`).join('');
 }
 

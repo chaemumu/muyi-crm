@@ -167,9 +167,16 @@ function periodRange(p){
 }
 function last7(){return Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return d.toISOString().slice(0,10)})}
 function fmtPhone(raw){const n=raw.replace(/\D/g,'');if(n.length<=3)return n;if(n.length<=7)return n.slice(0,3)+'-'+n.slice(3);return n.slice(0,3)+'-'+n.slice(3,7)+'-'+n.slice(7,11)}
+function formatPhoneInput(el){const v=el.value.replace(/\D/g,'').slice(0,11);el.value=fmtPhone(v)}
 function maskPhone(p){if(!p)return'-';return p.replace(/(\d{3})-(\d{2})(\d{2})-(\d{2})(\d{2})/,'$1-$2**-$4**')}
 function fmtDt(s){if(!s)return'-';const d=new Date(s);return d.toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'})+' '+d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
 function fmtDate(s){return s?(s+'').slice(0,10):'-'}
+const _ROLE_HIER=['inactive','junior','user','admin','master'];
+const _ROLE_LBL={inactive:'비활성',junior:'신입사원',user:'사원',admin:'관리자',master:'MASTER'};
+function getAllowedRoleOpts(curSel){
+  const myIdx=_ROLE_HIER.indexOf(PR?.role||'user');
+  return _ROLE_HIER.slice(0,myIdx).map(r=>`<option value="${r}"${curSel===r?' selected':''}>${_ROLE_LBL[r]}</option>`).join('');
+}
 function rlLbl(r){return({master:'MASTER',admin:'관리자',user:'사원',junior:'신입사원',inactive:'비활성'})[r]||(r||'USER').toUpperCase()}
 function rlCls(r){return({master:'b-master',admin:'b-admin',user:'b-user',inactive:'b-inactive'})[r]||'b-user'}
 function stBadge(s){if(s==='계약중')return`<span class="st-contract">⛔ 계약중</span>`;return`<span class="st-prospect">◉ 가망</span>`}

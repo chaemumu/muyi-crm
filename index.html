@@ -1917,8 +1917,10 @@ SIDEBAR_CONFIG.admin=[
 
 SIDEBAR_CONFIG.master=[
   ...SIDEBAR_CONFIG.admin,
-  {id:'miUserMgmt',page:'admin',label:'사용자 전체 관리',icon:'👥',tab:'users'},
-  {id:'miRoleMgmt',page:'admin',label:'권한 관리',icon:'🔑',tab:'users'}
+  {id:'miUserMgmt',page:'admin',label:'사용자 관리',icon:'👥',tab:'users',masterOnly:true},
+  {id:'miAllCrm',page:'admin',label:'전체 DB',icon:'🗄️',tab:'allcrm',masterOnly:true},
+  {id:'miKakaoWork',page:'admin',label:'카카오워크',icon:'💬',tab:'kakaowork',masterOnly:true},
+  {id:'miBackup',label:'전체 백업',icon:'💾',tab:'backup',masterOnly:true},
 ];
 
 function renderSidebar(role){
@@ -1952,6 +1954,12 @@ function renderSidebar(role){
     div.id=m.id;
     div.className='mi';
     div.onclick=()=>{
+      if(m.masterOnly){
+        if(m.tab==='backup'){backupAllData();return;}
+        goPage(m.page||'admin');
+        setTimeout(()=>showMasterPanel(m.tab),100);
+        return;
+      }
       goPage(m.page);
       if(m.tab)setTimeout(()=>admTab(m.tab,document.querySelector(`#adminTabBar .ti`)),50);
     };
@@ -2059,18 +2067,21 @@ function _syncDarkBtn(isDark){
     if(lbl)lbl.textContent='다크모드';
   }
 }
+function _syncLogo(isDark){
+  const logo=document.getElementById('topLogo');
+  if(!logo)return;
+  if(isDark){
+    logo.style.display='none';
+  }else{
+    logo.style.display='';
+    logo.style.filter='brightness(0) saturate(100%) invert(24%) sepia(94%) saturate(1338%) hue-rotate(240deg)';
+  }
+}
 function toggleDark(){
   document.body.classList.toggle('dark');
   const isDark=document.body.classList.contains('dark');
   _syncDarkBtn(isDark);
-  const logo=document.getElementById('topLogo');
-  if(logo){
-    if(isDark){
-      logo.style.filter='brightness(0) saturate(100%) invert(57%) sepia(84%) saturate(1070%) hue-rotate(1deg)';
-    }else{
-      logo.style.filter='brightness(0) saturate(100%) invert(24%) sepia(94%) saturate(1338%) hue-rotate(240deg)';
-    }
-  }
+  _syncLogo(isDark);
   if(AU)sb.from('user_settings').upsert([{user_id:AU.id,dark_mode:isDark}]).then(()=>{});
 }
 async function loadDarkMode(){
@@ -2078,7 +2089,9 @@ async function loadDarkMode(){
   const{data}=await sb.from('user_settings').select('dark_mode').eq('user_id',AU.id).maybeSingle();
   if(data?.dark_mode)document.body.classList.add('dark');
   else document.body.classList.remove('dark');
-  _syncDarkBtn(document.body.classList.contains('dark'));
+  const isDark=document.body.classList.contains('dark');
+  _syncDarkBtn(isDark);
+  _syncLogo(isDark);
 }
 
 // ── INIT ──
@@ -3283,12 +3296,9 @@ function setupAdminPage(){
   const role=(PR?.role||'').toLowerCase();
   if(!['master','admin'].includes(role)){goPage('dash');return}
 
-  // 역할별 탭 배열 선택
-  const tabs=(role==='master')?MASTER_TABS:ADMIN_TABS;
-  const defaultTab=(role==='master')?'users':'pipeline';
-  const desc=(role==='master')?'시스템 전체 관리 — MASTER 전용':'관리자 기능';
-
-  document.getElementById('adminDesc').textContent=desc;
+  // 관리자 페이지는 항상 ADMIN_TABS만 표시
+  // 마스터 전용 항목은 사이드바 [마스터 전용] 섹션에서 접근
+  document.getElementById('adminDesc').textContent='관리자 기능';
 
   // ADMIN일 경우: MASTER 전용 패널을 DOM에서 완전 제거
   if(role!=='master'){
@@ -3298,17 +3308,26 @@ function setupAdminPage(){
     });
   }
 
-  // 탭 바 렌더링
+  // 탭 바 렌더링 — 역할 무관 ADMIN_TABS만 표시
   const tabBar=document.getElementById('adminTabBar');
-  tabBar.innerHTML=tabs.map((t,i)=>{
+  tabBar.innerHTML=ADMIN_TABS.map((t,i)=>{
     if(t.action)return `<div class="ti" onclick="${t.action}">${t.label}</div>`;
     return `<div class="ti${i===0?' on':''}" onclick="admTab('${t.key}',this)">${t.label}</div>`;
   }).join('');
 
-  // 기본 탭 표시 + 데이터 로드
-  admTab_show(defaultTab);
-  if(role==='master'){loadAdmUsers();loadMgrFilter();loadTpMgrFilter();}
-  else{loadTpMgrFilter();loadTeamPipeline();}
+  // 기본 탭: 파이프라인
+  admTab_show('pipeline');
+  loadTpMgrFilter();
+  loadTeamPipeline();
+}
+
+// 마스터 전용 패널 직접 표시 (탭바 우회)
+function showMasterPanel(tab){
+  document.querySelectorAll('#adminTabBar .ti').forEach(t=>t.classList.remove('on'));
+  admTab_show(tab);
+  if(tab==='users'){loadAdmUsers();loadMgrFilter();}
+  if(tab==='allcrm')loadAdmCRM();
+  if(tab==='kakaowork')loadKakaoWorkSettings();
 }
 
 function admTab(tab,el){

@@ -6,7 +6,7 @@ async function openCrmModal(id){
 
   // 헤더
   document.getElementById('crmModalTitle').textContent=data.business_name||'-';
-  document.getElementById('crmModalSub').innerHTML=`${stageBadge(data.stage||'가망')} &nbsp;담당: ${data.manager||'-'}`;
+  document.getElementById('crmModalSub').innerHTML=`${stageBadge(data.stage||'가망')} &nbsp;담당자:${data.manager||'-'}`;
 
   // 좌측 정보 뷰 채우기
   document.getElementById('ivName').textContent=data.business_name||'-';
@@ -114,7 +114,7 @@ async function saveCrmEdit(){
   curCrmData={...curCrmData,...payload};
   // 정보 뷰 갱신
   document.getElementById('crmModalTitle').textContent=name;
-  document.getElementById('crmModalSub').innerHTML=`${stageBadge(stageVal)} &nbsp;담당: ${curCrmData.manager||'-'}`;
+  document.getElementById('crmModalSub').innerHTML=`${stageBadge(stageVal)} &nbsp;담당자:${curCrmData.manager||'-'}`;
   document.getElementById('ivName').textContent=name;
   document.getElementById('ivPhone').textContent=maskPhone(phone);
   document.getElementById('ivSubPhone').textContent=payload.sub_phone||'-';
@@ -206,7 +206,7 @@ async function quickChangeStage(stage){
   const{error}=await sb.from('prospects').update({stage}).eq('id',curCrmId);
   if(error){showToast('단계 변경 실패: '+error.message,'error');return;}
   if(curCrmData)curCrmData.stage=stage;
-  document.getElementById('crmModalSub').innerHTML=`${stageBadge(stage)} &nbsp;담당: ${curCrmData?.manager||'-'}`;
+  document.getElementById('crmModalSub').innerHTML=`${stageBadge(stage)} &nbsp;담당자:${curCrmData?.manager||'-'}`;
   showToast(`단계 변경: ${stage}`,'success');
   if(stage==='계약완료'){
     if(typeof sendKakaoWorkNotify==='function')sendKakaoWorkNotify('contract',{business_name:curCrmData?.business_name||'-',manager:PR?.name||AU.email});

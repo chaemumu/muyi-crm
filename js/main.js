@@ -80,29 +80,27 @@ async function loadDash(){
   const priv=isPriv();
   document.getElementById('dashAdmin').style.display=priv?'block':'none';
   document.getElementById('dashUser').style.display=priv?'none':'block';
+  // badges handled inside loadTodayAct (priv) and loadUserDash (non-priv)
   if(priv)await Promise.all([loadKPI(),loadCharts(),loadTodayAct(),loadTeam(),loadLeaderboard(),loadGoalProgress(),loadTodayContacts(),loadConversionStats(),renderDashCal(),loadFailReasonChart(),loadMonthlyContractChart()]);
-  else{await loadUserDash();await renderActChart();}
-  try{
-    const{data:bData}=await sb.from('calls').select('call_count,call_time').eq('manager',AU.id).eq('date',td());
-    let tc=0,tt=0;(bData||[]).forEach(r=>{tc+=r.call_count||0;tt+=r.call_time||0;});
-    await renderBadges(tc,tt);
-  }catch(e){}
+  else await Promise.all([loadUserDash(),renderActChart()]);
 }
 
 async function loadKPI(){
   const{start,end}=periodRange(curPeriod);
   const pLbl={day:'오늘',week:'이번 주',month:'이번 달'}[curPeriod];
-  const{data:cd}=await sb.from('calls').select('call_count,call_time').gte('date',start).lte('date',end);
+  const n=new Date(),ms=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-01';
+  const[{data:cd},{count:crmCnt},{count:cc}]=await Promise.all([
+    sb.from('calls').select('call_count,call_time').gte('date',start).lte('date',end),
+    sb.from('prospects').select('*',{count:'exact',head:true}).gte('created_at',start+'T00:00:00').lte('created_at',end+'T23:59:59.999'),
+    sb.from('prospects').select('*',{count:'exact',head:true}).eq('stage','계약완료').gte('created_at',ms+'T00:00:00'),
+  ]);
   let calls=0,mins=0;(cd||[]).forEach(r=>{calls+=r.call_count||0;mins+=r.call_time||0});
   document.getElementById('kCalls').textContent=calls;
   document.getElementById('kTime').textContent=mins+'분';
   document.getElementById('kCallsSub').textContent=pLbl+' · 팀 전체';
   document.getElementById('kTimeSub').textContent=pLbl+' · 팀 전체';
-  const{count:crmCnt}=await sb.from('prospects').select('*',{count:'exact',head:true}).gte('created_at',start+'T00:00:00').lte('created_at',end+'T23:59:59.999');
   document.getElementById('kCrm').textContent=crmCnt||0;
   document.getElementById('kCrmSub').textContent=pLbl+' · 팀 전체';
-  const n=new Date(),ms=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-01';
-  const{count:cc}=await sb.from('prospects').select('*',{count:'exact',head:true}).eq('stage','계약완료').gte('created_at',ms+'T00:00:00');
   document.getElementById('kContract').textContent=cc||0;
 }
 
@@ -118,8 +116,10 @@ async function loadTodayContacts(){
 }
 
 async function loadConversionStats(){
-  const{data:users}=await sb.from('users').select('id,name').in('role',['user','admin','master']);
-  const{data:prospects}=await sb.from('prospects').select('manager,stage');
+  const[{data:users},{data:prospects}]=await Promise.all([
+    sb.from('users').select('id,name').in('role',['user','admin','master']),
+    sb.from('prospects').select('manager,stage'),
+  ]);
   const stats={};
   (users||[]).forEach(u=>stats[u.name]={name:u.name,total:0,contract:0});
   (prospects||[]).forEach(p=>{
@@ -144,39 +144,38 @@ async function loadConversionStats(){
 }
 
 async function loadUserDash(){
-  const{data:today}=await sb.from('calls').select('*').eq('manager',AU.id).eq('date',td()).maybeSingle();
-  document.getElementById('uKpiCalls').textContent=(today?.call_count||0)+'콜';
-  document.getElementById('uKpiTime').textContent=(today?.call_time||0)+'분';
-  const{start:ws}=periodRange('week');
-  const{data:wk}=await sb.from('calls').select('call_count').eq('manager',AU.id).gte('date',ws).lte('date',td());
-  let wc=0;(wk||[]).forEach(r=>wc+=r.call_count||0);document.getElementById('uWeekCalls').textContent=wc;
-  const{start:ms2}=periodRange('month');
-  const{data:mn}=await sb.from('calls').select('call_count').eq('manager',AU.id).gte('date',ms2).lte('date',td());
-  let mc=0;(mn||[]).forEach(r=>mc+=r.call_count||0);document.getElementById('uMonthCalls').textContent=mc;
   const mgr=AU.id;
-  const{count}=await sb.from('prospects').select('*',{count:'exact',head:true}).eq('manager',mgr);
-  document.getElementById('uMyCrm').textContent=count||0;
-  const{count:cc}=await sb.from('prospects').select('*',{count:'exact',head:true}).eq('manager',mgr).eq('stage','계약완료');
-  document.getElementById('uMyContract').textContent=cc||0;
-  const{data:pdata}=await sb.from('prospects').select('stage').eq('manager',mgr);
+  const todayStr=td();
+  const{start:ws}=periodRange('week');
+  const{start:ms2}=periodRange('month');
+  // 8개 순차 쿼리 → 4개 병렬 / 중복 제거
+  const[{data:todayRow},{data:wk},{data:mn},{data:pdata}]=await Promise.all([
+    sb.from('calls').select('call_count,call_time').eq('manager',mgr).eq('date',todayStr).maybeSingle(),
+    sb.from('calls').select('call_count').eq('manager',mgr).gte('date',ws).lte('date',todayStr),
+    sb.from('calls').select('call_count').eq('manager',mgr).gte('date',ms2).lte('date',todayStr),
+    sb.from('prospects').select('id,business_name,phone,stage,next_contact_date').eq('manager',mgr),
+  ]);
+  document.getElementById('uKpiCalls').textContent=(todayRow?.call_count||0)+'콜';
+  document.getElementById('uKpiTime').textContent=(todayRow?.call_time||0)+'분';
+  let wc=0;(wk||[]).forEach(r=>wc+=r.call_count||0);document.getElementById('uWeekCalls').textContent=wc;
+  let mc=0;(mn||[]).forEach(r=>mc+=r.call_count||0);document.getElementById('uMonthCalls').textContent=mc;
+  // pdata에서 카운트 파생 (별도 count 쿼리 불필요)
+  document.getElementById('uMyCrm').textContent=(pdata||[]).length;
+  document.getElementById('uMyContract').textContent=(pdata||[]).filter(r=>r.stage==='계약완료').length;
   const sc={};STAGES.forEach(s=>sc[s.key]=0);(pdata||[]).forEach(r=>sc[r.stage||'가망']++);
   document.getElementById('userPipeline').innerHTML=STAGES.map(s=>`
     <div class="pipe-card ${s.pipe}" onclick="goPage('crm')">
       <div class="pipe-icon">${s.icon}</div><div class="pipe-label">${s.label}</div>
       <div class="pipe-count">${sc[s.key]}</div>
     </div>`).join('');
-  // 오늘 연락 예정 (USER)
-  const{data:tc}=await sb.from('prospects').select('id,business_name,phone,stage').eq('manager',mgr).eq('next_contact_date',td());
+  // 오늘 연락 예정: pdata에서 필터 (별도 쿼리 불필요)
+  const tc=(pdata||[]).filter(r=>r.next_contact_date===todayStr);
   const uCard=document.getElementById('userTodayContactsCard');
-  if(tc?.length){uCard.style.display='block';document.getElementById('userTodayContactCnt').textContent=tc.length+'건';
+  if(tc.length){uCard.style.display='block';document.getElementById('userTodayContactCnt').textContent=tc.length+'건';
     document.getElementById('userTodayContactsList').innerHTML=tc.map(r=>`<div style="display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid #f0f2f8"><strong>${r.business_name}</strong> <span style="color:#9fa6bc;font-size:13px">${maskPhone(r.phone)}</span> ${stageBadge(r.stage||'가망')} <button class="btn-s btn-sm" style="margin-left:auto" onclick="openCrmModal(${r.id})">상세</button></div>`).join('');}
   else uCard.style.display='none';
-  // 뱃지 렌더
-  if(typeof renderBadges==='function'){
-    const{data:bdToday}=await sb.from('calls').select('call_count,call_time').eq('manager',AU.id).eq('date',td());
-    let _bc=0,_bt=0;(bdToday||[]).forEach(r=>{_bc+=r.call_count||0;_bt+=r.call_time||0;});
-    await renderBadges(_bc,_bt);
-  }
+  // 뱃지: todayRow 재사용 (재조회 없음)
+  if(typeof renderBadges==='function')await renderBadges(todayRow?.call_count||0,todayRow?.call_time||0);
 }
 
 async function loadCharts(){
@@ -210,35 +209,42 @@ async function renderActChart(){
   if(actChartMode==='day'){
     const days=Array.from({length:14},(_,i)=>{const d=new Date();d.setDate(d.getDate()-13+i);return d.toISOString().slice(0,10)});
     labels=days.map(d=>d.slice(5).replace('-','/'));
-    const{data:cd}=await sb.from('calls').select('date,call_count').eq('manager',AU.id).in('date',days);
+    // 2개 병렬 쿼리
+    const[{data:cd},{data:pd}]=await Promise.all([
+      sb.from('calls').select('date,call_count').eq('manager',AU.id).in('date',days),
+      sb.from('prospects').select('created_at,stage').eq('manager',mgr).gte('created_at',days[0]+'T00:00:00'),
+    ]);
     const cm={};(cd||[]).forEach(r=>cm[r.date]=(cm[r.date]||0)+(r.call_count||0));
     callData=days.map(d=>cm[d]||0);
-    const{data:pd}=await sb.from('prospects').select('created_at,stage').eq('manager',mgr).gte('created_at',days[0]+'T00:00:00');
     const pm={},qm={};(pd||[]).forEach(r=>{const d=r.created_at.slice(0,10);pm[d]=(pm[d]||0)+1;if(r.stage==='계약완료')qm[d]=(qm[d]||0)+1});
     crmData=days.map(d=>pm[d]||0);contractData=days.map(d=>qm[d]||0);
   }else if(actChartMode==='week'){
+    // 24개 순차 쿼리 → 2개 병렬 bulk + JS 집계
     const weeks=[];for(let i=7;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i*7);weeks.push(d.toISOString().slice(0,10))}
     labels=weeks.map((_,i)=>`W${8-i}`);
+    const wkEnd=new Date(weeks[7]);wkEnd.setDate(wkEnd.getDate()+6);const wkEndStr=wkEnd.toISOString().slice(0,10);
+    const[{data:wkCalls},{data:wkCrm}]=await Promise.all([
+      sb.from('calls').select('date,call_count').eq('manager',AU.id).gte('date',weeks[0]).lte('date',wkEndStr),
+      sb.from('prospects').select('created_at,stage').eq('manager',mgr).gte('created_at',weeks[0]+'T00:00:00').lte('created_at',wkEndStr+'T23:59:59'),
+    ]);
     for(let i=0;i<8;i++){
-      const s=new Date(weeks[i]),e=new Date(weeks[i]);e.setDate(e.getDate()+6);
-      const ss=s.toISOString().slice(0,10),ee=e.toISOString().slice(0,10);
-      const{data:cd}=await sb.from('calls').select('call_count').eq('manager',AU.id).gte('date',ss).lte('date',ee);
-      let c=0;(cd||[]).forEach(r=>c+=r.call_count||0);callData.push(c);
-      const{count:cnt}=await sb.from('prospects').select('*',{count:'exact',head:true}).eq('manager',mgr).gte('created_at',ss+'T00:00:00').lte('created_at',ee+'T23:59:59');
-      crmData.push(cnt||0);
-      const{count:cc}=await sb.from('prospects').select('*',{count:'exact',head:true}).eq('manager',mgr).eq('stage','계약완료').gte('created_at',ss+'T00:00:00').lte('created_at',ee+'T23:59:59');
-      contractData.push(cc||0);
+      const ss=weeks[i];const eDate=new Date(ss);eDate.setDate(eDate.getDate()+6);const ee=eDate.toISOString().slice(0,10);
+      let c=0;(wkCalls||[]).forEach(r=>{if(r.date>=ss&&r.date<=ee)c+=r.call_count||0;});callData.push(c);
+      const sl=(wkCrm||[]).filter(r=>{const d=r.created_at.slice(0,10);return d>=ss&&d<=ee;});
+      crmData.push(sl.length);contractData.push(sl.filter(r=>r.stage==='계약완료').length);
     }
   }else{
+    // 36개 순차 쿼리 → 2개 병렬 bulk + JS 집계
     labels=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+    const[{data:moCalls},{data:moCrm}]=await Promise.all([
+      sb.from('calls').select('date,call_count').eq('manager',AU.id).gte('date',`${yr}-01-01`).lte('date',`${yr}-12-31`),
+      sb.from('prospects').select('created_at,stage').eq('manager',mgr).gte('created_at',`${yr}-01-01T00:00:00`).lte('created_at',`${yr}-12-31T23:59:59`),
+    ]);
     for(let m=1;m<=12;m++){
       const ss=`${yr}-${String(m).padStart(2,'0')}-01`,ee=`${yr}-${String(m).padStart(2,'0')}-${String(new Date(yr,m,0).getDate()).padStart(2,'0')}`;
-      const{data:cd}=await sb.from('calls').select('call_count').eq('manager',AU.id).gte('date',ss).lte('date',ee);
-      let c=0;(cd||[]).forEach(r=>c+=r.call_count||0);callData.push(c);
-      const{count:cnt}=await sb.from('prospects').select('*',{count:'exact',head:true}).eq('manager',mgr).gte('created_at',ss+'T00:00:00').lte('created_at',ee+'T23:59:59');
-      crmData.push(cnt||0);
-      const{count:cc}=await sb.from('prospects').select('*',{count:'exact',head:true}).eq('manager',mgr).eq('stage','계약완료').gte('created_at',ss+'T00:00:00').lte('created_at',ee+'T23:59:59');
-      contractData.push(cc||0);
+      let c=0;(moCalls||[]).forEach(r=>{if(r.date>=ss&&r.date<=ee)c+=r.call_count||0;});callData.push(c);
+      const sl=(moCrm||[]).filter(r=>{const d=r.created_at.slice(0,10);return d>=ss&&d<=ee;});
+      crmData.push(sl.length);contractData.push(sl.filter(r=>r.stage==='계약완료').length);
     }
   }
   const ctx=document.getElementById('chartUserAct');if(!ctx)return;
@@ -253,12 +259,16 @@ async function renderActChart(){
 }
 
 async function loadTodayAct(){
-  const{data}=await sb.from('calls').select('*').eq('manager',AU.id).eq('date',td()).maybeSingle();
+  const{data}=await sb.from('calls').select('call_count,call_time,memo').eq('manager',AU.id).eq('date',td()).maybeSingle();
   if(data){document.getElementById('actCount').value=data.call_count||'';document.getElementById('actTime').value=data.call_time||'';document.getElementById('actMemo').value=data.memo||'';}
+  // 뱃지: 여기서 처리해 loadDash의 별도 재조회 제거
+  if(typeof renderBadges==='function')await renderBadges(data?.call_count||0,data?.call_time||0);
 }
 async function loadTeam(){
-  const{data:calls}=await sb.from('calls').select('*').eq('date',td());
-  const{data:users}=await sb.from('users').select('id,name');
+  const[{data:calls},{data:users}]=await Promise.all([
+    sb.from('calls').select('manager,call_count,call_time,memo').eq('date',td()),
+    sb.from('users').select('id,name'),
+  ]);
   const umap={};(users||[]).forEach(u=>umap[u.id]=u.name);
   const tbody=document.getElementById('teamBody');
   if(!calls?.length){tbody.innerHTML='<tr><td colspan="4" class="empty" style="padding:16px">오늘 활동 기록 없음</td></tr>';return}
@@ -266,8 +276,10 @@ async function loadTeam(){
 }
 async function loadLeaderboard(){
   const{start:ms}=periodRange('month');
-  const{data}=await sb.from('calls').select('manager,call_count').gte('date',ms).lte('date',td());
-  const{data:users}=await sb.from('users').select('id,name');
+  const[{data},{data:users}]=await Promise.all([
+    sb.from('calls').select('manager,call_count').gte('date',ms).lte('date',td()),
+    sb.from('users').select('id,name'),
+  ]);
   const umap={};(users||[]).forEach(u=>umap[u.id]=u.name);
   const totals={};(data||[]).forEach(r=>totals[r.manager]=(totals[r.manager]||0)+(r.call_count||0));
   const sorted=Object.entries(totals).sort((a,b)=>b[1]-a[1]).slice(0,5);
@@ -287,10 +299,12 @@ async function loadGoalProgress(){
   if(!goal){gs.style.display='none';return}
   gs.style.display='block';document.getElementById('goalMonthLbl').textContent=yr+'년 '+mo+'월';
   const{start:ms}=periodRange('month');
-  const{data:cd}=await sb.from('calls').select('call_count').gte('date',ms);
+  const[{data:cd},{count:crmC},{count:conC}]=await Promise.all([
+    sb.from('calls').select('call_count').gte('date',ms),
+    sb.from('prospects').select('*',{count:'exact',head:true}).gte('created_at',ms+'T00:00:00'),
+    sb.from('prospects').select('*',{count:'exact',head:true}).eq('stage','계약완료').gte('created_at',ms+'T00:00:00'),
+  ]);
   let tc=0;(cd||[]).forEach(r=>tc+=r.call_count||0);
-  const{count:crmC}=await sb.from('prospects').select('*',{count:'exact',head:true}).gte('created_at',ms+'T00:00:00');
-  const{count:conC}=await sb.from('prospects').select('*',{count:'exact',head:true}).eq('stage','계약완료').gte('created_at',ms+'T00:00:00');
   const items=[{lbl:'콜 달성',cur:tc,target:goal.target_calls,color:'#1e10c7'},{lbl:'CRM 등록',cur:crmC||0,target:goal.target_crm,color:'#059669'},{lbl:'계약 완료',cur:conC||0,target:goal.target_contracts,color:'#ee4e00'}];
   document.getElementById('goalRow').innerHTML=items.map(({lbl,cur,target,color})=>{
     const pct=target>0?Math.min(100,Math.round(cur/target*100)):0;
@@ -306,11 +320,9 @@ async function saveAct(){
   if(ex)await sb.from('calls').update(payload).eq('id',ex.id);
   else await sb.from('calls').insert([payload]);
   setMsg('actMsg','✓ 저장되었습니다.',true);loadKPI();loadTeam();loadLeaderboard();loadGoalProgress();
-  // 목표 달성 체크 + 뱃지 체크
+  // 목표 달성 체크 + 뱃지 체크 (저장한 값 재사용 — 재조회 없음)
   if(typeof checkGoalAchievement==='function')await checkGoalAchievement();
-  const{data:bdData}=await sb.from('calls').select('call_count,call_time').eq('manager',AU.id).eq('date',td());
-  let _bc=0,_bt=0;(bdData||[]).forEach(r=>{_bc+=r.call_count||0;_bt+=r.call_time||0;});
-  if(typeof checkAndAwardBadges==='function')await checkAndAwardBadges(_bc,_bt);
+  if(typeof checkAndAwardBadges==='function')await checkAndAwardBadges(count,time);
 }
 
 // ── 캘린더 ──
@@ -918,7 +930,7 @@ async function loadTeamPipeline(){
   const mgrId=document.getElementById('tpMgr')?.value||'';
   let q=sb.from('prospects').select('stage,manager,id,business_name,phone,created_at');
   if(mgrId)q=q.eq('manager_id',mgrId);
-  const{data}=await q;
+  const[{data},{data:usersRaw}]=await Promise.all([q,sb.from('users').select('name')]);
   const sc={};STAGES.forEach(s=>sc[s.key]=0);(data||[]).forEach(r=>sc[r.stage||'가망']++);
   const total=data?.length||0;
   document.getElementById('teamPipeCards').innerHTML=STAGES.map(s=>`
@@ -927,7 +939,7 @@ async function loadTeamPipeline(){
   document.getElementById('tpListLabel').textContent='전체 '+total+'건';
   const tbody=document.getElementById('tpListBody');
   if(!data?.length){tbody.innerHTML='<tr><td colspan="6" class="empty">데이터 없음</td></tr>';return}
-  const{data:users}=await sb.from('users').select('name');const un=(users||[]).map(u=>u.name);
+  const un=(usersRaw||[]).map(u=>u.name);
   tbody.innerHTML=data.map(r=>`<tr>
     <td><strong>${r.business_name||'-'}</strong></td><td>${r.phone||'-'}</td>
     <td>${stageBadge(r.stage||'가망')}</td><td>${r.manager||'-'}</td>
@@ -1080,8 +1092,10 @@ async function exportReportExcel(){
 
 // ── 사원별 현황 막대 ──
 async function loadMemberBars(){
-  const{data:prospects}=await sb.from('prospects').select('manager,stage');
-  const{data:users}=await sb.from('users').select('name').in('role',['user','admin','master']);
+  const[{data:prospects},{data:users}]=await Promise.all([
+    sb.from('prospects').select('manager,stage'),
+    sb.from('users').select('name').in('role',['user','admin','master']),
+  ]);
   const STAGE_COLORS={'가망':'#6366f1','컨택중':'#f59e0b','검토중':'#8b5cf6','미팅확정':'#ee4e00','계약완료':'#10b981','영업종결':'#ef4444'};
   const byMgr={};
   (users||[]).forEach(u=>{byMgr[u.name]={};});

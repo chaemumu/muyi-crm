@@ -29,7 +29,7 @@ async function loadStageList(stageKey,stageLabel){
   document.getElementById('stageListWrap').style.display='block';
   document.getElementById('stageListTitle').innerHTML=stageBadge(stageKey)+` ${stageLabel}`;
   const mgr=AU.id;
-  let q=sb.from('prospects').select('*').eq('stage',stageKey).order('created_at',{ascending:false});
+  let q=sb.from('prospects').select('id,business_name,phone,industry,stage,manager,next_contact_date,contract_end_date,created_at').eq('stage',stageKey).order('created_at',{ascending:false});
   if(!isPriv())q=q.eq('manager_id',mgr);
   const{data}=await q;
   const tbody=document.getElementById('stageListBody');
@@ -126,7 +126,7 @@ async function loadList(){
   const kw=document.getElementById('listKw').value.trim();
   const sf=document.getElementById('listStageFilter').value;
   const ind=document.getElementById('listIndustry')?.value.trim()||'';
-  let q=sb.from('prospects').select('*').order('created_at',{ascending:false}).limit(300);
+  let q=sb.from('prospects').select('id,business_name,phone,industry,stage,manager,next_contact_date,created_at').order('created_at',{ascending:false}).limit(300);
   // 담당자별 필터링: admin/master는 전체, user는 자신의 데이터만
   if(!isPriv())q=q.eq('manager_id',AU.id);
   if(kw)q=q.or(`business_name.ilike.%${kw}%,manager.ilike.%${kw}%`);
@@ -443,14 +443,14 @@ async function bulkSetNextContact() {
 // ── 관리자 CRM ──
 async function loadAdmCRM(){
   const kw=document.getElementById('admKw').value.trim(),mgrId=document.getElementById('admMgr').value,stage=document.getElementById('admStage').value;
-  let q=sb.from('prospects').select('*').order('created_at',{ascending:false});
+  let q=sb.from('prospects').select('id,business_name,phone,industry,stage,status,manager,created_at').order('created_at',{ascending:false});
   if(kw)q=q.or(`business_name.ilike.%${kw}%,phone.ilike.%${kw}%`);
   if(mgrId)q=q.eq('manager_id',mgrId);if(stage)q=q.eq('stage',stage);
-  const{data}=await q;
+  const[{data},{data:usersRaw}]=await Promise.all([q,sb.from('users').select('name')]);
   document.getElementById('admCnt').textContent=(data?.length||0)+'건';
   const tbody=document.getElementById('admCrmBody');
   if(!data?.length){tbody.innerHTML='<tr><td colspan="8" class="empty">데이터 없음</td></tr>';return}
-  const{data:users}=await sb.from('users').select('name');const un=(users||[]).map(u=>u.name);
+  const un=(usersRaw||[]).map(u=>u.name);
   tbody.innerHTML=data.map(r=>`<tr class="tbl-clickrow" onclick="openCrmModal(${r.id})">
     <td><strong>${r.business_name||'-'}</strong></td><td>${r.phone||'-'}</td>
     <td>${r.industry?`<span class="tag-chip industry">${r.industry}</span>`:'-'}</td>

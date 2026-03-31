@@ -26,76 +26,100 @@ const TIER_INFO={
   master:{chip:'tc-master',label:'MASTER',name:'최고 관리자',desc:'시스템 전체 관리',feats:[{ok:true,txt:'모든 ADMIN 권한 포함'},{ok:true,txt:'계정 생성 및 권한 변경'},{ok:true,txt:'INACTIVE 권한 부여'},{ok:true,txt:'전체 DB 조회/삭제'},{ok:true,txt:'담당자별 DB 이관'},{ok:true,txt:'비밀번호 재설정'}]},
 };
 
-// ════ SaaS 메뉴 구조 (역할별 완전히 다른 렌더링) ════
-const SIDEBAR_CONFIG={
+// ════ SaaS 메뉴 구조 ════
+const SIDEBAR_GROUPS={
   user:[
-    {id:'miDash',page:'dash',label:'대시보드',icon:'📊'},
-    {id:'miCrm',page:'crm',label:'CRM 관리',icon:'📋'},
-    {id:'miCalendar',page:'calendar',label:'연락 캘린더',icon:'📅'},
-    {id:'miManual',page:'manual',label:'이용 안내',icon:'📖'},
-    {id:'miMypage',page:'mypage',label:'내 정보',icon:'👤'}
+    {
+      label:'영업',
+      items:[
+        {id:'miDash',     page:'dash',     label:'대시보드',  icon:'📊'},
+        {id:'miCrm',      page:'crm',      label:'영업 DB',   icon:'📋'},
+        {id:'miCalendar', page:'calendar', label:'캘린더',    icon:'📅'},
+      ]
+    },
+    {
+      label:'내 정보',
+      items:[
+        {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
+        {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
+      ]
+    }
   ],
-  admin: [],  // 먼저 정의 (spread 연산자 위해)
-  master: []  // 먼저 정의 (spread 연산자 위해)
+  admin:[
+    {
+      label:'영업',
+      items:[
+        {id:'miDash',     page:'dash',     label:'대시보드',  icon:'📊'},
+        {id:'miCrm',      page:'crm',      label:'영업 DB',   icon:'📋'},
+        {id:'miCalendar', page:'calendar', label:'캘린더',    icon:'📅'},
+      ]
+    },
+    {
+      label:'관리',
+      items:[
+        {id:'miAnnounce', page:'announce', label:'공지사항',    icon:'📣'},
+        {id:'miAdmin',    page:'admin',    label:'관리자 설정', icon:'⚙️'},
+      ]
+    },
+    {
+      label:'내 정보',
+      items:[
+        {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
+        {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
+      ]
+    }
+  ],
+  master:[
+    {
+      label:'영업',
+      items:[
+        {id:'miDash',     page:'dash',     label:'대시보드', icon:'📊'},
+        {id:'miCrm',      page:'crm',      label:'영업 DB',  icon:'📋'},
+        {id:'miCalendar', page:'calendar', label:'캘린더',   icon:'📅'},
+      ]
+    },
+    {
+      label:'관리',
+      items:[
+        {id:'miAnnounce', page:'announce', label:'공지사항',  icon:'📣'},
+        {id:'miMaster',   page:'admin',    label:'통합 관리', icon:'🛡️'},
+      ]
+    },
+    {
+      label:'내 정보',
+      items:[
+        {id:'miManual', page:'manual', label:'이용 안내', icon:'📖'},
+        {id:'miMypage', page:'mypage', label:'내 정보',   icon:'👤'},
+      ]
+    }
+  ]
 };
-
-// spread 연산자로 상속 구조 명시
-SIDEBAR_CONFIG.admin=[
-  ...SIDEBAR_CONFIG.user,
-  {id:'miAnnounce',page:'announce',label:'공지사항',icon:'📣'},
-  {id:'miAdmin',page:'admin',label:'관리자',icon:'⚙️'}
-];
-
-SIDEBAR_CONFIG.master=[
-  ...SIDEBAR_CONFIG.admin,
-  {id:'miUserMgmt',page:'admin',label:'사용자 관리',icon:'👥',tab:'users',masterOnly:true},
-  {id:'miAllCrm',page:'admin',label:'전체 DB',icon:'🗄️',tab:'allcrm',masterOnly:true},
-  {id:'miKakaoWork',page:'admin',label:'카카오워크',icon:'💬',tab:'kakaowork',masterOnly:true},
-  {id:'miBackup',label:'전체 백업',icon:'💾',tab:'backup',masterOnly:true},
-];
 
 function renderSidebar(role){
   const nav=document.querySelector('.sb-nav');
   if(!nav)return;
-
   role=(role||'user').toLowerCase();
-  nav.innerHTML=''; // 기존 메뉴 완전 제거
-
-  const menus=SIDEBAR_CONFIG[role]||SIDEBAR_CONFIG.user;
-
-  // 그룹 헤더 추가
-  const secMenu=document.createElement('div');
-  secMenu.className='nav-sec';secMenu.textContent='메뉴';
-  nav.appendChild(secMenu);
-
-  menus.forEach((m,i)=>{
-    // admin/master 전용 메뉴 시작 시 구분선 추가
-    if(m.id==='miAnnounce'){
-      const secAdmin=document.createElement('div');
-      secAdmin.className='nav-sec';secAdmin.textContent='관리';
-      nav.appendChild(secAdmin);
-    }
-    if(m.id==='miUserMgmt'){
-      const secMaster=document.createElement('div');
-      secMaster.className='nav-sec';secMaster.textContent='마스터 전용';
-      nav.appendChild(secMaster);
-    }
-
-    const div=document.createElement('div');
-    div.id=m.id;
-    div.className='mi';
-    div.onclick=()=>{
-      if(m.masterOnly){
-        if(m.tab==='backup'){backupAllData();return;}
-        goPage(m.page||'admin');
-        setTimeout(()=>showMasterPanel(m.tab),100);
-        return;
-      }
-      goPage(m.page);
-      if(m.tab)setTimeout(()=>admTab(m.tab,document.querySelector(`#adminTabBar .ti`)),50);
-    };
-    div.innerHTML=`<span class="mi-ic">${m.icon}</span>${m.label}`;
-    nav.appendChild(div);
+  nav.innerHTML='';
+  const groups=SIDEBAR_GROUPS[role]||SIDEBAR_GROUPS.user;
+  groups.forEach(group=>{
+    const sec=document.createElement('div');
+    sec.className='nav-sec';
+    sec.textContent=group.label;
+    nav.appendChild(sec);
+    group.items.forEach(m=>{
+      const div=document.createElement('div');
+      div.id=m.id;
+      div.className='mi';
+      div.onclick=()=>{
+        if(m.masterPanel){
+          goPage('admin');
+          return;
+        }
+        goPage(m.page);
+      };
+      div.innerHTML=`<span class="mi-ic">${m.icon}</span>${m.label}`;
+      nav.appendChild(div);
+    });
   });
 }
 
@@ -443,6 +467,14 @@ function goPage(page){
     const pg=document.getElementById('pg'+cap(p));if(pg)pg.classList.toggle('active',p===page);
     const m=document.getElementById('mi'+cap(p));if(m)m.classList.toggle('active',p===page);
   });
+  // master role은 miMaster를 admin 페이지 active로, miAdmin은 inactive
+  const isMaster=(PR?.role||'').toLowerCase()==='master';
+  const miMaster=document.getElementById('miMaster');
+  const miAdmin=document.getElementById('miAdmin');
+  if(isMaster){
+    if(miMaster)miMaster.classList.toggle('active',page==='admin');
+    if(miAdmin)miAdmin.classList.remove('active');
+  }
   closeSidebar();
   if(page==='dash')     loadDash();
   if(page==='admin')    setupAdminPage();

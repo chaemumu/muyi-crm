@@ -475,30 +475,53 @@ function setupAdminPage(){
 
   document.getElementById('adminDesc').textContent='관리자 기능';
 
+  // master는 MASTER_ONLY_PANELS 유지, admin은 제거
   if(role!=='master'){
     MASTER_ONLY_PANELS.forEach(id=>{
       const el=document.getElementById(id);
-      if(el)el.remove();
+      if(el)el.style.display='none';
+    });
+  } else {
+    MASTER_ONLY_PANELS.forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.style.display='';
     });
   }
 
+  const tabs=role==='master'?MASTER_TABS:ADMIN_TABS;
+  const defaultTab=tabs[0].key;
+
   const tabBar=document.getElementById('adminTabBar');
-  tabBar.innerHTML=ADMIN_TABS.map((t,i)=>{
+  tabBar.innerHTML=tabs.map((t,i)=>{
     if(t.action)return `<div class="ti" onclick="${t.action}">${t.label}</div>`;
     return `<div class="ti${i===0?' on':''}" onclick="admTab('${t.key}',this)">${t.label}</div>`;
   }).join('');
 
-  admTab_show('pipeline');
-  loadTpMgrFilter();
-  loadTeamPipeline();
+  admTab_show(defaultTab);
+  if(defaultTab==='users'){loadAdmUsers();loadMgrFilter();}
+  else if(defaultTab==='pipeline'){loadTpMgrFilter();loadTeamPipeline();}
 }
 
 function showMasterPanel(tab){
-  document.querySelectorAll('#adminTabBar .ti').forEach(t=>t.classList.remove('on'));
+  const allTabs=document.querySelectorAll('#adminTabBar .ti');
+  allTabs.forEach(t=>t.classList.remove('on'));
+  // 해당 탭 버튼 active 처리
+  allTabs.forEach(t=>{
+    if(t.getAttribute('onclick')&&t.getAttribute('onclick').includes(`'${tab}'`))t.classList.add('on');
+  });
   admTab_show(tab);
   if(tab==='users'){loadAdmUsers();loadMgrFilter();}
   if(tab==='allcrm')loadAdmCRM();
   if(tab==='kakaowork')loadKakaoWorkSettings();
+  if(tab==='pipeline'){loadTpMgrFilter();loadTeamPipeline();}
+  if(tab==='blocked')loadBlockedAdmin();
+  if(tab==='goal')loadGoalHist();
+  if(tab==='templates')loadTemplateAdmin();
+  if(tab==='report')loadWeeklyReport();
+  if(tab==='dupcheck')loadDupCheck();
+  if(tab==='stale')loadStaleDB();
+  if(tab==='perfcards'){if(typeof initPerfCardSelects==='function')initPerfCardSelects();loadPerfCards();}
+  if(tab==='assign'){loadAssignUsers();loadAssignList();}
 }
 
 function admTab(tab,el){

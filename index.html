@@ -92,13 +92,13 @@ body{font-family:-apple-system,'SF Pro Display','Noto Sans KR',BlinkMacSystemFon
 .u-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,.25),rgba(255,255,255,.1));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:2px solid rgba(255,255,255,.2)}
 .u-nm{font-size:15px;color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
 .u-rl{font-size:11px;color:rgba(255,255,255,.5);margin-top:1px;letter-spacing:.5px;text-transform:uppercase}
-.sb-nav{padding:12px 10px;flex:1;overflow-y:auto;overflow-x:hidden}
+.sb-nav{padding:14px 10px;flex:1;overflow-y:auto;overflow-x:hidden}
 .sb-nav::-webkit-scrollbar{display:none}
-.nav-sec{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;padding:0 8px;margin:16px 0 6px}
-.nav-sec:first-child{margin-top:4px}
-.mi{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;cursor:pointer;color:rgba(255,255,255,.6);font-size:15px;font-weight:500;transition:all .15s;margin-bottom:2px;position:relative}
-.mi:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.9)}
-.mi.active{background:rgba(255,255,255,.95);color:#09086e;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.nav-sec{font-size:10px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:1.8px;padding:0 10px;margin:20px 0 6px;font-weight:700}
+.nav-sec:first-child{margin-top:6px}
+.mi{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:rgba(255,255,255,.55);font-size:14px;font-weight:500;transition:all .15s;margin-bottom:1px;position:relative}
+.mi:hover{background:rgba(255,255,255,.09);color:rgba(255,255,255,.9);transform:translateX(2px)}
+.mi.active{background:rgba(255,255,255,.97);color:#09086e;font-weight:700;box-shadow:0 2px 12px rgba(0,0,0,.2)}
 .mi-ic{font-size:16px;width:22px;text-align:center;flex-shrink:0}
 .mi-badge{margin-left:auto;background:var(--orange);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;min-width:20px;text-align:center}
 .sb-foot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.07)}
@@ -899,15 +899,17 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
       </div>
     </div>
     <div class="sb-nav">
-      <div class="nav-sec">메뉴</div>
-      <div class="mi active" id="miDash"     onclick="goPage('dash')">   <span class="mi-ic">📊</span>대시보드</div>
-      <div class="mi"        id="miCrm"      onclick="goPage('crm')">    <span class="mi-ic">📋</span>CRM 관리</div>
-      <div class="mi"        id="miCalendar" onclick="goPage('calendar')"><span class="mi-ic">📅</span>연락 캘린더</div>
+      <div class="nav-sec">영업</div>
+      <div class="mi active" id="miDash"     onclick="goPage('dash')">    <span class="mi-ic">📊</span>대시보드</div>
+      <div class="mi"        id="miCrm"      onclick="goPage('crm')">     <span class="mi-ic">📋</span>영업 DB</div>
+      <div class="mi"        id="miCalendar" onclick="goPage('calendar')"> <span class="mi-ic">📅</span>캘린더</div>
+      <div class="nav-sec">관리</div>
       <div class="mi"        id="miAnnounce" onclick="goPage('announce')" style="display:none"><span class="mi-ic">📣</span>공지사항<span class="mi-badge" id="announceBadge" style="display:none">N</span></div>
-      <div class="mi"        id="miManual"   onclick="goPage('manual')"> <span class="mi-ic">📖</span>이용 안내</div>
-      <div class="mi"        id="miAdmin"    onclick="goPage('admin')" style="display:none"><span class="mi-ic">⚙️</span>관리자</div>
-      <div class="nav-sec">내 설정</div>
-      <div class="mi"        id="miMypage"   onclick="goPage('mypage')"> <span class="mi-ic">👤</span>내 정보</div>
+      <div class="mi"        id="miAdmin"    onclick="goPage('admin')"    style="display:none"><span class="mi-ic">⚙️</span>관리자 설정</div>
+      <div class="mi"        id="miMaster"   onclick="goPage('admin')"    style="display:none"><span class="mi-ic">🛡️</span>마스터 관리</div>
+      <div class="nav-sec">내 정보</div>
+      <div class="mi"        id="miManual"   onclick="goPage('manual')">  <span class="mi-ic">📖</span>이용 안내</div>
+      <div class="mi"        id="miMypage"   onclick="goPage('mypage')">  <span class="mi-ic">👤</span>내 정보</div>
     </div>
     <div class="sb-foot">
       <button class="btn-logout" onclick="doLogout()">🚪 로그아웃</button>

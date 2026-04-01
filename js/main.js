@@ -619,13 +619,12 @@ async function createUserAdmin(){
   const role=document.getElementById('adm_nRole')?.value;
   if(!email||!pw||!nick){setMsg('adm_createMsg','모든 항목을 입력하세요.',false);return;}
   if(pw.length<8){setMsg('adm_createMsg','비밀번호는 8자 이상.',false);return;}
-  const{data,error}=await sb.auth.signUp({email,password:pw});
-  if(error){setMsg('adm_createMsg','오류: '+error.message,false);return;}
-  const uid=data.user?.id;
-  if(uid)await sb.from('users').upsert([{id:uid,name:nick,role,email}]);
-  setMsg('adm_createMsg','✓ 계정 생성 완료 — 이메일 인증 발송됨',true);
+  const sess=await sb.auth.getSession();
+  const token=sess.data.session?.access_token;
+  const{data,error}=await sb.functions.invoke('create-user',{body:{email,password:pw,name:nick,role},headers:{Authorization:`Bearer ${token}`}});
+  if(error||data?.error){setMsg('adm_createMsg','오류: '+(data?.error||error?.message),false);return;}
+  setMsg('adm_createMsg','✓ 계정 생성 완료',true);
   ['adm_nEmail','adm_nPw','adm_nNick'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  // 권한 변경 패널 갱신
   if(_adminSubTab==='roleChange')loadAdmUsersRolePanel();
 }
 
@@ -900,11 +899,11 @@ async function createUser(){
   const nick=document.getElementById('nNick').value.trim(),role=document.getElementById('nRole').value;
   if(!email||!pw||!nick){setMsg('createMsg','모든 항목을 입력하세요.',false);return}
   if(pw.length<8){setMsg('createMsg','비밀번호는 8자 이상.',false);return}
-  const{data,error}=await sb.auth.signUp({email,password:pw});
-  if(error){setMsg('createMsg','오류: '+error.message,false);return}
-  const uid=data.user?.id;
-  if(uid)await sb.from('users').upsert([{id:uid,name:nick,role,email}]);
-  setMsg('createMsg','✓ 계정 생성 완료 — 이메일 인증 발송됨',true);
+  const sess=await sb.auth.getSession();
+  const token=sess.data.session?.access_token;
+  const{data,error}=await sb.functions.invoke('create-user',{body:{email,password:pw,name:nick,role},headers:{Authorization:`Bearer ${token}`}});
+  if(error||data?.error){setMsg('createMsg','오류: '+(data?.error||error?.message),false);return}
+  setMsg('createMsg','✓ 계정 생성 완료',true);
   ['nEmail','nPw','nNick'].forEach(id=>document.getElementById(id).value='');loadAdmUsers();
 }
 

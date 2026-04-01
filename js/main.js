@@ -1256,6 +1256,41 @@ function initRegForm(){
   initNaverUrlParsing();
 }
 
+// ── 네이버 URL 자동완성 ──
+let _naverUrlTimer=null;
+function onNaverUrlInput(val){
+  clearTimeout(_naverUrlTimer);
+  const st=document.getElementById('naverParseStatus');
+  if(!val||!val.trim()){if(st)st.innerHTML='';return;}
+  const v=val.trim().toLowerCase();
+  if(!v.includes('naver.me')&&!v.includes('map.naver.com')&&!v.includes('place.naver.com')){if(st)st.innerHTML='';return;}
+  if(st)st.innerHTML='<span class="nps-loading">🔍 장소 정보 불러오는 중…</span>';
+  _naverUrlTimer=setTimeout(()=>_fetchNaverPlace(val.trim()),900);
+}
+async function _fetchNaverPlace(url){
+  const st=document.getElementById('naverParseStatus');
+  try{
+    const {data,error}=await sb.functions.invoke('naver-place',{body:{url}});
+    if(error||!data?.name){
+      if(st)st.innerHTML='<span class="nps-error">장소 정보를 찾을 수 없습니다</span>';
+      return;
+    }
+    let filled=[];
+    const nameEl=document.getElementById('rName');
+    if(nameEl&&!nameEl.value&&data.name){nameEl.value=data.name;filled.push('업체명');}
+    const addrEl=document.getElementById('rAddress');
+    if(addrEl&&!addrEl.value&&data.address){addrEl.value=data.address;filled.push('주소');}
+    const indEl=document.getElementById('rIndustry');
+    if(indEl&&data.category){indEl.value=data.category;filled.push('업종');}
+    if(st)st.innerHTML=filled.length
+      ?`<span class="nps-success">✅ ${filled.join('·')} 자동완성됨</span>`
+      :'<span class="nps-info">ℹ 이미 입력된 항목은 유지됩니다</span>';
+  }catch(e){
+    if(st)st.innerHTML='<span class="nps-error">오류: '+e.message+'</span>';
+  }
+}
+function initNaverUrlParsing(){/* URL oninput 핸들러로 동작 */}
+
 // ── 업종 피커 ──
 const INDUSTRIES=["음식점", "카페", "베이커리", "치킨", "피자", "분식", "일식", "중식", "고기집", "술집", "호프", "이자카야", "카페/디저트", "피부샵", "네일샵", "헤어샵", "마사지", "세탁소", "편의점", "약국", "병원", "학원", "부동산", "숙박", "기타"];
 function initIndustryPickers(){

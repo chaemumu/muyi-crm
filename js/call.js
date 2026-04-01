@@ -12,6 +12,20 @@ function selectCallResult(result){
   else if(result==='거절')btn.classList.add('sel-reject');
 }
 
+// ── 통화 결과 → timeline 클래스 ──
+function _tlClass(result){
+  if(result==='통화성공')return'success';
+  if(result==='부재중')return'absent';
+  if(result==='거절')return'reject';
+  return'default';
+}
+function _tlEmoji(result){
+  if(result==='통화성공')return'✅';
+  if(result==='부재중')return'📵';
+  if(result==='거절')return'🚫';
+  return'📝';
+}
+
 // ── 통화 기록 저장 ──
 async function saveCallLog(){
   if(!curCrmId)return;
@@ -41,45 +55,47 @@ async function loadCallHistory(id){
   const el=document.getElementById('callLogList');
   if(!data?.length){el.innerHTML='<div class="empty">통화 기록 없음</div>';return}
   const myId=AU?.id;
-  el.innerHTML=data.map(c=>{
+  el.innerHTML='<div class="crm-tl-list">'+data.map(c=>{
     const isInitial=c.is_initial===true||c.is_initial==='true';
     const canEdit=isPriv()||(c.manager_id===myId);
     const dt=new Date(c.called_at);
     const timeStr=`${dt.getFullYear()}.${String(dt.getMonth()+1).padStart(2,'0')}.${String(dt.getDate()).padStart(2,'0')} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
     const safeContent=(c.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    return`<div class="call-log-item${isInitial?' call-log-initial':''}" id="cl-${c.id}">
-      <div class="cl-meta">
-        <span class="cl-who">${c.manager_name||'-'}</span>
-        <div style="display:flex;align-items:center;gap:6px">
-          <span class="cl-result cl-result-${c.result||'기타'}">${c.result||'-'}</span>
-          <span class="cl-time">${timeStr}</span>
+    const tc=_tlClass(c.result);
+    return`<div class="crm-tl-item${isInitial?' call-log-initial':''}" id="cl-${c.id}">
+      <div class="crm-tl-dot tl-${tc}">${_tlEmoji(c.result)}</div>
+      <div class="crm-tl-body">
+        <div class="crm-tl-header">
+          <span class="crm-tl-badge tl-${tc}">${c.result||'-'}</span>
+          <span class="crm-tl-time">${timeStr}</span>
+          <span class="crm-tl-manager">${c.manager_name||'-'}</span>
         </div>
-      </div>
-      <div class="cl-content" id="cl-txt-${c.id}">${safeContent}</div>
-      ${canEdit?`<div class="call-log-actions">
-        <button class="cl-edit-btn" onclick="startEditCallLog(${c.id},'${(c.content||'').replace(/'/g,'\\\'').replace(/\n/g,'\\n')}','${c.result||'기타'}')">수정</button>
-        <button class="cl-edit-btn" style="color:var(--red)" onclick="deleteCallLog(${c.id})">삭제</button>
-      </div>
-      <div class="cl-editing" id="cl-edit-${c.id}">
-        <select class="fi" id="cl-result-${c.id}" style="margin-bottom:7px;font-size:13px">
-          <option value="통화성공" ${c.result==='통화성공'?'selected':''}>통화성공</option>
-          <option value="부재중" ${c.result==='부재중'?'selected':''}>부재중</option>
-          <option value="거절" ${c.result==='거절'?'selected':''}>거절</option>
-        </select>
-        <textarea class="fi" id="cl-content-${c.id}" rows="3" style="margin-bottom:7px;resize:vertical;font-size:13px">${safeContent}</textarea>
-        <div style="display:flex;gap:6px">
-          <button class="btn-p btn-sm" onclick="saveEditCallLog(${c.id})">저장</button>
-          <button class="btn-g btn-sm" onclick="cancelEditCallLog(${c.id})">취소</button>
+        <div class="crm-tl-content" id="cl-txt-${c.id}">${safeContent}</div>
+        ${canEdit?`<div class="crm-tl-actions">
+          <button class="crm-tl-edit-btn" onclick="startEditCallLog(${c.id},'${(c.content||'').replace(/'/g,'\\\'').replace(/\n/g,'\\n')}','${c.result||'기타'}')">수정</button>
+          <button class="crm-tl-edit-btn del" onclick="deleteCallLog(${c.id})">삭제</button>
         </div>
-      </div>`:''}
+        <div class="crm-tl-editing" id="cl-edit-${c.id}">
+          <select class="fi" id="cl-result-${c.id}" style="margin-bottom:7px;font-size:13px">
+            <option value="통화성공" ${c.result==='통화성공'?'selected':''}>통화성공</option>
+            <option value="부재중" ${c.result==='부재중'?'selected':''}>부재중</option>
+            <option value="거절" ${c.result==='거절'?'selected':''}>거절</option>
+          </select>
+          <textarea class="fi" id="cl-content-${c.id}" rows="3" style="margin-bottom:7px;resize:vertical;font-size:13px">${safeContent}</textarea>
+          <div style="display:flex;gap:6px">
+            <button class="btn-p btn-sm" onclick="saveEditCallLog(${c.id})">저장</button>
+            <button class="btn-g btn-sm" onclick="cancelEditCallLog(${c.id})">취소</button>
+          </div>
+        </div>`:''}
+      </div>
     </div>`;
-  }).join('');
+  }).join('')+'</div>';
 }
 
 // ── 통화 기록 수정/삭제 ──
 function startEditCallLog(id,content,result){
   const editDiv=document.getElementById(`cl-edit-${id}`);
-  if(editDiv){editDiv.style.display='block';}
+  if(editDiv)editDiv.style.display='block';
 }
 function cancelEditCallLog(id){
   const editDiv=document.getElementById(`cl-edit-${id}`);

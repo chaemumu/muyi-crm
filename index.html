@@ -832,6 +832,66 @@ body.dark .info-val{color:#f5f5f7}
 body.dark .stage-sel-btn{opacity:.6}
 body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
 
+/* ── Naver URL parse status ── */
+.naver-parse-status{min-height:18px;margin-top:6px;font-size:12px;font-weight:600}
+.nps-loading{color:var(--gray-400)}
+.nps-success{color:#16a34a}
+.nps-error{color:#dc2626}
+.nps-info{color:var(--gray-500)}
+
+/* ── CRM MODAL PREMIUM REDESIGN ── */
+.crm-modal-head{background:linear-gradient(160deg,#f0f5ff 0%,#ffffff 60%);border-bottom:1px solid var(--border2)}
+.crm-head-hero{display:flex;align-items:center;gap:14px;flex:1;min-width:0}
+.crm-head-avatar{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#0a84ff 0%,#5e5ce6 100%);color:#fff;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:-.5px;box-shadow:0 4px 14px rgba(10,132,255,.28);user-select:none}
+.crm-head-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.crm-info-rows{display:flex;flex-direction:column}
+.crm-info-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border2)}
+.crm-info-row:last-child{border-bottom:none}
+.crm-info-icon{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:var(--gray-100);margin-top:1px}
+.crm-info-row-content{flex:1;min-width:0}
+.crm-info-row-label{font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
+.crm-info-row-value{font-size:14px;font-weight:600;color:var(--gray-950);word-break:break-word;line-height:1.4}
+.crm-chip-btns{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.crm-chip-btn{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--gray-600);transition:all .15s;font-family:inherit}
+.crm-chip-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light);transform:translateY(-1px)}
+.crm-chip-btn:active{transform:translateY(0)}
+/* Timeline call history */
+.crm-tl-list{display:flex;flex-direction:column;position:relative}
+.crm-tl-item{display:flex;gap:12px;padding:12px 0;position:relative}
+.crm-tl-item:not(:last-child)::after{content:'';position:absolute;left:15px;top:44px;bottom:0;width:2px;background:var(--border2);z-index:0}
+.crm-tl-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;position:relative;z-index:1;border:2px solid transparent}
+.crm-tl-dot.tl-success{background:#f0fdf4;border-color:#16a34a}
+.crm-tl-dot.tl-absent{background:#fefce8;border-color:#ca8a04}
+.crm-tl-dot.tl-reject{background:#fff1f2;border-color:#dc2626}
+.crm-tl-dot.tl-default{background:var(--gray-100);border-color:var(--border)}
+.crm-tl-body{flex:1;min-width:0;background:var(--surface);border-radius:12px;padding:12px 14px;border:1px solid var(--border2);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.crm-tl-header{display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap}
+.crm-tl-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px}
+.crm-tl-badge.tl-success{background:#dcfce7;color:#166534}
+.crm-tl-badge.tl-absent{background:#fef9c3;color:#713f12}
+.crm-tl-badge.tl-reject{background:#fee2e2;color:#9f1239}
+.crm-tl-badge.tl-default{background:var(--gray-100);color:var(--gray-600)}
+.crm-tl-time{font-size:11px;color:var(--gray-400);font-weight:500}
+.crm-tl-manager{font-size:11px;color:var(--gray-400);margin-left:auto;font-weight:500}
+.crm-tl-content{font-size:13px;color:var(--gray-700);line-height:1.6;word-break:break-word}
+.crm-tl-actions{display:flex;gap:5px;margin-top:8px}
+.crm-tl-edit-btn{font-size:11px;font-weight:600;color:var(--gray-400);background:none;border:1px solid var(--border);border-radius:6px;padding:3px 9px;cursor:pointer;font-family:inherit;transition:all .15s}
+.crm-tl-edit-btn:hover{color:var(--gray-700);border-color:var(--gray-300)}
+.crm-tl-edit-btn.del:hover{color:var(--red);border-color:var(--red)}
+.crm-tl-editing{display:none;margin-top:10px}
+/* dark mode for premium classes */
+body.dark .crm-modal-head{background:linear-gradient(160deg,#1a1a2e 0%,#1c1c1e 60%)}
+body.dark .crm-head-avatar{box-shadow:0 4px 12px rgba(10,132,255,.18)}
+body.dark .crm-info-row{border-color:rgba(255,255,255,.08)}
+body.dark .crm-info-icon{background:#2c2c2e}
+body.dark .crm-info-row-value{color:#f5f5f7}
+body.dark .crm-info-row-label{color:var(--gray-500)}
+body.dark .crm-chip-btn{background:#2c2c2e;border-color:rgba(255,255,255,.1);color:#d1d1d6}
+body.dark .crm-chip-btn:hover{border-color:var(--orange);color:var(--orange);background:rgba(255,107,0,.1)}
+body.dark .crm-tl-item::after{background:rgba(255,255,255,.08)}
+body.dark .crm-tl-body{background:#2c2c2e;border-color:rgba(255,255,255,.1)}
+body.dark .crm-tl-content{color:#aeaeb2}
+
 </style>
 </head>
 <body>
@@ -1153,7 +1213,7 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
                 <input class="fi" id="rIndustry" value="음식점" placeholder="업종 입력" oninput="onIndustryInput(this.value,'rIndustryList')" onfocus="onIndustryInput(this.value,'rIndustryList')" autocomplete="off">
                 <div class="autocomplete-list" id="rIndustryList" style="display:none;z-index:500;position:absolute;top:100%;left:0;right:0"></div>
               </div>
-              <div class="form-group" id="assignUserGroup">
+              <div class="form-group" id="assignUserGroup" style="display:none">
                 <label class="lbl">담당자 배정</label>
                 <select class="fi" id="rAssignUser">
                   <option value="">본인 (자동)</option>
@@ -1848,13 +1908,18 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
 <!-- CRM 상세 모달 -->
 <div class="modal-overlay" id="crmModal" style="display:none" onclick="if(event.target===this)closeCrmModal()">
   <div class="modal modal-wide">
-    <div class="modal-head">
-      <div style="flex:1;min-width:0"><div class="modal-title" id="crmModalTitle">-</div><div class="stage-quick-wrap"><div class="modal-sub" id="crmModalSub" style="cursor:pointer;user-select:none" onclick="toggleHeaderStageDrop(event)">-</div><div class="stage-quick-drop" id="stageHeaderDrop"></div></div></div>
-      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+    <div class="modal-head crm-modal-head">
+      <div class="crm-head-hero">
+        <div class="crm-head-avatar" id="crmHeadAvatar">-</div>
+        <div style="flex:1;min-width:0">
+          <div class="modal-title" id="crmModalTitle">-</div>
+          <div class="stage-quick-wrap"><div class="modal-sub" id="crmModalSub" style="cursor:pointer;user-select:none" onclick="toggleHeaderStageDrop(event)">-</div><div class="stage-quick-drop" id="stageHeaderDrop"></div></div>
+        </div>
+      </div>
+      <div class="crm-head-actions">
         <button class="btn-g btn-sm" id="modalPrevBtn" onclick="moveCrmModal(-1)" title="이전">◀</button>
         <span id="modalIndexLabel" style="font-size:12px;color:var(--gray-400);white-space:nowrap"></span>
         <button class="btn-g btn-sm" id="modalNextBtn" onclick="moveCrmModal(1)" title="다음">▶</button>
-
         <button class="modal-close" onclick="closeCrmModal()">✕</button>
       </div>
     </div>
@@ -1868,45 +1933,63 @@ body.dark .stage-sel-btn:hover,.stage-sel-btn.active-stage{opacity:1}
           <!-- 업체 정보 통합 카드 -->
           <div class="info-section-card">
             <!-- 업체명 + 업종 -->
-            <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:16px">
-              <span id="ivName" style="font-size:17px;font-weight:800;color:var(--gray-950);letter-spacing:-.3px;line-height:1.3">-</span>
-              <span id="ivIndustry" style="font-size:12px;color:var(--gray-400);font-weight:500;white-space:nowrap">-</span>
+            <div style="margin-bottom:14px">
+              <div id="ivName" style="font-size:17px;font-weight:800;color:var(--gray-950);letter-spacing:-.3px;line-height:1.3;margin-bottom:4px">-</div>
+              <span id="ivIndustry" style="font-size:12px;color:var(--gray-400);font-weight:500;background:var(--gray-100);padding:2px 9px;border-radius:10px;display:inline-block">-</span>
             </div>
-            <!-- 대표연락처 / 서브연락처 한 줄 -->
-            <div style="display:flex;gap:20px;margin-bottom:14px">
-              <div>
-                <div class="info-lbl" style="margin-bottom:3px">대표연락처</div>
-                <div class="info-val" id="ivPhone" style="font-size:14px;font-weight:600">-</div>
+            <!-- 아이콘 행 -->
+            <div class="crm-info-rows">
+              <div class="crm-info-row">
+                <div class="crm-info-icon">📞</div>
+                <div class="crm-info-row-content">
+                  <div class="crm-info-row-label">대표연락처</div>
+                  <div class="crm-info-row-value" id="ivPhone">-</div>
+                </div>
               </div>
-              <div>
-                <div class="info-lbl" style="margin-bottom:3px">서브연락처</div>
-                <div class="info-val" id="ivSubPhone" style="font-size:14px;font-weight:600">-</div>
+              <div class="crm-info-row">
+                <div class="crm-info-icon">📱</div>
+                <div class="crm-info-row-content">
+                  <div class="crm-info-row-label">서브연락처</div>
+                  <div class="crm-info-row-value" id="ivSubPhone">-</div>
+                </div>
               </div>
-            </div>
-            <!-- 주소 -->
-            <div class="info-field"><span class="info-lbl">주소</span><span class="info-val" id="ivAddress">-</span></div>
-            <!-- 대표특징 -->
-            <div class="info-field"><span class="info-lbl">대표특징</span><span class="info-val" id="ivFeature">-</span></div>
-            <!-- URL -->
-            <div class="info-field">
-              <span class="info-lbl">URL</span>
-              <a id="ivUrl" href="#" target="_blank" style="color:var(--blue);font-size:12px;font-weight:500;display:none;word-break:break-all;line-height:1.5;text-decoration:underline;text-underline-offset:2px"></a>
-              <span id="ivUrlEmpty" class="info-val">-</span>
+              <div class="crm-info-row">
+                <div class="crm-info-icon">📍</div>
+                <div class="crm-info-row-content">
+                  <div class="crm-info-row-label">주소</div>
+                  <div class="crm-info-row-value" id="ivAddress">-</div>
+                </div>
+              </div>
+              <div class="crm-info-row">
+                <div class="crm-info-icon">✨</div>
+                <div class="crm-info-row-content">
+                  <div class="crm-info-row-label">대표특징</div>
+                  <div class="crm-info-row-value" id="ivFeature">-</div>
+                </div>
+              </div>
+              <div class="crm-info-row">
+                <div class="crm-info-icon">🔗</div>
+                <div class="crm-info-row-content">
+                  <div class="crm-info-row-label">URL</div>
+                  <a id="ivUrl" href="#" target="_blank" style="font-size:13px;color:var(--blue);font-weight:600;display:none;word-break:break-all;line-height:1.5;text-decoration:none"></a>
+                  <span id="ivUrlEmpty" class="crm-info-row-value">-</span>
+                </div>
+              </div>
             </div>
           </div>
           <!-- 다음 연락 예정일 -->
           <div class="info-section-card">
             <div class="info-section-title">다음 연락 예정일</div>
-            <div id="ivNextContact" style="font-size:22px;font-weight:900;color:var(--gray-950);letter-spacing:-.5px;margin-bottom:4px">미설정</div>
-            <div style="font-size:12px;color:var(--gray-400);margin-bottom:12px;font-weight:500">날짜를 선택하거나 아래에서 빠르게 설정하세요</div>
-            <div class="day-btn-group">
-              <button class="day-btn" onclick="setNextContactDay(1)">+1일</button>
-              <button class="day-btn" onclick="setNextContactDay(2)">+2일</button>
-              <button class="day-btn" onclick="setNextContactDay(3)">+3일</button>
-              <button class="day-btn" onclick="setNextContactDay(4)">+4일</button>
-              <button class="day-btn" onclick="setNextContactDay(5)">+5일</button>
-              <button class="day-btn" onclick="setNextContactDay(6)">+6일</button>
-              <button class="day-btn" onclick="setNextContactDay(7)">+7일</button>
+            <div id="ivNextContact" style="font-size:24px;font-weight:900;color:var(--gray-950);letter-spacing:-.5px;margin-bottom:4px">미설정</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-bottom:10px;font-weight:500">아래에서 빠르게 설정하세요</div>
+            <div class="crm-chip-btns">
+              <button class="crm-chip-btn" onclick="setNextContactDay(1)">+1일</button>
+              <button class="crm-chip-btn" onclick="setNextContactDay(2)">+2일</button>
+              <button class="crm-chip-btn" onclick="setNextContactDay(3)">+3일</button>
+              <button class="crm-chip-btn" onclick="setNextContactDay(4)">+4일</button>
+              <button class="crm-chip-btn" onclick="setNextContactDay(5)">+5일</button>
+              <button class="crm-chip-btn" onclick="setNextContactDay(6)">+6일</button>
+              <button class="crm-chip-btn" onclick="setNextContactDay(7)">+7일</button>
             </div>
           </div>
         </div>

@@ -7,6 +7,8 @@ async function openCrmModal(id){
   // 헤더
   document.getElementById('crmModalTitle').textContent=data.business_name||'-';
   document.getElementById('crmModalSub').innerHTML=`${stageBadge(data.stage||'가망')} &nbsp;담당자:${data.manager||'-'}`;
+  const avatarEl=document.getElementById('crmHeadAvatar');
+  if(avatarEl)avatarEl.textContent=(data.business_name||'?').charAt(0);
 
   // 좌측 정보 뷰 채우기
   document.getElementById('ivName').textContent=data.business_name||'-';
@@ -18,10 +20,10 @@ async function openCrmModal(id){
   document.getElementById('ivFeature').textContent=data.feature||data.memo||'-';
   const urlEl=document.getElementById('ivUrl'),urlEmptyEl=document.getElementById('ivUrlEmpty');
   if(data.naver_url){
-    urlEl.href=data.naver_url;
-    // 표시 텍스트: 도메인+경로 요약 (너무 길면 앞 50자)
-    try{const u=new URL(data.naver_url);urlEl.textContent=u.hostname+(u.pathname.length>1?u.pathname:'');}
-    catch(e){urlEl.textContent=data.naver_url.length>50?data.naver_url.slice(0,50)+'…':data.naver_url;}
+    const safeUrl=data.naver_url.trim().startsWith('http')?data.naver_url.trim():'https://'+data.naver_url.trim();
+    urlEl.href=safeUrl;
+    try{const u=new URL(safeUrl);urlEl.textContent=u.hostname+(u.pathname.length>1?u.pathname:'');}
+    catch(e){urlEl.textContent=safeUrl.length>50?safeUrl.slice(0,50)+'…':safeUrl;}
     urlEl.style.display='block';urlEmptyEl.style.display='none';
   }else{urlEl.style.display='none';urlEmptyEl.style.display='block';}
 
@@ -123,9 +125,10 @@ async function saveCrmEdit(){
   document.getElementById('ivFeature').textContent=newFeature||'-';
   const urlEl=document.getElementById('ivUrl'),urlEmptyEl=document.getElementById('ivUrlEmpty');
   if(payload.naver_url){
-    urlEl.href=payload.naver_url;
-    try{const u=new URL(payload.naver_url);urlEl.textContent=u.hostname+(u.pathname.length>1?u.pathname:'');}
-    catch(e){urlEl.textContent=payload.naver_url.length>50?payload.naver_url.slice(0,50)+'…':payload.naver_url;}
+    const safeUrl=payload.naver_url.trim().startsWith('http')?payload.naver_url.trim():'https://'+payload.naver_url.trim();
+    urlEl.href=safeUrl;
+    try{const u=new URL(safeUrl);urlEl.textContent=u.hostname+(u.pathname.length>1?u.pathname:'');}
+    catch(e){urlEl.textContent=safeUrl.length>50?safeUrl.slice(0,50)+'…':safeUrl;}
     urlEl.style.display='block';urlEmptyEl.style.display='none';
   }else{urlEl.style.display='none';urlEmptyEl.style.display='block';}
   if(stageVal==='계약완료'&&oldStage!=='계약완료'&&typeof launchConfetti==='function')launchConfetti();

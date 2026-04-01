@@ -70,7 +70,9 @@ function closeStageList(){document.getElementById('stageListWrap').style.display
 // ── CRM 등록 ──
 async function saveCRM(){
   const name=document.getElementById('rName').value.trim(),phone=document.getElementById('rPhone').value.trim();
+  const naverUrl=document.getElementById('rNaverUrl').value.trim();
   if(!name||!phone){setMsg('regMsg','업체명과 전화번호는 필수입니다.',false);return}
+  if(!naverUrl){setMsg('regMsg','네이버 지도 URL은 필수입니다.',false);return}
   const{data:blocked}=await sb.from('blocked_stores').select('brand_name');
   const mb=(blocked||[]).find(b=>name.toLowerCase().includes(b.brand_name.toLowerCase()));
   if(mb){setMsg('regMsg',`⛔ [${mb.brand_name}] 전지점 영업 불가 업체입니다.`,false);return}

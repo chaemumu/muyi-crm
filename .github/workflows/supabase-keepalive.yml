@@ -1,0 +1,22 @@
+name: Supabase keep-alive
+
+# Supabase Free 플랜은 7일간 요청이 없으면 프로젝트를 자동 일시정지함 → 3일마다 DB 조회로 방지
+on:
+  schedule:
+    - cron: '0 0 */3 * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ping Supabase DB
+        run: |
+          SB_URL=$(grep -oP 'const SB_URL="\K[^"]+' js/supabase.js)
+          SB_KEY=$(grep -oP 'const SB_KEY="\K[^"]+' js/supabase.js)
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            "$SB_URL/rest/v1/call_logs?select=id&limit=1" \
+            -H "apikey: $SB_KEY" -H "Authorization: Bearer $SB_KEY")
+          echo "HTTP $code"
+          [ "$code" = "200" ]

@@ -477,7 +477,7 @@ function goPage(page){
   if(page==='announce') loadAnnouncements();
   if(page==='manual')   loadManual();
   if(page==='calendar') renderCalendar();
-  if(page==='crm')      {loadPipeline();loadBlockedInCheckTab();setTimeout(initRegForm,100);}
+  if(page==='crm')      {closeRegDrawer();loadPipeline();loadList();setTimeout(initRegForm,100);}
   if(page==='mypage')   loadMypage();
 }
 

@@ -1360,7 +1360,7 @@ async function onRegNameInput(val){
     list.style.display='block';
     list.innerHTML=data.map(r=>`<div class="autocomplete-item" onclick="selectNameAuto('${r.business_name.replace(/'/g,"\\'")}','regNameAutoList','rName')">${r.business_name} <small style="color:#9fa6bc">${r.stage||'가망'} · ${r.manager||'-'}</small></div>`).join('');
     document.getElementById('regDupWarn').style.display='block';
-    document.getElementById('regDupWarn').textContent=`⚠️ "${data[0].business_name}" 등 ${data.length}건 유사 업체 발견 — 중복 확인 탭에서 먼저 확인하세요`;
+    document.getElementById('regDupWarn').textContent=`⚠️ "${data[0].business_name}" 등 ${data.length}건 유사 업체 발견 — 상단 [중복 확인]에서 상세 확인`;
   }else{list.style.display='none';document.getElementById('regDupWarn').style.display='none';}
 }
 function selectNameAuto(val,listId,inputId){
@@ -1428,7 +1428,7 @@ function renderDupResult(data,raw,isPhone){
   }
 }
 function quickReg(val,isPhone){
-  crmTab('reg',document.querySelector('#pgCrm .tab-bar .ti:nth-child(2)'));
+  crmTab('reg');
   if(isPhone){const d=val.replace(/\D/g,'');document.getElementById('rPhone').value=fmtPhone(d);}
   else document.getElementById('rName').value=val;
 }

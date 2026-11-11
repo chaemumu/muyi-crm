@@ -1,12 +1,34 @@
 // ── CRM 탭 ──
-function crmTab(tab,el){
-  const map={check:'tabCheck',reg:'tabReg',list:'tabList'};
-  Object.values(map).forEach(id=>document.getElementById(id).style.display='none');
-  document.querySelectorAll('#pgCrm .tab-bar .ti').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');document.getElementById(map[tab]).style.display='block';
-  if(tab==='list'){loadList();initIndustryPickers();}
-  if(tab==='check')loadBlockedInCheckTab();
-  if(tab==='reg')loadAssignUserDropdown();
+// 목록은 항상 표시, 신규 등록·중복 확인은 우측 드로어
+function crmTab(tab){
+  if(tab==='list'){closeRegDrawer();loadList();initIndustryPickers();return}
+  const dw=document.getElementById('regDrawer');
+  if(dw.parentElement!==document.body)document.body.appendChild(dw); // 페이지 transform 영향 없이 화면 우측에 고정
+  dw.classList.add('open');
+  document.getElementById('tabReg').style.display=tab==='reg'?'block':'none';
+  document.getElementById('tabCheck').style.display=tab==='check'?'block':'none';
+  document.getElementById('dwBtnReg').classList.toggle('on',tab==='reg');
+  document.getElementById('dwBtnCheck').classList.toggle('on',tab==='check');
+  if(tab==='check'){loadBlockedInCheckTab();setTimeout(()=>document.getElementById('searchName')?.focus(),50)}
+  if(tab==='reg'){loadAssignUserDropdown();setTimeout(()=>document.getElementById('rName')?.focus(),50)}
+}
+function closeRegDrawer(){document.getElementById('regDrawer')?.classList.remove('open')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeRegDrawer()});
+
+// 등록 폼 전화번호 실시간 중복 검사 (7자리 이상, 입력 멈춘 뒤 0.4초)
+let _regPhoneT=null;
+function onRegPhoneInput(val){
+  clearTimeout(_regPhoneT);
+  const warn=document.getElementById('regPhoneDupWarn');
+  const digits=String(val||'').replace(/\D/g,'');
+  if(digits.length<7){warn.style.display='none';return}
+  _regPhoneT=setTimeout(async()=>{
+    const{data}=await sb.from('prospects').select('business_name,stage,manager,status').or(`phone.ilike.%${val}%,phone.ilike.%${fmtPhone(digits)}%`).limit(5);
+    if(!data?.length){warn.style.display='none';return}
+    const hasC=data.some(d=>d.status==='계약중');
+    warn.style.display='block';
+    warn.textContent=`${hasC?'⛔ 계약중 업체 — 연락 금지 · ':'⚠️ '}동일 번호 ${data.length}건: ${data.map(d=>`${d.business_name}(${d.stage||'가망'}·${d.manager||'-'})`).join(', ')}`;
+  },400);
 }
 
 // ── PIPELINE ──
@@ -120,7 +142,8 @@ async function saveCRM(){
   if(industryEl)industryEl.value='음식점';
   if(assignSel)assignSel.value='';
   const ns=document.getElementById('naverParseStatus');if(ns)ns.textContent='';
-  loadPipeline();
+  ['regDupWarn','regPhoneDupWarn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  loadPipeline();loadList();
 }
 
 // ── CRM 목록 ──

@@ -446,10 +446,12 @@ async function deleteAnnounce(id){
 }
 
 // ════ 관리자 설정 — 2단 탭 구조 ════
+// 운영관리 + 마스터 설정 통합. roles: 탭을 볼 수 있는 권한 (마스터는 '마스터 > 사용자 관리'에서 계정 생성)
 const ADMIN_MAIN_TABS=[
-  {key:'account', label:'계정관리'},
-  {key:'data',    label:'데이터관리'},
-  {key:'ops',     label:'운영관리'},
+  {key:'account', label:'계정관리',   roles:['admin']},
+  {key:'data',    label:'데이터관리', roles:['admin','master']},
+  {key:'ops',     label:'운영관리',   roles:['admin','master']},
+  {key:'master',  label:'마스터',     roles:['master']},
 ];
 const ADMIN_SUB_TABS={
   account:[
@@ -469,7 +471,14 @@ const ADMIN_SUB_TABS={
     {key:'perfcards', label:'사원별 성과',   panel:'admPerfCards',   load:()=>{if(typeof initPerfCardSelects==='function')initPerfCardSelects();loadPerfCards();}},
     {key:'kakaowork', label:'카카오워크',    panel:'admKakaoWork',   load:()=>loadKakaoWorkSettings()},
   ],
+  master:[
+    {key:'mstrUsers',    label:'사용자 관리', panel:'admUsers',    load:()=>{const sel=document.getElementById('nRole');if(sel)sel.innerHTML=getAllowedRoleOpts('');loadAdmUsers();}},
+    {key:'mstrRoles',    label:'권한 관리',   panel:'admRoles',    load:()=>loadAdmUsersRoles()},
+    {key:'mstrDatabase', label:'전체 DB',     panel:'admCrmWrap',  load:()=>{loadAdmCRM();loadMgrFilter();}},
+    {key:'mstrDbUpload', label:'DB 업로드',   panel:'admDbUpload', load:null},
+  ],
 };
+const adminTabsForRole=()=>{const r=(PR?.role||'').toLowerCase();return ADMIN_MAIN_TABS.filter(t=>t.roles.includes(r));};
 let _adminMainTab='account',_adminSubTab='createUser';
 
 function setupAdminPage(){
@@ -477,13 +486,13 @@ function setupAdminPage(){
   if(!['master','admin'].includes(role)){goPage('dash');return;}
   const sel=document.getElementById('adm_nRole');
   if(sel)sel.innerHTML=getAllowedRoleOpts('');
-  renderAdminMainTabs('account');
+  renderAdminMainTabs(adminTabsForRole()[0]?.key);
 }
 function renderAdminMainTabs(mainKey){
   _adminMainTab=mainKey;
   const bar=document.getElementById('adminMainTabBar');
   if(!bar)return;
-  bar.innerHTML=ADMIN_MAIN_TABS.map(t=>
+  bar.innerHTML=adminTabsForRole().map(t=>
     `<div class="ti${t.key===mainKey?' on':''}" onclick="renderAdminMainTabs('${t.key}')">${t.label}</div>`
   ).join('');
   const subs=ADMIN_SUB_TABS[mainKey]||[];
@@ -519,49 +528,14 @@ function admTab(tab,el){
 function admTab_show(){}// no-op, renderAdminSubTabs가 담당
 
 // ════ 마스터 전용 페이지 ════
-const MASTER_PAGE_TABS=[
-  {key:'mstrUsers',    label:'사용자 관리'},
-  {key:'mstrRoles',    label:'권한 관리'},
-  {key:'mstrDatabase', label:'전체 DB'},
-  {key:'mstrDbUpload', label:'DB 업로드'},
-];
-const MASTER_TAB_PANEL_MAP={
-  mstrUsers:'admUsers',
-  mstrRoles:'admRoles',
-  mstrDatabase:'admCrmWrap',
-  mstrDbUpload:'admDbUpload',
-};
+// 마스터 설정은 '관리 > 마스터' 탭으로 통합됨 (레거시 호출 호환)
 function setupMasterPage(initialTab='mstrUsers'){
-  const role=(PR?.role||'').toLowerCase();
-  if(role!=='master'){goPage('dash');return;}
-  const sel=document.getElementById('nRole');
-  if(sel)sel.innerHTML=getAllowedRoleOpts('');
-  const tabBar=document.getElementById('masterTabBar');
-  if(!tabBar)return;
-  tabBar.innerHTML=MASTER_PAGE_TABS.map(t=>
-    `<div class="ti${t.key===initialTab?' on':''}" onclick="masterTab('${t.key}',this)">${t.label}</div>`
-  ).join('');
-  masterTab_show(initialTab);
-  if(initialTab==='mstrUsers')loadAdmUsers();
-  if(initialTab==='mstrRoles')loadAdmUsersRoles();
-  if(initialTab==='mstrDatabase'){loadAdmCRM();loadMgrFilter();}
+  if((PR?.role||'').toLowerCase()!=='master'){goPage('dash');return;}
+  renderAdminMainTabs('master');renderAdminSubTabs('master',initialTab);
 }
-function masterTab(tab,el){
-  document.querySelectorAll('#masterTabBar .ti').forEach(t=>t.classList.remove('on'));
-  if(el)el.classList.add('on');
-  masterTab_show(tab);
-  if(tab==='mstrUsers')loadAdmUsers();
-  if(tab==='mstrRoles')loadAdmUsersRoles();
-  if(tab==='mstrDatabase'){loadAdmCRM();loadMgrFilter();}
-}
-function masterTab_show(tab){
-  Object.entries(MASTER_TAB_PANEL_MAP).forEach(([key,panelId])=>{
-    const el=document.getElementById(panelId);
-    if(el)el.style.display=(key===tab)?'block':'none';
-  });
-}
+function masterTab(tab){renderAdminSubTabs('master',tab);}
 function showMasterPanel(tab){
-  goPage('master');// legacy redirect
+  goPage('master');
 }
 
 // ── 권한 관리 패널 (마스터 전용) ──
@@ -1360,7 +1334,7 @@ async function onRegNameInput(val){
     list.style.display='block';
     list.innerHTML=data.map(r=>`<div class="autocomplete-item" onclick="selectNameAuto('${r.business_name.replace(/'/g,"\\'")}','regNameAutoList','rName')">${r.business_name} <small style="color:#9fa6bc">${r.stage||'가망'} · ${r.manager||'-'}</small></div>`).join('');
     document.getElementById('regDupWarn').style.display='block';
-    document.getElementById('regDupWarn').textContent=`⚠️ "${data[0].business_name}" 등 ${data.length}건 유사 업체 발견 — 중복 확인 탭에서 먼저 확인하세요`;
+    document.getElementById('regDupWarn').textContent=`⚠️ "${data[0].business_name}" 등 ${data.length}건 유사 업체 발견 — 상단 [중복 확인]에서 상세 확인`;
   }else{list.style.display='none';document.getElementById('regDupWarn').style.display='none';}
 }
 function selectNameAuto(val,listId,inputId){
@@ -1428,7 +1402,7 @@ function renderDupResult(data,raw,isPhone){
   }
 }
 function quickReg(val,isPhone){
-  crmTab('reg',document.querySelector('#pgCrm .tab-bar .ti:nth-child(2)'));
+  crmTab('reg');
   if(isPhone){const d=val.replace(/\D/g,'');document.getElementById('rPhone').value=fmtPhone(d);}
   else document.getElementById('rName').value=val;
 }

@@ -1,6 +1,49 @@
 const SB_URL="https://npkpxlbcwmwlxqauevyv.supabase.co";
 const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wa3B4bGJjd213bHhxYXVldnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzMjg2MTIsImV4cCI6MjA4OTkwNDYxMn0.t3n2RvYdJd1_1Ay44V3MW7p2GqJDiocqgrmt0qIov88";
-const sb=window.supabase.createClient(SB_URL,SB_KEY);
+// ── 장애 알림: Supabase 요청 실패·스크립트 오류 → 카카오워크 즉시 알림 ──
+// 1차 CRM kakaowork-notify, 실패 시 2차 홈페이지 Supabase notify-alert (CRM Supabase 전체 장애 대비)
+const ALERT_HP_URL="https://pacyhanuwuizcxwoggen.supabase.co/functions/v1/notify-alert";
+const ALERT_HP_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhY3loYW51d3VpemN4d29nZ2VuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MTI2NDgsImV4cCI6MjA5MTI4ODY0OH0.oe39KUtwr-mZ4OsqWQT6Y3USpigQpD825IM14mIFEaY";
+const _alertSent={};
+function crmAlert(title,detail){
+  const key=title+'|'+String(detail||'').slice(0,80),now=Date.now();
+  if(_alertSent[key]&&now-_alertSent[key]<60000)return;
+  _alertSent[key]=now;
+  let who='비로그인';try{who=PR?.name||AU?.email||who}catch(_){}
+  const det=String(detail||'').slice(0,400);
+  const text=`🚨 [CRM 장애] ${title}\n사용자: ${who}${det?'\n내용: '+det:''}\n위치: ${location.href}`;
+  window.fetch(`${SB_URL}/functions/v1/kakaowork-notify`,{method:'POST',keepalive:true,
+    headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},
+    body:JSON.stringify({type:'alert',data:{message:text}})})
+  .then(r=>{if(!r.ok)throw new Error(r.status)})
+  .catch(()=>window.fetch(ALERT_HP_URL,{method:'POST',keepalive:true,
+    headers:{'Content-Type':'application/json',apikey:ALERT_HP_KEY},
+    body:JSON.stringify({system:'CRM',title,detail:`사용자: ${who} / ${det}`,page:location.href})}).catch(()=>{}));
+}
+// 알림 대상: 네트워크 오류, 5xx, 데이터 저장·수정·삭제(GET 제외) 4xx. 로그인 실패(auth 4xx)는 정상 동작이므로 제외
+async function monitoredFetch(input,init){
+  const url=typeof input==='string'?input:(input?.url||'');
+  const method=(init?.method||'GET').toUpperCase();
+  const path=url.replace(SB_URL,'').split('?')[0];
+  try{
+    const r=await window.fetch(input,init);
+    const isWrite4xx=r.status>=400&&r.status<500&&method!=='GET'&&!path.startsWith('/auth/');
+    if(r.status>=500||isWrite4xx){
+      r.clone().text().then(t=>crmAlert(`요청 실패 HTTP ${r.status} (${method} ${path})`,t)).catch(()=>{});
+    }
+    return r;
+  }catch(e){
+    if(e?.name!=='AbortError')crmAlert(`서버 연결 실패 (${method} ${path})`,e?.message||String(e));
+    throw e;
+  }
+}
+window.addEventListener('error',e=>{
+  if(e.filename&&!e.filename.startsWith(location.origin))return; // 외부 CDN 스크립트 오류 제외
+  crmAlert('화면 스크립트 오류',`${e.message} @ ${(e.filename||'').replace(location.origin,'')}:${e.lineno}`);
+});
+window.addEventListener('unhandledrejection',e=>crmAlert('처리되지 않은 오류',e.reason?.message||String(e.reason)));
+
+const sb=window.supabase.createClient(SB_URL,SB_KEY,{global:{fetch:monitoredFetch}});
 
 let AU=null,PR=null,curPeriod='day',chCalls=null,chCRM=null,chUserAct=null;
 let curCrmId=null,curCrmData=null,actChartMode='day';

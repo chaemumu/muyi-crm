@@ -1,7 +1,7 @@
 name: CRM health check
 
-# 30분마다 CRM 사이트·Supabase DB·Auth 상태 점검
-# - 실패 시 카카오워크 알림 (시크릿 KAKAOWORK_WEBHOOK_URL 우선, 없으면 CRM 등록 웹훅) + GitHub 실패 메일
+# 30분마다 CRM(사이트·DB·Auth) + 홈페이지(사이트·DB·문의 접수 함수) 상태 점검
+# - 실패 시 카카오워크 알림 (시크릿 KAKAOWORK_WEBHOOK_URL 우선 → 홈페이지 notify-alert → CRM kakaowork-notify) + GitHub 실패 메일
 # - DB 조회가 주기적으로 발생하므로 Supabase Free 플랜 자동 일시정지도 방지
 on:
   schedule:
@@ -37,6 +37,16 @@ jobs:
                 -H "apikey: $SB_KEY" -H "Authorization: Bearer $SB_KEY"
           check "Supabase 로그인" "200" "$SB_URL/auth/v1/health" -H "apikey: $SB_KEY"
 
+          # 홈페이지 + 문의 접수 경로 (홈페이지 Supabase)
+          HP_URL=$(grep -oP 'const ALERT_HP_URL="\K[^"]+' js/supabase.js | sed 's#/functions/v1/.*##')
+          HP_KEY=$(grep -oP 'const ALERT_HP_KEY="\K[^"]+' js/supabase.js)
+          check "홈페이지"            "200" "https://www.muyi.co.kr/" -L
+          check "홈페이지 DB"         "200" "$HP_URL/rest/v1/contacts?select=id&limit=1" \
+                -H "apikey: $HP_KEY" -H "Authorization: Bearer $HP_KEY"
+          # 필수값 없는 요청 → 함수가 살아 있으면 400(검증 오류), 죽었으면 5xx/000. 문의는 생성되지 않음
+          check "문의 접수 함수"      "400" "$HP_URL/functions/v1/contact" -X POST \
+                -H "apikey: $HP_KEY" -H 'Content-Type: application/json' -d '{}'
+
           {
             echo "fails<<EOF"
             printf "%b" "$FAILS"
@@ -56,11 +66,19 @@ jobs:
           if [ -n "$WEBHOOK" ]; then
             # 시크릿 웹훅 직접 발송 (Supabase 전체 장애 시에도 동작)
             jq -n --arg t "$TEXT" '{text:$t}' | curl -s -X POST -H 'Content-Type: application/json' -d @- "$WEBHOOK"
-          else
-            # 시크릿 미설정 → CRM에 등록된 카카오워크 웹훅으로 kakaowork-notify 함수 경유 발송
-            SB_URL=$(grep -oP 'const SB_URL="\K[^"]+' js/supabase.js)
-            SB_KEY=$(grep -oP 'const SB_KEY="\K[^"]+' js/supabase.js)
-            jq -n --arg t "$TEXT" '{type:"alert",data:{message:$t}}' | curl -s --max-time 20 -X POST \
-              -H 'Content-Type: application/json' -H "apikey: $SB_KEY" -H "Authorization: Bearer $SB_KEY" \
-              -d @- "$SB_URL/functions/v1/kakaowork-notify" || echo "카카오워크 발송 실패 — GitHub 메일 알림만 발송"
+            exit 0
           fi
+          # 1차: 홈페이지 Supabase notify-alert (관리자 카카오워크 방), 2차: CRM kakaowork-notify
+          HP_URL=$(grep -oP 'const ALERT_HP_URL="\K[^"]+' js/supabase.js)
+          HP_KEY=$(grep -oP 'const ALERT_HP_KEY="\K[^"]+' js/supabase.js)
+          code=$(jq -n --arg d "$(printf '%b' "$FAILS")" --arg u "$RUN_URL" \
+              '{system:"상태 점검",title:"서비스 응답 이상",detail:$d,page:$u}' \
+            | curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST \
+              -H 'Content-Type: application/json' -H "apikey: $HP_KEY" -d @- "$HP_URL" || true)
+          echo "notify-alert → HTTP $code"
+          [ "$code" = "200" ] && exit 0
+          SB_URL=$(grep -oP 'const SB_URL="\K[^"]+' js/supabase.js)
+          SB_KEY=$(grep -oP 'const SB_KEY="\K[^"]+' js/supabase.js)
+          jq -n --arg t "$TEXT" '{type:"alert",data:{message:$t}}' | curl -s --max-time 20 -X POST \
+            -H 'Content-Type: application/json' -H "apikey: $SB_KEY" -H "Authorization: Bearer $SB_KEY" \
+            -d @- "$SB_URL/functions/v1/kakaowork-notify" || echo "카카오워크 발송 실패 — GitHub 메일 알림만 발송"

@@ -75,16 +75,13 @@ const TIER_INFO={
 const SIDEBAR_ALL_GROUPS=[
   {label:'메뉴',items:[
     {id:'miDash',     page:'dash',     label:'대시보드',   icon:'📊', roles:['user','admin','master']},
-    {id:'miCrm',      page:'crm',      label:'CRM 관리',   icon:'📋', roles:['user','admin','master']},
+    {id:'miCrm',      page:'crm',      label:'영업 관리',   icon:'📋', roles:['user','admin','master']},
     {id:'miCalendar', page:'calendar', label:'연락 캘린더', icon:'📅', roles:['user','admin','master']},
     {id:'miAnnounce', page:'announce', label:'공지사항',    icon:'📣', roles:['user','admin','master']},
     {id:'miManual',   page:'manual',   label:'이용 안내',   icon:'📖', roles:['user','admin','master']},
   ]},
   {label:'관리자 전용',items:[
-    {id:'miAdmin', page:'admin', label:'운영관리', icon:'⚙️', roles:['admin','master']},
-  ]},
-  {label:'마스터 전용',roles:['master'],items:[
-    {id:'miMaster', page:'master', label:'마스터 전용', icon:'🛡️', roles:['master']},
+    {id:'miAdmin', page:'admin', label:'관리', icon:'⚙️', roles:['admin','master']},
   ]},
   {label:'계정',items:[
     {id:'miMypage', page:'mypage', label:'내 정보', icon:'👤', roles:['user','admin','master']},
@@ -401,10 +398,6 @@ async function fetchProfile(){const{data}=await sb.from('users').select('*').eq(
 function bootApp(){
   const role=(PR?.role||'user').toLowerCase();
   if(role==='inactive'){sb.auth.signOut();AU=null;PR=null;document.getElementById('loginErr').textContent='⛔ 접근 권한이 없습니다. MASTER에게 문의하세요.';return}
-  // pgMaster가 mainArea 바깥에 있을 경우 이동
-  const mainArea=document.getElementById('mainArea');
-  const pgMaster=document.getElementById('pgMaster');
-  if(pgMaster&&mainArea&&pgMaster.parentElement!==mainArea)mainArea.appendChild(pgMaster);
   document.getElementById('loginWrap').style.display='none';
   document.getElementById('app').style.display='block';
   const name=PR?.name||AU.email.split('@')[0];
@@ -454,8 +447,10 @@ function goPage(page){
   const role=(PR?.role||'user').toLowerCase();
 
   // ── 마스터 전용 서브페이지: 레거시 호환성 (masterUsers/masterRoles → master) ──
-  if(page==='masterUsers'||page==='masterRoles'){
-    goPage('master');
+  // 마스터 설정은 관리 페이지의 '마스터' 탭으로 통합
+  if(page==='master'||page==='masterUsers'||page==='masterRoles'){
+    if(role!=='master'){goPage('dash');return}
+    goPage('admin');setupMasterPage(page==='masterRoles'?'mstrRoles':'mstrUsers');
     return;
   }
 
@@ -466,14 +461,13 @@ function goPage(page){
     return;
   }
 
-  ['dash','crm','calendar','announce','manual','admin','master','mypage'].forEach(p=>{
+  ['dash','crm','calendar','announce','manual','admin','mypage'].forEach(p=>{
     const pg=document.getElementById('pg'+cap(p));if(pg)pg.classList.toggle('active',p===page);
     const m=document.getElementById('mi'+cap(p));if(m)m.classList.toggle('active',p===page);
   });
   closeSidebar();
   if(page==='dash')     loadDash();
   if(page==='admin')    setupAdminPage();
-  if(page==='master')   setupMasterPage('mstrUsers');
   if(page==='announce') loadAnnouncements();
   if(page==='manual')   loadManual();
   if(page==='calendar') renderCalendar();

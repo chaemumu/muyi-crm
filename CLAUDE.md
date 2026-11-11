@@ -16,7 +16,7 @@
 ## 파일 구조
 | 파일 | 역할 |
 |---|---|
-| `index.html` | 전체 화면(페이지·모달) + CSS. 페이지 전환은 `goPage('dash'|'crm'|'calendar'|'announce'|'admin'|'master'|'manual'|'mypage')` |
+| `index.html` | 전체 화면(페이지·모달) + CSS. 페이지 전환은 `goPage('dash'|'crm'|'calendar'|'announce'|'admin'|'manual'|'mypage')` — `master`는 `관리 > 마스터` 탭으로 리다이렉트 |
 | `js/supabase.js` | 클라이언트 생성, 인증/프로필(`AU`, `PR` 전역), **장애 감시(monitoredFetch · crmAlert)** |
 | `js/crm.js` | 가망 DB 목록·등록·단계(`STAGES`)·일괄 처리 |
 | `js/detail.js` | 업체 상세 모달 |
@@ -53,7 +53,7 @@
 
 ## UX 개선 로드맵 (2026-11 기준)
 1. ✅ 로고 Base64 제거 (index.html 792KB → 152KB)
-2. 영업 관리: 목록 중심 + "가망 등록"은 사이드 패널, 중복 검사 입력 시 자동
-3. 운영관리 탭 분리(팀 / DB / 리포트 / 설정) + 마스터 설정과 중복 기능 통합
+2. ✅ 영업 관리: 목록 중심 + 등록·중복확인 우측 드로어, 전화번호 실시간 중복 검사
+3. ✅ 운영관리 + 마스터 설정 → `관리` 단일 메뉴 (탭: 계정관리[admin] / 데이터관리 / 운영관리 / 마스터[master]) — 탭 정의는 `js/main.js` `ADMIN_MAIN_TABS`·`ADMIN_SUB_TABS`
 4. MUYI Lab 디자인 시스템 적용 (아이콘 통일·디자인 토큰·다크모드 버튼 단일화)
 5. 홈페이지 문의 → CRM `prospects` 자동 등록

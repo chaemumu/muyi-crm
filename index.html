@@ -977,7 +977,6 @@ body.dark .crm-tl-content{color:#aeaeb2}
       <div class="mi"        id="miAnnounce" onclick="goPage('announce')"> <span class="mi-ic">📣</span>공지사항<span class="mi-badge" id="announceBadge" style="display:none">N</span></div>
       <div class="mi"        id="miAdmin"    onclick="goPage('admin')"    style="display:none"><span class="mi-ic">⚙️</span>운영관리</div>
       <div class="nav-sec"   id="navSecMaster"                            style="display:none">마스터 전용</div>
-      <div class="mi"        id="miMaster"   onclick="goPage('master')"   style="display:none"><span class="mi-ic">🛡️</span>마스터 설정</div>
       <div class="nav-sec">계정</div>
       <div class="mi"        id="miManual"   onclick="goPage('manual')">  <span class="mi-ic">📖</span>이용 안내</div>
       <div class="mi"        id="miMypage"   onclick="goPage('mypage')">  <span class="mi-ic">👤</span>내 정보</div>
@@ -1595,7 +1594,7 @@ body.dark .crm-tl-content{color:#aeaeb2}
     <div class="page" id="pgAdmin">
       <div class="pg-wrap">
         <div class="pg-head">
-          <div><div class="pg-title">⚙️ 운영 관리</div><div class="pg-desc">데이터·운영 관리</div></div>
+          <div><div class="pg-title">관리</div><div class="pg-desc">계정 · 데이터 · 운영 · 마스터 설정</div></div>
           <div class="pg-actions"><button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button></div>
         </div>
         <!-- 2단 탭 구조: 메인 탭 + 서브 탭 -->
@@ -1707,7 +1706,6 @@ body.dark .crm-tl-content{color:#aeaeb2}
             <div id="templateAdminList"></div>
           </div>
         </div>
-      </div>
 
         <!-- 주간 리포트 패널 -->
         <div id="admReport" style="display:none">
@@ -1834,20 +1832,7 @@ body.dark .crm-tl-content{color:#aeaeb2}
             <button class="btn-s btn-sm" style="margin-top:14px" onclick="saveKwSettings()">알림 설정 저장</button>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- ■ MASTER ■ -->
-    <div class="page" id="pgMaster">
-      <div class="pg-wrap">
-        <div class="pg-head">
-          <div>
-            <div class="pg-title">🛡️ 마스터 전용</div>
-            <div class="pg-desc">최고 관리자 전용 기능</div>
-          </div>
-          <div class="pg-actions"><button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button></div>
-        </div>
-        <div class="tab-bar" id="masterTabBar"></div>
+        <!-- ── 마스터 전용 패널 (관리 > 마스터 탭) ── -->
         <!-- 사용자 관리 패널 -->
         <div id="admUsers" style="display:none">
           <div class="card" style="margin-bottom:16px">
@@ -1907,6 +1892,7 @@ body.dark .crm-tl-content{color:#aeaeb2}
         </div>
       </div>
     </div>
+  </div><!-- /mainArea : 이하 모달은 .layout 직속 (기존 구조 유지) -->
 
 <!-- DB 업로드 모달 -->
 <div class="modal-overlay" id="dbUploadModal" style="display:none" onclick="if(event.target===this)closeDbUploadModal()">

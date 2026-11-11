@@ -60,6 +60,7 @@ async function openCrmModal(id){
   document.getElementById('callContent').value='';
 
   await loadCallHistory(id);
+  if(typeof loadBizDoc==='function')loadBizDoc(id);
   if(typeof updateModalNav==='function')updateModalNav(id);
   document.getElementById('crmModal').style.display='flex';
 }

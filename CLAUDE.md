@@ -22,16 +22,20 @@
 | `js/detail.js` | 업체 상세 모달 |
 | `js/call.js` | 콜 기록(`call_logs`) |
 | `js/main.js` | 대시보드·관리·마스터 설정·공지·일정 등 나머지 |
+| `js/bizdoc.js` | 사업자등록증 업로드 → 흑백 WebP 압축 → AI 추출(`biz-ocr`) → 확인 모달 → 저장 |
 | `reset-password.html` | 비밀번호 재설정 메일 링크 착지 페이지 |
 | `logo-blue.webp` / `logo-white.webp` | 로그인 / 사이드바 로고 (Base64 인라인 금지) |
 
 ## 데이터 (public)
 - 핵심: `prospects`(가망 DB), `calls`, `call_logs`, `users`(role·name, Auth와 id 공유)
+- 사업자등록증: `business_registrations`(추출 텍스트, RLS = 해당 업체를 볼 수 있는 사람) + Storage 비공개 버킷 `biz-docs/{prospect_id}/{uuid}.webp`(압축본)
 - 운영: `system_settings`(카카오워크 웹훅 등), `blocked_stores`, `goals`, `call_templates`, `announcements`, `upload_approvals`, `db_assignments`, `daily_badges`, `user_settings`
 - 권한(`users.role`): `master` > `admin` > 일반 영업 / `inactive`는 로그인 차단. 권한 검사는 RLS + Edge Function에서도 반드시 수행
+- `users.role` 변경은 트리거(`guard_users_role_change`)로 master만 가능. `users` 직접 insert 정책 없음(계정 생성은 `create-user`만)
 - 영업 단계: 가망 → 컨택중 → 검토중 → 미팅확정 → 계약완료 / 영업종결
 
 ## Edge Functions (CRM 프로젝트)
+- `biz-ocr`(사업자등록증 이미지 → Claude 추출, 저장은 안 함. CRM 프로젝트 Secret `ANTHROPIC_API_KEY` 필요)
 - `create-user`(마스터 검증 후 service_role 계정 생성), `reset-user-password`(마스터 전용), `kakaowork-notify`(계약·공지·alert 알림), `naver-place`(네이버 지도 URL 파싱)
 - `temp-reset-master`: **보안상 비활성화(410)됨 — 재활성화 금지**
 - 새 함수는 `verify_jwt: true` 기본. 끌 경우 함수 내부에서 직접 인증

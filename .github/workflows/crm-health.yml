@@ -41,7 +41,8 @@ jobs:
           HP_URL=$(grep -oP 'const ALERT_HP_URL="\K[^"]+' js/supabase.js | sed 's#/functions/v1/.*##')
           HP_KEY=$(grep -oP 'const ALERT_HP_KEY="\K[^"]+' js/supabase.js)
           check "홈페이지"            "200" "https://www.muyi.co.kr/" -L
-          check "홈페이지 DB"         "200" "$HP_URL/rest/v1/contacts?select=id&limit=1" \
+          # contacts는 비공개 테이블이라 anon 조회 시 401(권한 거부)이 정상 — DB까지 응답이 왔다는 뜻. 000/5xx만 장애
+          check "홈페이지 DB"         "200|401" "$HP_URL/rest/v1/contacts?select=id&limit=1" \
                 -H "apikey: $HP_KEY" -H "Authorization: Bearer $HP_KEY"
           # 필수값 없는 요청 → 함수가 살아 있으면 400(검증 오류), 죽었으면 5xx/000. 문의는 생성되지 않음
           check "문의 접수 함수"      "400" "$HP_URL/functions/v1/contact" -X POST \

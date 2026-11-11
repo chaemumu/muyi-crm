@@ -103,6 +103,7 @@ body{font-family:-apple-system,'SF Pro Display','Noto Sans KR',BlinkMacSystemFon
 .mi-badge{margin-left:auto;background:var(--orange);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;min-width:20px;text-align:center}
 .sb-foot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.07)}
 .btn-logout{width:100%;padding:11px;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:12px;color:rgba(255,255,255,.5);font-size:13px;font-family:inherit;cursor:pointer;transition:all .15s;font-weight:600;letter-spacing:.2px}
+.sb-theme{margin-bottom:8px}
 .btn-logout:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.25)}
 
 /* ── MAIN ── */
@@ -982,6 +983,7 @@ body.dark .crm-tl-content{color:#aeaeb2}
       <div class="mi"        id="miMypage"   onclick="goPage('mypage')">  <span class="mi-ic">👤</span>내 정보</div>
     </div>
     <div class="sb-foot">
+      <button class="btn-logout sb-theme" id="darkModeBtn" onclick="toggleDark()"><span class="dark-mode-label">🌙 다크모드</span></button>
       <button class="btn-logout" onclick="doLogout()">🚪 로그아웃</button>
     </div>
   </div>
@@ -997,7 +999,7 @@ body.dark .crm-tl-content{color:#aeaeb2}
         <div class="pg-head">
           <div><div class="pg-title" id="greeting">대시보드</div><div class="pg-desc" id="dateStr"></div></div>
           <div class="pg-actions">
-            <button id="darkModeBtn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span id="darkModeLabel">다크모드</span></button>
+            
             <button id="pushNotifyBtn" onclick="setupPushNotification()" style="display:none;background:#fff;border:1.5px solid #e4e7f0;border-radius:9px;padding:8px 14px;cursor:pointer;font-size:14px;display:none;align-items:center;gap:6px">🔔 알림 설정</button>
             
             <div class="period-row" style="margin:0">
@@ -1147,7 +1149,7 @@ body.dark .crm-tl-content{color:#aeaeb2}
           <div class="pg-actions">
             <button class="btn-g btn-sm" onclick="crmTab('check')">중복 확인</button>
             <button class="btn-p btn-sm" onclick="crmTab('reg')">+ 가망 등록</button>
-            <button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button>
+            
           </div>
         </div>
         <div class="card" style="margin-bottom:16px">
@@ -1364,7 +1366,7 @@ body.dark .crm-tl-content{color:#aeaeb2}
         <div class="pg-head">
           <div><div class="pg-title">📅 연락 캘린더</div><div class="pg-desc">다음 연락 예정일 기반 일정 관리</div></div>
           <div class="pg-actions">
-            <button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button>
+            
             <button class="btn-g btn-sm" onclick="moveMonth(-1)">◀ 이전달</button>
             <span id="calMonthLabel" style="font-size:16px;font-weight:700;color:#0f0c2e;padding:0 8px"></span>
             <button class="btn-g btn-sm" onclick="moveMonth(1)">다음달 ▶</button>
@@ -1387,7 +1389,7 @@ body.dark .crm-tl-content{color:#aeaeb2}
         <div class="pg-head">
           <div><div class="pg-title">📣 공지사항</div><div class="pg-desc">팀 공지 및 안내사항</div></div>
           <div class="pg-actions">
-            <button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button>
+            
             <button class="btn-p" id="announceWriteBtn" onclick="openAnnounceModal()" style="display:none">✏️ 공지 작성</button>
           </div>
         </div>
@@ -1399,7 +1401,7 @@ body.dark .crm-tl-content{color:#aeaeb2}
     <!-- ■ 이용안내 ■ -->
     <div class="page" id="pgManual">
       <div class="pg-wrap" style="max-width:1000px;margin:0 auto">
-        <div class="pg-head"><div><div class="pg-title">📖 이용 안내</div><div class="pg-desc">MUYI CRM 사용 가이드</div></div><div class="pg-actions"><button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button></div></div>
+        <div class="pg-head"><div><div class="pg-title">📖 이용 안내</div><div class="pg-desc">MUYI CRM 사용 가이드</div></div><div class="pg-actions"></div></div>
         <div id="myRoleBanner" class="my-role-banner" style="display:none"></div>
 
         <!-- 탭 바 -->
@@ -1595,7 +1597,7 @@ body.dark .crm-tl-content{color:#aeaeb2}
       <div class="pg-wrap">
         <div class="pg-head">
           <div><div class="pg-title">관리</div><div class="pg-desc">계정 · 데이터 · 운영 · 마스터 설정</div></div>
-          <div class="pg-actions"><button class="dark-mode-btn" onclick="toggleDark()" style="background:none;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--gray-600);font-weight:600;font-family:inherit;transition:all .2s">🌙 <span class="dark-mode-label">다크모드</span></button></div>
+          <div class="pg-actions"></div>
         </div>
         <!-- 2단 탭 구조: 메인 탭 + 서브 탭 -->
         <div style="background:var(--surface);border-radius:var(--radius-lg);margin-bottom:20px;border:1px solid var(--border2);overflow:hidden;box-shadow:var(--shadow-sm)">

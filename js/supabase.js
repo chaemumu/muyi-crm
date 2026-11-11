@@ -228,24 +228,10 @@ function openSidebar(){document.getElementById('sidebar').classList.add('open');
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('mobOverlay').classList.remove('show')}
 
 // 다크모드
+// 다크모드 토글은 사이드바 하단 버튼 하나만 사용
 function _syncDarkBtn(isDark){
-  const btns=document.querySelectorAll('#darkModeBtn,.dark-mode-btn');
-  btns.forEach(btn=>{
-    const lbl=btn.querySelector('.dark-mode-label')||document.getElementById('darkModeLabel');
-    if(isDark){
-      btn.style.background='rgba(255,255,255,.07)';
-      btn.style.borderColor='rgba(255,255,255,.2)';
-      btn.style.color='#e5e7eb';
-      btn.firstChild.textContent='☀️ ';
-      if(lbl)lbl.textContent='라이트모드';
-    }else{
-      btn.style.background='none';
-      btn.style.borderColor='';
-      btn.style.color='';
-      btn.firstChild.textContent='🌙 ';
-      if(lbl)lbl.textContent='다크모드';
-    }
-  });
+  const lbl=document.querySelector('#darkModeBtn .dark-mode-label');
+  if(lbl)lbl.textContent=isDark?'☀️ 라이트모드':'🌙 다크모드';
 }
 function _syncLogo(isDark){}
 function toggleDark(){

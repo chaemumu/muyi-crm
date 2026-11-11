@@ -38,7 +38,8 @@ async function monitoredFetch(input,init){
   }
 }
 window.addEventListener('error',e=>{
-  if(e.filename&&!e.filename.startsWith(location.origin))return; // 외부 CDN 스크립트 오류 제외
+  // 자체 스크립트 오류만 알림 (외부 CDN·확장프로그램 오류, 파일명 없는 'Script error.' 제외)
+  if(!e.filename||!e.filename.startsWith(location.origin))return;
   crmAlert('화면 스크립트 오류',`${e.message} @ ${(e.filename||'').replace(location.origin,'')}:${e.lineno}`);
 });
 window.addEventListener('unhandledrejection',e=>crmAlert('처리되지 않은 오류',e.reason?.message||String(e.reason)));

@@ -1,7 +1,7 @@
 name: CRM health check
 
 # 30분마다 CRM 사이트·Supabase DB·Auth 상태 점검
-# - 실패 시 카카오워크 알림 (Secrets: KAKAOWORK_WEBHOOK_URL) + GitHub 실패 메일
+# - 실패 시 카카오워크 알림 (시크릿 KAKAOWORK_WEBHOOK_URL 우선, 없으면 CRM 등록 웹훅) + GitHub 실패 메일
 # - DB 조회가 주기적으로 발생하므로 Supabase Free 플랜 자동 일시정지도 방지
 on:
   schedule:
@@ -51,7 +51,16 @@ jobs:
           FAILS: ${{ steps.checks.outputs.fails }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          if [ -z "$WEBHOOK" ]; then echo "KAKAOWORK_WEBHOOK_URL 미설정 — GitHub 메일 알림만 발송"; exit 0; fi
           NOW=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M')
           TEXT=$(printf '🚨 *MUYI CRM 장애 감지*\n\n%s\n\n🕐 %s\n🔗 %s' "$FAILS" "$NOW" "$RUN_URL")
-          jq -n --arg t "$TEXT" '{text:$t}' | curl -s -X POST -H 'Content-Type: application/json' -d @- "$WEBHOOK"
+          if [ -n "$WEBHOOK" ]; then
+            # 시크릿 웹훅 직접 발송 (Supabase 전체 장애 시에도 동작)
+            jq -n --arg t "$TEXT" '{text:$t}' | curl -s -X POST -H 'Content-Type: application/json' -d @- "$WEBHOOK"
+          else
+            # 시크릿 미설정 → CRM에 등록된 카카오워크 웹훅으로 kakaowork-notify 함수 경유 발송
+            SB_URL=$(grep -oP 'const SB_URL="\K[^"]+' js/supabase.js)
+            SB_KEY=$(grep -oP 'const SB_KEY="\K[^"]+' js/supabase.js)
+            jq -n --arg t "$TEXT" '{type:"alert",data:{message:$t}}' | curl -s --max-time 20 -X POST \
+              -H 'Content-Type: application/json' -H "apikey: $SB_KEY" -H "Authorization: Bearer $SB_KEY" \
+              -d @- "$SB_URL/functions/v1/kakaowork-notify" || echo "카카오워크 발송 실패 — GitHub 메일 알림만 발송"
+          fi

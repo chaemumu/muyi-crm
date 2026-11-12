@@ -147,11 +147,14 @@ async function saveCRM(){
 }
 
 // ── CRM 목록 ──
+// 홈페이지 문의로 자동 등록된 업체 표시 (ingest-lead → prospects.lead_source='homepage')
+const leadSourceBadge=(r)=>r.lead_source==='homepage'?'<span class="lead-src-badge">홈페이지 문의</span>':'';
+
 async function loadList(){
   const kw=document.getElementById('listKw').value.trim();
   const sf=document.getElementById('listStageFilter').value;
   const ind=document.getElementById('listIndustry')?.value.trim()||'';
-  let q=sb.from('prospects').select('id,business_name,phone,industry,stage,manager,next_contact_date,created_at').order('created_at',{ascending:false}).limit(300);
+  let q=sb.from('prospects').select('id,business_name,phone,industry,stage,manager,next_contact_date,created_at,lead_source').order('created_at',{ascending:false}).limit(300);
   // 담당자별 필터링: admin/master는 전체, user는 자신의 데이터만
   if(!isPriv())q=q.eq('manager_id',AU.id);
   if(kw)q=q.or(`business_name.ilike.%${kw}%,manager.ilike.%${kw}%`);
@@ -175,7 +178,7 @@ async function loadList(){
     const stageOpts=Object.entries(STAGE_ICONS).map(([s,i])=>`<div class="stage-q-item" onclick="quickStageChange(${r.id},'${s}',this.closest('.stage-quick-drop'))">${i} ${s}</div>`).join('');
     return`<tr>
       <td class="check-col"><input type="checkbox" class="row-check" data-id="${r.id}" onchange="toggleRowCheck(this,${r.id})"></td>
-      <td class="tbl-clickrow" onclick="openCrmModal(${r.id})"><strong>${highlight(r.business_name,kw)}</strong></td>
+      <td class="tbl-clickrow" onclick="openCrmModal(${r.id})"><strong>${highlight(r.business_name,kw)}</strong>${leadSourceBadge(r)}</td>
       <td>${r.phone||'-'}</td>
       <td>${r.industry?`<span class="tag-chip industry">${r.industry}</span>`:'-'}</td>
       <td>
@@ -714,15 +717,16 @@ async function loadAssignUsers(){
 }
 async function loadAssignList(){
   const kw=(document.getElementById('assignSearchKw')?.value||'').trim();
-  let q=sb.from('prospects').select('id,business_name,phone,stage,manager,created_at').order('created_at',{ascending:false}).limit(200);
+  let q=sb.from('prospects').select('id,business_name,phone,stage,manager,created_at,lead_source').order('created_at',{ascending:false}).limit(200);
   if(kw)q=q.ilike('business_name','%'+kw+'%');
+  if(document.getElementById('assignUnassignedOnly')?.checked)q=q.is('manager',null);
   const{data}=await q;
   const tbody=document.getElementById('assignListBody');
   if(!tbody)return;
   if(!data?.length){tbody.innerHTML='<tr><td colspan="6" class="empty">결과 없음</td></tr>';return;}
   tbody.innerHTML=data.map(r=>`<tr>
     <td><input type="checkbox" class="assign-row-chk" data-id="${r.id}" data-name="${(r.business_name||'').replace(/"/g,'')}"></td>
-    <td><strong>${r.business_name||'-'}</strong></td>
+    <td><strong>${r.business_name||'-'}</strong>${leadSourceBadge(r)}</td>
     <td>${maskPhone(r.phone)}</td>
     <td>${stageBadge(r.stage||'가망')}</td>
     <td style="color:#6b7494">${r.manager||'-'}</td>

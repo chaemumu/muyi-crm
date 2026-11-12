@@ -28,6 +28,7 @@
 
 ## 데이터 (public)
 - 핵심: `prospects`(가망 DB), `calls`, `call_logs`, `users`(role·name, Auth와 id 공유)
+- 홈페이지 연동: `lead_imports`(문의 id ↔ 업체 id), `integration_secrets`(RLS만, 정책 없음 = service_role 전용), `prospects.lead_source`
 - 사업자등록증: `business_registrations`(추출 텍스트, RLS = 해당 업체를 볼 수 있는 사람) + Storage 비공개 버킷 `biz-docs/{prospect_id}/{uuid}.webp`(압축본)
 - 운영: `system_settings`(카카오워크 웹훅 등), `blocked_stores`, `goals`, `call_templates`, `announcements`, `upload_approvals`, `db_assignments`, `daily_badges`, `user_settings`
 - 권한(`users.role`): `master` > `admin` > 일반 영업 / `inactive`는 로그인 차단. 권한 검사는 RLS + Edge Function에서도 반드시 수행
@@ -61,4 +62,7 @@
 2. ✅ 영업 관리: 목록 중심 + 등록·중복확인 우측 드로어, 전화번호 실시간 중복 검사
 3. ✅ 운영관리 + 마스터 설정 → `관리` 단일 메뉴 (탭: 계정관리[admin] / 데이터관리 / 운영관리 / 마스터[master]) — 탭 정의는 `js/main.js` `ADMIN_MAIN_TABS`·`ADMIN_SUB_TABS`
 4. MUYI Lab 디자인 시스템 적용 (아이콘 통일·디자인 토큰) — ✅ 다크모드 버튼은 사이드바 하단 1개로 통일 완료
-5. 홈페이지 문의 → CRM `prospects` 자동 등록
+5. ✅ 홈페이지 문의 → CRM `prospects` 자동 등록 (미배정·가망·태그 `홈페이지문의`, `lead_source='homepage'`)
+   - 흐름: 홈페이지 `contacts` insert 트리거 + pg_cron 10분 재시도 → 홈페이지 `push-crm` → CRM `ingest-lead`(x-ingest-key = 양쪽 `integration_secrets`)
+   - 같은 문의 id는 `lead_imports`로 1회만, 같은 전화번호 업체가 있으면 새로 만들지 않고 `call_logs`에 [문의 재접수] 추가
+   - 전화번호 없는 문의는 등록 불가 → 카카오워크 알림. 15분 넘게 실패하면 알림 1회

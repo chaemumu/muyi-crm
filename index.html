@@ -770,6 +770,9 @@ body.dark .pg-wrap,body.dark .page{background:#0e0e12}
 .info-field:last-child{margin-bottom:0}
 .info-lbl{display:block;font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px}
 .info-val{font-size:14px;font-weight:600;color:var(--gray-950);word-break:break-word;line-height:1.5}
+.lead-src-badge{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;background:#eeedfd;color:#1E10C7;vertical-align:middle}
+body.dark .lead-src-badge{background:#25234a;color:#a9a3ff}
+.assign-unassigned{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13px;color:var(--gray-600);cursor:pointer}
 .biz-doc{margin-top:16px;padding-top:14px;border-top:1px solid var(--border2);display:flex;flex-direction:column;gap:8px}
 .biz-doc-h{font-size:13px;font-weight:700;color:var(--gray-700);display:flex;align-items:center;gap:8px}
 .biz-doc-empty{font-size:12.5px;color:var(--gray-500);line-height:1.5}
@@ -1768,6 +1771,7 @@ body.dark .crm-tl-content{color:#aeaeb2}
                   <input class="fi" id="assignSearchKw" placeholder="업체명 검색" onkeydown="if(event.key==='Enter')loadAssignList()">
                   <button class="btn-s btn-sm" onclick="loadAssignList()">조회</button>
                 </div>
+                <label class="assign-unassigned"><input type="checkbox" id="assignUnassignedOnly" checked onchange="loadAssignList()"> 미배정만 보기 (홈페이지 문의 자동 등록분 포함)</label>
               </div>
             </div>
             <div style="overflow-x:auto">

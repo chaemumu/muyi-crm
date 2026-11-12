@@ -36,6 +36,7 @@
 
 ## Edge Functions (CRM 프로젝트)
 - `biz-ocr`(사업자등록증 이미지 → Claude 추출, 저장은 안 함. CRM 프로젝트 Secret `ANTHROPIC_API_KEY` 필요)
+- `backup-export`(매일 백업용 전체 내보내기, 헤더 `x-backup-key` = Secret `BACKUP_KEY`. 호출자는 사용자 구글 드라이브의 Apps Script — 코드: `backup/google-apps-script.js`, 마지막 실행 시각은 `system_settings.last_backup_at`)
 - `create-user`(마스터 검증 후 service_role 계정 생성), `reset-user-password`(마스터 전용), `kakaowork-notify`(계약·공지·alert 알림), `naver-place`(네이버 지도 URL 파싱)
 - `temp-reset-master`: **보안상 비활성화(410)됨 — 재활성화 금지**
 - 새 함수는 `verify_jwt: true` 기본. 끌 경우 함수 내부에서 직접 인증

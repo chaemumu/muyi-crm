@@ -1,4 +1,11 @@
-# MUYI CRM — 영업 관리 내부 툴
+# MUYI CRM — 영업 관리 내부 툴 (⚠️ 사용 중단 · 보관)
+
+> **2026-11-12부로 사용 중단.** 영업 관리는 홈페이지 문의함(`chaemumu/muyi-homepage`의 `admin.html`, www.muyi.co.kr/admin)으로 일원화했다.
+> - 이 저장소·Supabase `npkpxlbcwmwlxqauevyv`에 새 기능을 만들지 말 것. Supabase 프로젝트는 일시정지(보관) 상태
+> - 사업자등록증 AI 등록·드라이브 백업은 문의함으로 이식 완료
+> - 최종 백업: 구글 드라이브 `MUYI CRM 백업`(2026-11-12)
+> - 30분 상태 점검(`crm-health.yml`)은 삭제 → 홈페이지 저장소 `.github/workflows/health.yml`이 대신함
+> - 아래 내용은 보관 당시 구조 기록이다
 
 ## 프로젝트 정체성
 - 무이코퍼레이션 영업팀 내부 CRM (가망 DB · 콜 기록 · 일정 · 팀 관리)

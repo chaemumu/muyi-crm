@@ -27,7 +27,9 @@ async function monitoredFetch(input,init){
   const path=url.replace(SB_URL,'').split('?')[0];
   try{
     const r=await window.fetch(input,init);
-    const isWrite4xx=r.status>=400&&r.status<500&&method!=='GET'&&!path.startsWith('/auth/');
+    // 사용자 입력 문제(사업자등록증 아님·용량 초과 등)는 장애가 아니므로 제외
+    const userInputErr=path.startsWith('/functions/v1/biz-ocr')&&[400,413,422].includes(r.status);
+    const isWrite4xx=r.status>=400&&r.status<500&&method!=='GET'&&!path.startsWith('/auth/')&&!userInputErr;
     if(r.status>=500||isWrite4xx){
       r.clone().text().then(t=>crmAlert(`요청 실패 HTTP ${r.status} (${method} ${path})`,t)).catch(()=>{});
     }

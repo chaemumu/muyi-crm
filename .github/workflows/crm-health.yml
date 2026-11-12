@@ -5,7 +5,7 @@ name: CRM health check
 # - DB 조회가 주기적으로 발생하므로 Supabase Free 플랜 자동 일시정지도 방지
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '7,37 * * * *'   # 정각·30분 정각은 GitHub 스케줄 혼잡으로 누락이 잦아 피함
   workflow_dispatch:
 
 jobs:

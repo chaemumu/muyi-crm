@@ -1,0 +1,6 @@
+{
+  "redirects": [
+    { "source": "/", "destination": "https://www.muyi.co.kr/admin", "permanent": true },
+    { "source": "/:path*", "destination": "https://www.muyi.co.kr/admin", "permanent": true }
+  ]
+}

@@ -4,6 +4,7 @@
 > - 이 저장소·Supabase `npkpxlbcwmwlxqauevyv`에 새 기능을 만들지 말 것. Supabase 프로젝트는 일시정지(보관) 상태
 > - 사업자등록증 AI 등록·드라이브 백업은 문의함으로 이식 완료
 > - 최종 백업: 구글 드라이브 `MUYI CRM 백업`(2026-11-12)
+> - **사이트 차단(2026-11-20)**: `vercel.json`이 모든 주소를 www.muyi.co.kr/admin 으로 영구 이동(308). 옛 화면이 안 열리므로 '서버 연결 실패' 장애 알림도 더 이상 안 생김. 코드는 보관용으로만 남김
 > - 30분 상태 점검(`crm-health.yml`)은 삭제 → 홈페이지 저장소 `.github/workflows/health.yml`이 대신함
 > - 아래 내용은 보관 당시 구조 기록이다
 
